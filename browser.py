@@ -28,24 +28,7 @@ import webkit
 
 gtk.gdk.threads_init()
 
-class BrowserPage(webkit.WebView):
-
-    def __init__(self):
-        webkit.WebView.__init__(self)
-        settings = self.get_settings()
-
-        # scale other content besides from text as well
-        self.set_full_content_zoom(True)
-
-class TabLabel (gtk.HBox):
-    def __init__ (self, title, child):
-        gtk.HBox.__init__(self, False, 4)
-        self.label = gtk.Label(title)
-        self.pack_start(self.label, True, True, 0)
-        self.set_data("label", self.label)
-
 class ContentPane (gtk.VBox):
-
     __gsignals__ = {
         "new-window-requested": (gobject.SIGNAL_RUN_FIRST,
                                  gobject.TYPE_NONE,
@@ -56,11 +39,13 @@ class ContentPane (gtk.VBox):
         """initialize the content pane"""
         gtk.VBox.__init__(self)
         self.show_all()
+        self.connect("new-window-requested", lambda *a, **k: None)
 
     def new_tab (self, url=None):
         """creates a new page in a new tab"""
         # create the tab content
-        browser = BrowserPage()
+        browser = webkit.WebView()
+        browser.set_full_content_zoom(True)
         self._construct_tab_view(browser, url)
 
     def _construct_tab_view (self, web_view, url):
@@ -81,7 +66,8 @@ class ContentPane (gtk.VBox):
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
         scrolled_window.props.vscrollbar_policy = gtk.POLICY_AUTOMATIC
-        view = BrowserPage()
+        view = webkit.WebView()
+        view.set_full_content_zoom(True)
         scrolled_window.add(view)
         scrolled_window.show_all()
 

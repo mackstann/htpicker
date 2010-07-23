@@ -41,19 +41,10 @@ class BrowserPage(webkit.WebView):
         self.set_full_content_zoom(True)
 
 class TabLabel (gtk.HBox):
-    """A class for Tab labels"""
-
     def __init__ (self, title, child):
-        """initialize the tab label"""
         gtk.HBox.__init__(self, False, 4)
-        self.title = title
-        self.child = child
         self.label = gtk.Label(title)
-
-        icon = gtk.image_new_from_stock(gtk.STOCK_ORIENTATION_PORTRAIT, gtk.ICON_SIZE_BUTTON)
-        self.pack_start(icon, False, False, 0)
         self.pack_start(self.label, True, True, 0)
-
         self.set_data("label", self.label)
 
 class ContentPane (gtk.Notebook):
@@ -140,47 +131,14 @@ class ContentPane (gtk.Notebook):
         self.emit("new-window-requested", web_view)
 
 
-class WebToolbar(gtk.Toolbar):
-
-    __gsignals__ = {
-        "load-requested": (gobject.SIGNAL_RUN_FIRST,
-                           gobject.TYPE_NONE,
-                           (gobject.TYPE_STRING,)),
-        "new-tab-requested": (gobject.SIGNAL_RUN_FIRST,
-                              gobject.TYPE_NONE, ()),
-        "view-source-mode-requested": (gobject.SIGNAL_RUN_FIRST,
-                                       gobject.TYPE_NONE,
-                                       (gobject.TYPE_BOOLEAN, ))
-        }
-
-    def __init__(self):
-        gtk.Toolbar.__init__(self)
-
-    def _entry_activate_cb(self, entry):
-        self.emit("load-requested", entry.props.text)
-
-    def _add_tab_cb(self, button):
-        self.emit("new-tab-requested")
-
-    def _view_source_mode_cb(self, button):
-        self.emit("view-source-mode-requested", button.get_active())
-
 class WebBrowser(gtk.Window):
 
     def __init__(self):
         gtk.Window.__init__(self)
 
-        toolbar = WebToolbar()
         content_tabs = ContentPane()
-        content_tabs.connect("new-window-requested", self._new_window_requested_cb)
-        toolbar.connect("load-requested", load_requested_cb, content_tabs)
-        toolbar.connect("new-tab-requested", new_tab_requested_cb, content_tabs)
 
-        vbox = gtk.VBox(spacing=1)
-        vbox.pack_start(toolbar, expand=False, fill=False)
-        vbox.pack_start(content_tabs)
-
-        self.add(vbox)
+        self.add(content_tabs)
         self.set_default_size(800, 600)
         self.connect('destroy', destroy_cb, content_tabs)
 
@@ -188,50 +146,10 @@ class WebBrowser(gtk.Window):
 
         content_tabs.new_tab("http://www.google.com")
 
-    def _new_window_requested_cb (self, content_pane, view):
-        features = view.get_window_features()
-        window = view.get_toplevel()
-
-        scrolled_window = view.get_parent()
-        if features.get_property("scrollbar-visible"):
-            scrolled_window.props.hscrollbar_policy = gtk.POLICY_NEVER
-            scrolled_window.props.vscrollbar_policy = gtk.POLICY_NEVER
-
-        isLocationbarVisible = features.get_property("locationbar-visible")
-        isToolbarVisible = features.get_property("toolbar-visible")
-        if isLocationbarVisible or isToolbarVisible:
-            toolbar = WebToolbar(isLocationbarVisible, isToolbarVisible)
-            scrolled_window.get_parent().pack_start(toolbar, False, False, 0)
-
-        window.set_default_size(features.props.width, features.props.height)
-        window.move(features.props.x, features.props.y)
-
-        window.show_all()
-        return True
-
-# event handlers
-def new_tab_requested_cb (toolbar, content_pane):
-    content_pane.new_tab("about:blank")
-
-def load_requested_cb (widget, text, content_pane):
-    if not text:
-        return
-    content_pane.load(text)
-
 def destroy_cb(window, content_pane):
     """destroy window resources"""
-    num_pages = content_pane.get_n_pages()
-    while num_pages != -1:
-        child = content_pane.get_nth_page(num_pages)
-        if child:
-            view = child.get_child()
-        num_pages = num_pages - 1
     window.destroy()
     gtk.main_quit()
-
-# context menu item callbacks
-def about_pywebkitgtk_cb(menu_item, web_view):
-    web_view.open("http://live.gnome.org/PyWebKitGtk")
 
 #def zoom_in_cb(menu_item, web_view):
 #    """Zoom into the page"""

@@ -22,36 +22,28 @@
 # * custom button - w/o margins/padding to make tabs thin
 #
 
-import gobject
 import gtk
 import webkit
 
 gtk.gdk.threads_init()
 
 class ContentPane (gtk.VBox):
-    __gsignals__ = {
-        "new-window-requested": (gobject.SIGNAL_RUN_FIRST,
-                                 gobject.TYPE_NONE,
-                                 (gobject.TYPE_OBJECT,))
-        }
-
     def __init__ (self):
         """initialize the content pane"""
         gtk.VBox.__init__(self)
         self.show_all()
-        self.connect("new-window-requested", lambda *a, **k: None)
 
     def new_tab (self, url=None):
         """creates a new page in a new tab"""
         # create the tab content
-        browser = webkit.WebView()
-        browser.set_full_content_zoom(True)
-        self._construct_tab_view(browser, url)
 
-    def _construct_tab_view (self, web_view, url):
+class WebBrowser(gtk.Window):
+    def __init__(self, url):
+        gtk.Window.__init__(self)
+
+        web_view = webkit.WebView()
+        web_view.set_full_content_zoom(True)
         web_view.open(url)
-
-        web_view.connect("create-web-view", self._new_web_view_request_cb)
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
@@ -60,45 +52,13 @@ class ContentPane (gtk.VBox):
         scrolled_window.show_all()
 
         self.add(scrolled_window)
-        self.show_all()
 
-    def _new_web_view_request_cb (self, web_view, web_frame):
-        scrolled_window = gtk.ScrolledWindow()
-        scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
-        scrolled_window.props.vscrollbar_policy = gtk.POLICY_AUTOMATIC
-        view = webkit.WebView()
-        view.set_full_content_zoom(True)
-        scrolled_window.add(view)
-        scrolled_window.show_all()
-
-        vbox = gtk.VBox(spacing=1)
-        vbox.pack_start(scrolled_window, True, True)
-
-        window = gtk.Window()
-        window.add(vbox)
-        view.connect("web-view-ready", self._new_web_view_ready_cb)
-        return view
-
-    def _new_web_view_ready_cb (self, web_view):
-        self.emit("new-window-requested", web_view)
-
-
-class WebBrowser(gtk.Window):
-
-    def __init__(self):
-        gtk.Window.__init__(self)
-
-        content_tabs = ContentPane()
-
-        self.add(content_tabs)
         self.set_default_size(800, 600)
-        self.connect('destroy', destroy_cb, content_tabs)
+        self.connect('destroy', destroy_cb)
 
         self.show_all()
 
-        content_tabs.new_tab("http://www.google.com")
-
-def destroy_cb(window, content_pane):
+def destroy_cb(window):
     """destroy window resources"""
     window.destroy()
     gtk.main_quit()
@@ -117,5 +77,5 @@ def destroy_cb(window, content_pane):
 #        web_view.set_zoom_level(1.0)
 
 if __name__ == "__main__":
-    webbrowser = WebBrowser()
+    webbrowser = WebBrowser('http://google.com')
     gtk.main()

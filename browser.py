@@ -22,11 +22,8 @@
 # * custom button - w/o margins/padding to make tabs thin
 #
 
-from gettext import gettext as _
-
 import gobject
 import gtk
-import pango
 import webkit
 
 gtk.gdk.threads_init()
@@ -47,12 +44,9 @@ class TabLabel (gtk.HBox):
         self.pack_start(self.label, True, True, 0)
         self.set_data("label", self.label)
 
-class ContentPane (gtk.Notebook):
+class ContentPane (gtk.VBox):
 
     __gsignals__ = {
-        "focus-view-title-changed": (gobject.SIGNAL_RUN_FIRST,
-                                     gobject.TYPE_NONE,
-                                     (gobject.TYPE_OBJECT, gobject.TYPE_STRING,)),
         "new-window-requested": (gobject.SIGNAL_RUN_FIRST,
                                  gobject.TYPE_NONE,
                                  (gobject.TYPE_OBJECT,))
@@ -60,21 +54,8 @@ class ContentPane (gtk.Notebook):
 
     def __init__ (self):
         """initialize the content pane"""
-        gtk.Notebook.__init__(self)
-        self.props.scrollable = True
-        self.props.homogeneous = True
-
+        gtk.VBox.__init__(self)
         self.show_all()
-
-    def load (self, text):
-        """load the given uri in the current web view"""
-        child = self.get_nth_page(self.get_current_page())
-        view = child.get_child()
-        view.open(text)
-
-    def new_tab_with_webview (self, webview):
-        """creates a new tab with the given webview as its child"""
-        self._construct_tab_view(webview)
 
     def new_tab (self, url=None):
         """creates a new page in a new tab"""
@@ -82,7 +63,9 @@ class ContentPane (gtk.Notebook):
         browser = BrowserPage()
         self._construct_tab_view(browser, url)
 
-    def _construct_tab_view (self, web_view, url=None):
+    def _construct_tab_view (self, web_view, url):
+        web_view.open(url)
+
         web_view.connect("create-web-view", self._new_web_view_request_cb)
 
         scrolled_window = gtk.ScrolledWindow()
@@ -91,25 +74,8 @@ class ContentPane (gtk.Notebook):
         scrolled_window.add(web_view)
         scrolled_window.show_all()
 
-        # create the tab
-        label = TabLabel(url, scrolled_window)
-        label.show_all()
-
-        new_tab_number = self.append_page(scrolled_window, label)
-        self.set_tab_label_packing(scrolled_window, False, False, gtk.PACK_START)
-        self.set_tab_label(scrolled_window, label)
-
-        # hide the tab if there's only one
-        self.set_show_tabs(self.get_n_pages() > 1)
-
+        self.add(scrolled_window)
         self.show_all()
-        self.set_current_page(new_tab_number)
-
-        # load the content
-        if not url:
-            web_view.load_string("hey", "text/html", "iso-8859-15", "about")
-        else:
-            web_view.open(url)
 
     def _new_web_view_request_cb (self, web_view, web_frame):
         scrolled_window = gtk.ScrolledWindow()

@@ -43,41 +43,18 @@ class BrowserPage(webkit.WebView):
 class TabLabel (gtk.HBox):
     """A class for Tab labels"""
 
-    __gsignals__ = {
-        "close": (gobject.SIGNAL_RUN_FIRST,
-                  gobject.TYPE_NONE,
-                  (gobject.TYPE_OBJECT,))
-        }
-
     def __init__ (self, title, child):
         """initialize the tab label"""
         gtk.HBox.__init__(self, False, 4)
         self.title = title
         self.child = child
         self.label = gtk.Label(title)
-        self.label.props.max_width_chars = 30
-        self.label.set_ellipsize(pango.ELLIPSIZE_MIDDLE)
-        self.label.set_alignment(0.0, 0.5)
 
         icon = gtk.image_new_from_stock(gtk.STOCK_ORIENTATION_PORTRAIT, gtk.ICON_SIZE_BUTTON)
-        close_image = gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_MENU)
-        close_button = gtk.Button()
-        close_button.set_relief(gtk.RELIEF_NONE)
-        close_button.connect("clicked", self._close_tab, child)
-        close_button.set_image(close_image)
         self.pack_start(icon, False, False, 0)
         self.pack_start(self.label, True, True, 0)
-        self.pack_start(close_button, False, False, 0)
 
         self.set_data("label", self.label)
-        self.set_data("close-button", close_button)
-
-    def set_label (self, text):
-        """sets the text of this label"""
-        self.label.set_label(text)
-
-    def _close_tab (self, widget, child):
-        self.emit("close", child)
 
 class ContentPane (gtk.Notebook):
 
@@ -125,7 +102,6 @@ class ContentPane (gtk.Notebook):
 
         # create the tab
         label = TabLabel(url, scrolled_window)
-        label.connect("close", self._close_tab)
         label.show_all()
 
         new_tab_number = self.append_page(scrolled_window, label)
@@ -143,14 +119,6 @@ class ContentPane (gtk.Notebook):
             web_view.load_string("hey", "text/html", "iso-8859-15", "about")
         else:
             web_view.open(url)
-
-    def _close_tab (self, label, child):
-        page_num = self.page_num(child)
-        if page_num != -1:
-            view = child.get_child()
-            view.destroy()
-            self.remove_page(page_num)
-        self.set_show_tabs(self.get_n_pages() > 1)
 
     def _new_web_view_request_cb (self, web_view, web_frame):
         scrolled_window = gtk.ScrolledWindow()

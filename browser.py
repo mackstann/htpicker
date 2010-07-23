@@ -31,59 +31,14 @@ import webkit
 
 gtk.gdk.threads_init()
 
-ABOUT_PAGE = """
-<html><head><title>PyWebKitGtk - About</title></head><body>
-<h1>Welcome to <code>webbrowser.py</code></h1>
-<p><a
-href="http://code.google.com/p/pywebkitgtk/">http://code.google.com/p/pywebkitgtk/</a><br/>
-</p>
-</body></html>
-"""
-
 class BrowserPage(webkit.WebView):
 
     def __init__(self):
         webkit.WebView.__init__(self)
         settings = self.get_settings()
-        settings.set_property("enable-developer-extras", True)
 
         # scale other content besides from text as well
         self.set_full_content_zoom(True)
-
-        # make sure the items will be added in the end
-        # hence the reason for the connect_after
-        self.connect_after("populate-popup", self.populate_popup)
-
-    def populate_popup(self, view, menu):
-        # zoom buttons
-        zoom_in = gtk.ImageMenuItem(gtk.STOCK_ZOOM_IN)
-        zoom_in.connect('activate', zoom_in_cb, view)
-        menu.append(zoom_in)
-
-        zoom_out = gtk.ImageMenuItem(gtk.STOCK_ZOOM_OUT)
-        zoom_out.connect('activate', zoom_out_cb, view)
-        menu.append(zoom_out)
-
-        zoom_hundred = gtk.ImageMenuItem(gtk.STOCK_ZOOM_100)
-        zoom_hundred.connect('activate', zoom_hundred_cb, view)
-        menu.append(zoom_hundred)
-
-        printitem = gtk.ImageMenuItem(gtk.STOCK_PRINT)
-        menu.append(printitem)
-        printitem.connect('activate', print_cb, view)
-
-        page_properties = gtk.ImageMenuItem(gtk.STOCK_PROPERTIES)
-        menu.append(page_properties)
-        page_properties.connect('activate', page_properties_cb, view)
-
-        menu.append(gtk.SeparatorMenuItem())
-
-        aboutitem = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
-        menu.append(aboutitem)
-        aboutitem.connect('activate', about_pywebkitgtk_cb, view)
-
-        menu.show_all()
-        return False
 
 class TabLabel (gtk.HBox):
     """A class for Tab labels"""
@@ -116,7 +71,6 @@ class TabLabel (gtk.HBox):
 
         self.set_data("label", self.label)
         self.set_data("close-button", close_button)
-        self.connect("style-set", tab_label_style_set_cb)
 
     def set_label (self, text):
         """sets the text of this label"""
@@ -124,16 +78,6 @@ class TabLabel (gtk.HBox):
 
     def _close_tab (self, widget, child):
         self.emit("close", child)
-
-def tab_label_style_set_cb (tab_label, style):
-    context = tab_label.get_pango_context()
-    metrics = context.get_metrics(tab_label.style.font_desc, context.get_language())
-    char_width = metrics.get_approximate_digit_width()
-    (width, height) = gtk.icon_size_lookup(gtk.ICON_SIZE_MENU)
-    tab_label.set_size_request(20 * pango.PIXELS(char_width) + 2 * width,
-                               pango.PIXELS(metrics.get_ascent() +
-    metrics.get_descent()) + 8)
-
 
 class ContentPane (gtk.Notebook):
 
@@ -151,10 +95,8 @@ class ContentPane (gtk.Notebook):
         gtk.Notebook.__init__(self)
         self.props.scrollable = True
         self.props.homogeneous = True
-        self.connect("switch-page", self._switch_page)
 
         self.show_all()
-        self._hovered_uri = None
 
     def load (self, text):
         """load the given uri in the current web view"""
@@ -173,11 +115,7 @@ class ContentPane (gtk.Notebook):
         self._construct_tab_view(browser, url)
 
     def _construct_tab_view (self, web_view, url=None):
-        web_view.connect("hovering-over-link", self._hovering_over_link_cb)
-        web_view.connect("populate-popup", self._populate_page_popup_cb)
-        web_view.connect("load-finished", self._view_load_finished_cb)
         web_view.connect("create-web-view", self._new_web_view_request_cb)
-        web_view.connect("title-changed", self._title_changed_cb)
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
@@ -201,22 +139,10 @@ class ContentPane (gtk.Notebook):
         self.set_current_page(new_tab_number)
 
         # load the content
-        self._hovered_uri = None
         if not url:
-            web_view.load_string(ABOUT_PAGE, "text/html", "iso-8859-15", "about")
+            web_view.load_string("hey", "text/html", "iso-8859-15", "about")
         else:
             web_view.open(url)
-
-    def _populate_page_popup_cb(self, view, menu):
-        # misc
-        if self._hovered_uri:
-            open_in_new_tab = gtk.MenuItem(_("Open Link in New Tab"))
-            open_in_new_tab.connect("activate", self._open_in_new_tab, view)
-            menu.insert(open_in_new_tab, 0)
-            menu.show_all()
-
-    def _open_in_new_tab (self, menuitem, view):
-        self.new_tab(self._hovered_uri)
 
     def _close_tab (self, label, child):
         page_num = self.page_num(child)
@@ -225,30 +151,6 @@ class ContentPane (gtk.Notebook):
             view.destroy()
             self.remove_page(page_num)
         self.set_show_tabs(self.get_n_pages() > 1)
-
-    def _switch_page (self, notebook, page, page_num):
-        child = self.get_nth_page(page_num)
-        view = child.get_child()
-        frame = view.get_main_frame()
-        self.emit("focus-view-title-changed", frame, frame.props.title)
-
-    def _hovering_over_link_cb (self, view, title, uri):
-        self._hovered_uri = uri
-
-    def _title_changed_cb (self, view, frame, title):
-        child = self.get_nth_page(self.get_current_page())
-        label = self.get_tab_label(child)
-        label.set_label(title)
-        self.emit("focus-view-title-changed", frame, title)
-
-    def _view_load_finished_cb(self, view, frame):
-        child = self.get_nth_page(self.get_current_page())
-        label = self.get_tab_label(child)
-        title = frame.get_title()
-        if not title:
-            title = frame.get_uri()
-        if title:
-            label.set_label(title)
 
     def _new_web_view_request_cb (self, web_view, web_frame):
         scrolled_window = gtk.ScrolledWindow()
@@ -283,35 +185,8 @@ class WebToolbar(gtk.Toolbar):
                                        (gobject.TYPE_BOOLEAN, ))
         }
 
-    def __init__(self, location_enabled=True, toolbar_enabled=True):
+    def __init__(self):
         gtk.Toolbar.__init__(self)
-
-        # location entry
-        if location_enabled:
-            self._entry = gtk.Entry()
-            self._entry.connect('activate', self._entry_activate_cb)
-            entry_item = gtk.ToolItem()
-            entry_item.set_expand(True)
-            entry_item.add(self._entry)
-            self._entry.show()
-            self.insert(entry_item, -1)
-            entry_item.show()
-
-        # add tab button
-        if toolbar_enabled:
-            addTabButton = gtk.ToolButton(gtk.STOCK_ADD)
-            addTabButton.connect("clicked", self._add_tab_cb)
-            self.insert(addTabButton, -1)
-            addTabButton.show()
-
-            viewSourceItem = gtk.ToggleToolButton(gtk.STOCK_PROPERTIES)
-            viewSourceItem.set_label("View Source Mode")
-            viewSourceItem.connect('toggled', self._view_source_mode_cb)
-            self.insert(viewSourceItem, -1)
-            viewSourceItem.show()
-
-    def location_set_text (self, text):
-        self._entry.set_text(text)
 
     def _entry_activate_cb(self, entry):
         self.emit("load-requested", entry.props.text)
@@ -329,11 +204,9 @@ class WebBrowser(gtk.Window):
 
         toolbar = WebToolbar()
         content_tabs = ContentPane()
-        content_tabs.connect("focus-view-title-changed", self._title_changed_cb, toolbar)
         content_tabs.connect("new-window-requested", self._new_window_requested_cb)
         toolbar.connect("load-requested", load_requested_cb, content_tabs)
         toolbar.connect("new-tab-requested", new_tab_requested_cb, content_tabs)
-        toolbar.connect("view-source-mode-requested", view_source_mode_requested_cb, content_tabs)
 
         vbox = gtk.VBox(spacing=1)
         vbox.pack_start(toolbar, expand=False, fill=False)
@@ -368,12 +241,6 @@ class WebBrowser(gtk.Window):
         window.show_all()
         return True
 
-    def _title_changed_cb (self, tabbed_pane, frame, title, toolbar):
-        if not title:
-           title = frame.get_uri()
-        self.set_title(_("PyWebKitGtk - %s") % title)
-        load_committed_cb(tabbed_pane, frame, toolbar)
-
 # event handlers
 def new_tab_requested_cb (toolbar, content_pane):
     content_pane.new_tab("about:blank")
@@ -382,11 +249,6 @@ def load_requested_cb (widget, text, content_pane):
     if not text:
         return
     content_pane.load(text)
-
-def load_committed_cb (tabbed_pane, frame, toolbar):
-    uri = frame.get_uri()
-    if uri:
-        toolbar.location_set_text(uri)
 
 def destroy_cb(window, content_pane):
     """destroy window resources"""
@@ -403,52 +265,18 @@ def destroy_cb(window, content_pane):
 def about_pywebkitgtk_cb(menu_item, web_view):
     web_view.open("http://live.gnome.org/PyWebKitGtk")
 
-def zoom_in_cb(menu_item, web_view):
-    """Zoom into the page"""
-    web_view.zoom_in()
-
-def zoom_out_cb(menu_item, web_view):
-    """Zoom out of the page"""
-    web_view.zoom_out()
-
-def zoom_hundred_cb(menu_item, web_view):
-    """Zoom 100%"""
-    if not (web_view.get_zoom_level() == 1.0):
-        web_view.set_zoom_level(1.0)
-
-def print_cb(menu_item, web_view):
-    mainframe = web_view.get_main_frame()
-    mainframe.print_full(gtk.PrintOperation(), gtk.PRINT_OPERATION_ACTION_PRINT_DIALOG);
-
-def page_properties_cb(menu_item, web_view):
-    mainframe = web_view.get_main_frame()
-    datasource = mainframe.get_data_source()
-    main_resource = datasource.get_main_resource()
-    window = gtk.Window()
-    window.set_default_size(100, 60)
-    vbox = gtk.VBox()
-    hbox = gtk.HBox()
-    hbox.pack_start(gtk.Label("MIME Type :"), False, False)
-    hbox.pack_end(gtk.Label(main_resource.get_mime_type()), False, False)
-    vbox.pack_start(hbox, False, False)
-    hbox2 = gtk.HBox()
-    hbox2.pack_start(gtk.Label("URI : "), False, False)
-    hbox2.pack_end(gtk.Label(main_resource.get_uri()), False, False)
-    vbox.pack_start(hbox2, False, False)
-    hbox3 = gtk.HBox()
-    hbox3.pack_start(gtk.Label("Encoding : "), False, False)
-    hbox3.pack_end(gtk.Label(main_resource.get_encoding()), False, False)
-    vbox.pack_start(hbox3, False, False)
-    window.add(vbox)
-    window.show_all()
-    window.present()
-
-
-def view_source_mode_requested_cb(widget, is_active, content_pane):
-    currentTab = content_pane.get_nth_page(content_pane.get_current_page())
-    childView = currentTab.get_child()
-    childView.set_view_source_mode(is_active)
-    childView.reload()
+#def zoom_in_cb(menu_item, web_view):
+#    """Zoom into the page"""
+#    web_view.zoom_in()
+#
+#def zoom_out_cb(menu_item, web_view):
+#    """Zoom out of the page"""
+#    web_view.zoom_out()
+#
+#def zoom_hundred_cb(menu_item, web_view):
+#    """Zoom 100%"""
+#    if not (web_view.get_zoom_level() == 1.0):
+#        web_view.set_zoom_level(1.0)
 
 if __name__ == "__main__":
     webbrowser = WebBrowser()

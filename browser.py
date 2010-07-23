@@ -28,7 +28,8 @@ import gobject
 import gtk
 import pango
 import webkit
-from inspector import Inspector
+
+gtk.gdk.threads_init()
 
 ABOUT_PAGE = """
 <html><head><title>PyWebKitGtk - About</title></head><body>
@@ -177,7 +178,6 @@ class ContentPane (gtk.Notebook):
         web_view.connect("load-finished", self._view_load_finished_cb)
         web_view.connect("create-web-view", self._new_web_view_request_cb)
         web_view.connect("title-changed", self._title_changed_cb)
-        inspector = Inspector(web_view.get_web_inspector())
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
@@ -205,7 +205,7 @@ class ContentPane (gtk.Notebook):
         if not url:
             web_view.load_string(ABOUT_PAGE, "text/html", "iso-8859-15", "about")
         else:
-            web_view.load_uri(url)
+            web_view.open(url)
 
     def _populate_page_popup_cb(self, view, menu):
         # misc

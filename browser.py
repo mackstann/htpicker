@@ -185,4 +185,5 @@ class MyHandler(URLHandler):
 if __name__ == "__main__":
     handler = MyHandler('myapp')
     webbrowser = WebBrowser('file://' + os.getcwd() + '/app.html', handler)
+    webbrowser.fullscreen()
     gtk.main()

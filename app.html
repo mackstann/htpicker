@@ -21,16 +21,16 @@
             var have_video = false;
             var old_el = null;
 
-            function full_url(prefix, filename)
+            var full_url = function(prefix, filename)
             {
                 return prefix + encodeURI(filename);
             }
 
-            function activate_file(el, prefix, filename, fullpath)
+            var activate_file = function(el, prefix, filename, fullpath)
             {
                 if(old_el)
-                    $(old_el).removeClass('ui-state-active');
-                $(el).addClass('ui-state-active');
+                    old_el.removeClass('ui-state-active');
+                el.addClass('ui-state-active');
                 old_el = el;
 
                 var player = $('#player');
@@ -50,12 +50,12 @@
                     player.fadeIn('slow');
                 }
             }
-            function activate_dir(el, prefix, filename, fullpath)
+            var activate_dir = function(el, prefix, filename, fullpath)
             {
                 load_files(fullpath);
             }
 
-            function htmlDecode(input)
+            var htmlDecode = function(input)
             {
                 var e = document.createElement('div');
                 e.innerHTML = input;
@@ -63,7 +63,7 @@
             }
 
 
-            function load_files(path) {
+            var load_files = function(path) {
                 var qs = '';
                 if(path)
                     qs = '?directory=' + encodeURI(path);
@@ -74,18 +74,34 @@
                     $('#files').html('');
                     for(var i = 0; i < files.length; i++)
                     {
+                        var onclick_func = files[i]['type'] == 'directory' ? activate_dir : activate_file;
                         var css_classes = 'ui-widget-header item';
 
-                        var onclick = files[i]['type'] == 'directory' ? 'activate_dir' : 'activate_file';
-
                         $('#files').append(
-                            '<div id="one" class="' + css_classes + '" ' +
-                                ' onmouseover="$(this).addClass(\'ui-state-hover\');" ' +
-                                ' onmouseout="$(this).removeClass(\'ui-state-hover\');">' +
-                                '<a href="#" onclick="' + onclick + '(this.parentNode, \'' + prefix + '\', \'' + files[i]['filename'] + '\', \'' + files[i]['fullpath'] + '\');">' +
-                                    files[i]['display_name'] +
-                                '</a>' +
-                            '</div>'
+                            ($('<div>')
+                                .attr('id', 'file-'+i)
+                                .attr('class', css_classes)
+                                .mouseover(function(i) {
+                                    return function(ev) {
+                                        $('#file-'+i).addClass("ui-state-hover");
+                                    };
+                                }(i))
+                                .mouseout(function(i) {
+                                    return function(ev) {
+                                        $('#file-'+i).removeClass("ui-state-hover");
+                                    };
+                                }(i))
+                                .append(
+                                    $('<a>')
+                                        .attr('href', '#')
+                                        .click(function(onclick_func, prefix, file) {
+                                            return function(ev) {
+                                                onclick_func($(ev.target).parent(), prefix, file['filename'], file['fullpath']);
+                                            };
+                                        }(onclick_func, prefix, files[i]))
+                                        .html(files[i]['display_name'])
+                                )
+                            )
                         );
                     }
                 });

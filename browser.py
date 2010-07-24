@@ -21,23 +21,37 @@ import webkit
 
 gtk.gdk.threads_init()
 
-class ContentPane (gtk.VBox):
-    def __init__ (self):
-        """initialize the content pane"""
-        gtk.VBox.__init__(self)
-        self.show_all()
+class URLHandler(object):
+    def __init__(self, scheme, actions):
+        self.scheme = scheme
+        self.actions = actions
 
-    def new_tab (self, url=None):
-        """creates a new page in a new tab"""
-        # create the tab content
+    def handle_request(self, uri):
+        if uri.startswith(self.scheme + '://'):
+            action = uri.split('://', 1)[1]
+            self.actions[action]()
+
 
 class WebBrowser(gtk.Window):
-    def __init__(self, url):
+
+    def __init__(self, url, url_handler):
         gtk.Window.__init__(self)
+
+        self.url_handler = url_handler
 
         web_view = webkit.WebView()
         web_view.set_full_content_zoom(True)
-        web_view.open(url)
+
+        settings = web_view.get_settings()
+        #settings.set_property("enable-default-context-menu", False)
+        #settings.set_property("enable-java-applet", False)
+        #settings.set_property("enable-plugins", False)
+        settings.set_property("enable-universal-access-from-file-uris", True)
+        settings.set_property("enable-xss-auditor", False)
+        #settings.set_property("tab-key-cycles-through-elements", False)
+
+        #web_view.open(url)
+        web_view.load_string('<html><body>hi<img src="myapp://foo"></body></html>', "text/html", "iso-8859-15", 'file:///foo/')
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
@@ -48,14 +62,17 @@ class WebBrowser(gtk.Window):
         self.add(scrolled_window)
 
         self.set_default_size(800, 600)
-        self.connect('destroy', destroy_cb)
+        self.connect('destroy', self._destroy_cb)
+        web_view.connect('resource-request-starting', self._resource_cb)
 
         self.show_all()
 
-def destroy_cb(window):
-    """destroy window resources"""
-    window.destroy()
-    gtk.main_quit()
+    def _destroy_cb(self, window):
+        window.destroy()
+        gtk.main_quit()
+
+    def _resource_cb(self, view, frame, resource, request, response):
+        self.url_handler.handle_request(resource.get_uri())
 
 #def zoom_in_cb(menu_item, web_view):
 #    """Zoom into the page"""
@@ -71,5 +88,10 @@ def destroy_cb(window):
 #        web_view.set_zoom_level(1.0)
 
 if __name__ == "__main__":
-    webbrowser = WebBrowser('http://google.com')
+    def cb():
+        print 'callback from a url request!'
+    handler = URLHandler('myapp', {
+        'foo': cb,
+    })
+    webbrowser = WebBrowser('http://google.com', handler)
     gtk.main()

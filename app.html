@@ -4,12 +4,13 @@
         <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.8.2.custom.min.js"></script>
         <style>
-            body {
-                background: #111;
-            }
-            div.item {
-                padding: 10px;
-            }
+            * { font-family: 'Droid Sans', sans-serif; font-size: xx-large; }
+            body { background: #111; }
+            div.item { padding: 10px; }
+            div.item a:link,
+            div.item a:active,
+            div.item a:hover,
+            div.item a:visited { text-decoration: none; }
         </style>
     </head>
 
@@ -17,6 +18,7 @@
         <div id="player" style="display: none;"></div>
         <script>
             var start_point = '.';
+            var have_video = false;
 
             function full_url(prefix, filename)
             {
@@ -25,9 +27,21 @@
 
             function activate_file(prefix, filename)
             {
-                $('body').append('video');
-                $('#player').html('<video src="' + full_url(prefix, filename) + '" autoplay controls>');
-                $('#player').delay(800).slideDown(400);
+                var player = $('#player');
+                if(!have_video)
+                {
+                    player.html('<video height="33%" width="50%" src="' + full_url(prefix, filename) + '" autoplay>');
+                    player.slideDown('fast');
+                    have_video = true;
+                }
+                else
+                {
+                    $('#player > video')[0].pause();
+                    player.fadeOut('fast');
+                    player.html('<video height="33%" width="50%" src="' + full_url(prefix, filename) + '" autoplay>');
+                    $('#player > video')[0].play();
+                    player.fadeIn('slow');
+                }
             }
             function activate_dir(prefix, filename)
             {

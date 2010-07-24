@@ -16,6 +16,7 @@
 
     <body>
         <div id="player" style="display: none;"></div>
+        <div id="files"></div>
         <script>
             var start_point = '.';
             var have_video = false;
@@ -26,7 +27,7 @@
                 return prefix + encodeURI(filename);
             }
 
-            function activate_file(el, prefix, filename)
+            function activate_file(el, prefix, filename, fullpath)
             {
                 if(old_el)
                     $(old_el).removeClass('ui-state-active');
@@ -34,6 +35,7 @@
                 old_el = el;
 
                 var player = $('#player');
+                    $('body').append(full_url(prefix, filename));
                 if(!have_video)
                 {
                     player.html('<video height="33%" width="50%" src="' + full_url(prefix, filename) + '" autoplay>');
@@ -49,30 +51,34 @@
                     player.fadeIn('slow');
                 }
             }
-            function activate_dir(el, prefix, filename)
+            function activate_dir(el, prefix, filename, fullpath)
             {
+                load_files(fullpath);
             }
 
-            $(function() {
-                $.getJSON('myapp://list_files', function(data) {
+            function load_files(path) {
+                $.getJSON('myapp://list_files?dir=' + encodeURI(path), function(data) {
                     var prefix = data['prefix'];
                     var files = data['files'];
+                    $('#files').html('');
                     for(var i = 0; i < files.length; i++)
                     {
                         var css_classes = 'ui-widget-header item';
 
                         var onclick = files[i]['type'] == 'directory' ? 'activate_dir' : 'activate_file';
 
-                        $('body').append(
+                        $('#files').append(
                             '<div id="one" class="' + css_classes + '">' +
-                                '<a href="#" onclick="' + onclick + '(this.parentNode, \'' + prefix + '\', \'' + files[i]['filename'] + '\');">' +
+                                '<a href="#" onclick="' + onclick + '(this.parentNode, \'' + prefix + '\', \'' + files[i]['filename'] + '\', \'' + files[i]['fullpath'] + '\');">' +
                                     files[i]['display_name'] +
                                 '</a>' +
                             '</div>'
                         );
                     }
                 });
-            });
+            }
+
+            $(load_files('.'));
         </script>
     </body>
 </html>

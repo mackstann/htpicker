@@ -23,6 +23,10 @@ import urllib
 import gtk
 import webkit
 
+import urlparse
+# urlparse.urlsplit() is dumb. it interprets the scheme and parses the
+# netloc/path different depending on whether or not it recognizes the scheme.
+
 gtk.gdk.threads_init()
 
 class WebBrowser(gtk.Window):
@@ -78,27 +82,52 @@ class URLHandler(object):
 
     def handle_request(self, request):
         uri = request.get_uri()
-        if uri.startswith(self.scheme + '://'):
-            action = uri.split('://', 1)[1]
-            new_uri = getattr(self, action)(uri)
+        scheme, rest = uri.split('://', 1)
+        if '?' in rest:
+            action, qs = rest.split('?')
+        else:
+            action = rest
+            qs = ''
+
+        q = urlparse.parse_qs(qs)
+
+        params = {}
+        for key, values in q.items():
+            # this won't let you use the same param name twice,
+            # i.e. ?foo=1&foo=2.  it will only use the first value.
+            params[key] = values[0]
+
+        if scheme == self.scheme:
+            new_uri = getattr(self, action)(uri, **params)
             if new_uri:
                 request.set_uri(new_uri)
 
 class MyHandler(URLHandler):
-    def list_files(self, uri):
-        base = '/home/nick/nasty/Videos/Mateo'
+    def list_files(self, uri, dir=None):
+        if not dir:
+            base = '/home/nick/nasty/Videos/Mateo'
+        else:
+            base = os.path.abspath(dir)
+
         prefix = 'file://' + urllib.quote(base) + '/'
         files = []
 
-        for i, filename in enumerate(os.listdir(base)):
+        for i, filename in enumerate(sorted(os.listdir(base))):
+            if filename.startswith('.'):
+                continue
+
             fullpath = base + '/' + filename
             file = {
                 'filename': filename,
                 'fullpath': fullpath,
                 'display_name': os.path.splitext(filename)[0],
             }
-            real = os.path.realpath(fullpath)
-            mode = os.stat(real).st_mode
+            real = os.path.realpath(os.path.abspath(fullpath))
+            try:
+                mode = os.stat(real).st_mode
+            except OSError:
+                # probably broken symlink
+                continue
 
             if stat.S_ISDIR(mode):
                 file['type'] = 'directory'
@@ -108,6 +137,13 @@ class MyHandler(URLHandler):
                 file['type'] = 'other'
 
             files.append(file)
+
+        files.insert(0, {
+            'filename': '..',
+            'fullpath': base + '/' + '..',
+            'display_name': 'Up One Directory',
+            'type': 'directory',
+        })
 
         response = {
             'prefix': prefix,

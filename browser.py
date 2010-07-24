@@ -76,6 +76,16 @@ class URLHandler(object):
 
     This assumes URIs of the form "scheme://method".  If you register with the
     scheme "foo", then the URI "foo://bar" will call your bar() method.
+
+    Query string parameters will be translated into Python keyword arguments
+    and passed to your method.  If you use a query parameter more than once,
+    the multiple values will be rolled up into a list.  E.g:
+
+        yourapp://yourmethod?a=one&a=two&b=three
+
+    will become:
+
+        yourmethod(a=['one', 'two'], b='three')
     """
 
     def __init__(self, scheme):
@@ -94,9 +104,7 @@ class URLHandler(object):
 
         params = {}
         for key, values in q.items():
-            # this won't let you use the same param name twice,
-            # i.e. ?foo=1&foo=2.  it will only use the first value.
-            params[key] = values[0]
+            params[key] = values[0] if len(values) == 1 else values
 
         if scheme == self.scheme:
             ret = getattr(self, action)(uri, **params)

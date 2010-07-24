@@ -61,10 +61,16 @@ class WebBrowser(gtk.Window):
         gtk.main_quit()
 
     def _resource_cb(self, view, frame, resource, request, response):
-        print dir(request)
         self.url_handler.handle_request(request)
 
 class URLHandler(object):
+    """
+    A URL Handler for a given network scheme.
+
+    This assumes URIs of the form "scheme://method".  If you register with the
+    scheme "foo", then the URI "foo://bar" will call your bar() method.
+    """
+
     def __init__(self, scheme):
         self.scheme = scheme
 
@@ -72,19 +78,27 @@ class URLHandler(object):
         uri = request.get_uri()
         if uri.startswith(self.scheme + '://'):
             action = uri.split('://', 1)[1]
-            getattr(self, action)(request)
+            new_uri = getattr(self, action)(uri)
+            if new_uri:
+                request.set_uri(new_uri)
 
 class MyHandler(URLHandler):
-    def foo(self, request):
+    def list_files(self, uri):
+        prefix = 'file://' + os.getcwd() + '/'
         files = os.listdir('.')
-        request.set_uri('data:text/plain;charset=utf-8;base64,' + json.dumps({'files': files}).encode('base64'))
-        #request.set_uri('''data:image/png;base64,
+        response = {
+            'prefix': prefix,
+            'files': files,
+        }
+        print response
+        return 'data:application/json;charset=utf-8;base64,' + json.dumps(response).encode('base64')
+        #return '''data:image/png;base64,
         #        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
         #        C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
         #        AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
         #        REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
         #        ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
-        #        vr4MkhoXe0rZigAAAABJRU5ErkJggg==''')
+        #        vr4MkhoXe0rZigAAAABJRU5ErkJggg=='''
 
 # bug! alert() hangs the app
 

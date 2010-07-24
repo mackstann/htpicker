@@ -19,14 +19,20 @@
         <script>
             var start_point = '.';
             var have_video = false;
+            var old_el = null;
 
             function full_url(prefix, filename)
             {
                 return prefix + encodeURI(filename);
             }
 
-            function activate_file(prefix, filename)
+            function activate_file(el, prefix, filename)
             {
+                if(old_el)
+                    $(old_el).removeClass('ui-state-active');
+                $(el).addClass('ui-state-active');
+                old_el = el;
+
                 var player = $('#player');
                 if(!have_video)
                 {
@@ -43,7 +49,7 @@
                     player.fadeIn('slow');
                 }
             }
-            function activate_dir(prefix, filename)
+            function activate_dir(el, prefix, filename)
             {
             }
 
@@ -54,14 +60,12 @@
                     for(var i = 0; i < files.length; i++)
                     {
                         var css_classes = 'ui-widget-header item';
-                        if(i == 3)
-                            css_classes += ' ui-state-active';
 
                         var onclick = files[i]['type'] == 'directory' ? 'activate_dir' : 'activate_file';
 
                         $('body').append(
                             '<div id="one" class="' + css_classes + '">' +
-                                '<a href="#" onclick="' + onclick + '(\'' + prefix + '\', \'' + files[i]['filename'] + '\');">' +
+                                '<a href="#" onclick="' + onclick + '(this.parentNode, \'' + prefix + '\', \'' + files[i]['filename'] + '\');">' +
                                     files[i]['filename'] +
                                 '</a>' +
                             '</div>'

@@ -105,7 +105,7 @@ class URLHandler(object):
             params[key] = values[0] if len(values) == 1 else values
 
         if scheme == self.scheme:
-            ret = getattr(self, action)(uri, **params)
+            ret = getattr(self, action)(**params)
 
             if hasattr(self, 'return_uri_filter'):
                 new_uri = self.return_uri_filter(ret)
@@ -123,11 +123,11 @@ class MyHandler(URLHandler):
     def return_uri_filter(self, data):
         return self.json_data_uri(data)
 
-    def get_initial_dir(self, uri):
+    def get_initial_dir(self):
         d = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
         return {'initial_dir': d}
 
-    def list_files(self, uri, directory):
+    def list_files(self, directory):
         base = os.path.abspath(directory)
 
         prefix = 'file://' + urllib.quote(base) + '/'

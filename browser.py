@@ -19,6 +19,7 @@
 import os
 import stat
 import json
+import urllib
 import gtk
 import webkit
 
@@ -85,12 +86,14 @@ class URLHandler(object):
 
 class MyHandler(URLHandler):
     def list_files(self, uri):
-        prefix = 'file://' + os.getcwd() + '/'
+        base = '/home/nick/nasty/Videos/Mateo'
+        prefix = 'file://' + urllib.quote(base) + '/'
         files = []
 
-        for i, filename in enumerate(os.listdir('.')):
-            file = {'filename': filename}
-            real = os.path.realpath(filename)
+        for i, filename in enumerate(os.listdir(base)):
+            fullpath = base + '/' + filename
+            file = {'filename': filename, 'fullpath': fullpath}
+            real = os.path.realpath(fullpath)
             mode = os.stat(real).st_mode
 
             if stat.S_ISDIR(mode):

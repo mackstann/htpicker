@@ -14,8 +14,25 @@
     </head>
 
     <body>
+        <div id="player" style="display: none;"></div>
         <script>
             var start_point = '.';
+
+            function full_url(prefix, filename)
+            {
+                return prefix + encodeURI(filename);
+            }
+
+            function activate_file(prefix, filename)
+            {
+                $('body').append('video');
+                $('#player').html('<video src="' + full_url(prefix, filename) + '" autoplay controls>');
+                $('#player').delay(800).slideDown(400);
+            }
+            function activate_dir(prefix, filename)
+            {
+            }
+
             $(function() {
                 $.getJSON('myapp://list_files', function(data) {
                     var prefix = data['prefix'];
@@ -26,7 +43,15 @@
                         if(i == 3)
                             css_classes += ' ui-state-active';
 
-                        $('body').append('<div id="one" class="' + css_classes + '"><a href="#">' + files[i]['filename'] + '</a></div>');
+                        var onclick = files[i]['type'] == 'directory' ? 'activate_dir' : 'activate_file';
+
+                        $('body').append(
+                            '<div id="one" class="' + css_classes + '">' +
+                                '<a href="#" onclick="' + onclick + '(\'' + prefix + '\', \'' + files[i]['filename'] + '\');">' +
+                                    files[i]['filename'] +
+                                '</a>' +
+                            '</div>'
+                        );
                     }
                 });
             });

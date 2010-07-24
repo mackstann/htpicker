@@ -21,17 +21,6 @@ import webkit
 
 gtk.gdk.threads_init()
 
-class URLHandler(object):
-    def __init__(self, scheme, actions):
-        self.scheme = scheme
-        self.actions = actions
-
-    def handle_request(self, uri):
-        if uri.startswith(self.scheme + '://'):
-            action = uri.split('://', 1)[1]
-            self.actions[action]()
-
-
 class WebBrowser(gtk.Window):
 
     def __init__(self, url, url_handler):
@@ -87,11 +76,19 @@ class WebBrowser(gtk.Window):
 #    if not (web_view.get_zoom_level() == 1.0):
 #        web_view.set_zoom_level(1.0)
 
+class URLHandler(object):
+    def __init__(self, scheme):
+        self.scheme = scheme
+
+    def handle_request(self, uri):
+        if uri.startswith(self.scheme + '://'):
+            action = uri.split('://', 1)[1]
+            getattr(self, action)()
+
 if __name__ == "__main__":
-    def cb():
-        print 'callback from a url request!'
-    handler = URLHandler('myapp', {
-        'foo': cb,
-    })
+    class MyHandler(URLHandler):
+        def foo(self):
+            print 'callback from a url request!'
+    handler = MyHandler('myapp')
     webbrowser = WebBrowser('http://google.com', handler)
     gtk.main()

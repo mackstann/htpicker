@@ -23,10 +23,7 @@ import json
 import urllib
 import gtk
 import webkit
-
 import urlparse
-# urlparse.urlsplit() is dumb. it interprets the scheme and parses the
-# netloc/path different depending on whether or not it recognizes the scheme.
 
 gtk.gdk.threads_init()
 
@@ -92,8 +89,9 @@ class URLHandler(object):
         self.scheme = scheme
 
     def handle_request(self, request):
-        uri = request.get_uri()
-        scheme, rest = uri.split('://', 1)
+        # i don't use urlparse.urlsplit() because it doesn't parse the
+        # netloc/path of non-http:// URLs in the usual way.
+        scheme, rest = request.get_uri().split('://', 1)
         if '?' in rest:
             action, qs = rest.split('?')
         else:

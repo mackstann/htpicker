@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import stat
 import json
 import gtk
 import webkit
@@ -85,12 +86,27 @@ class URLHandler(object):
 class MyHandler(URLHandler):
     def list_files(self, uri):
         prefix = 'file://' + os.getcwd() + '/'
-        files = os.listdir('.')
+        files = []
+
+        for i, filename in enumerate(os.listdir('.')):
+            file = {'filename': filename}
+            real = os.path.realpath(filename)
+            mode = os.stat(real).st_mode
+
+            if stat.S_ISDIR(mode):
+                file['type'] = 'directory'
+            elif stat.S_ISREG(mode):
+                file['type'] = 'file'
+            else:
+                file['type'] = 'other'
+
+            files.append(file)
+
         response = {
             'prefix': prefix,
             'files': files,
         }
-        print response
+
         return 'data:application/json;charset=utf-8;base64,' + json.dumps(response).encode('base64')
         #return '''data:image/png;base64,
         #        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP

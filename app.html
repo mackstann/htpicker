@@ -15,6 +15,7 @@
 
     <body>
         <script>
+            var start_point = '.';
             $(function() {
                 $.getJSON('myapp://list_files', function(data) {
                     var prefix = data['prefix'];
@@ -25,7 +26,7 @@
                         if(i == 3)
                             css_classes += ' ui-state-active';
 
-                        $('body').append('<div id="one" class="' + css_classes + '"><a href="' + prefix + files[i] + '">' + files[i] + '</a></div>');
+                        $('body').append('<div id="one" class="' + css_classes + '"><a href="#">' + files[i]['filename'] + '</a></div>');
                     }
                 });
             });

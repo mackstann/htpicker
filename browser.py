@@ -92,7 +92,11 @@ class MyHandler(URLHandler):
 
         for i, filename in enumerate(os.listdir(base)):
             fullpath = base + '/' + filename
-            file = {'filename': filename, 'fullpath': fullpath}
+            file = {
+                'filename': filename,
+                'fullpath': fullpath,
+                'display_name': os.path.splitext(filename)[0],
+            }
             real = os.path.realpath(fullpath)
             mode = os.stat(real).st_mode
 

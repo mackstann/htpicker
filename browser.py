@@ -99,16 +99,30 @@ class URLHandler(object):
             params[key] = values[0]
 
         if scheme == self.scheme:
-            new_uri = getattr(self, action)(uri, **params)
+            ret = getattr(self, action)(uri, **params)
+
+            if hasattr(self, 'return_uri_filter'):
+                new_uri = self.return_uri_filter(ret)
+            else:
+                new_uri = ret
+
             if new_uri:
                 request.set_uri(new_uri)
 
 class MyHandler(URLHandler):
-    def list_files(self, uri, dir=None):
-        if not dir:
-            base = sys.argv[1]
-        else:
-            base = os.path.abspath(dir)
+    @staticmethod
+    def json_data_uri(data):
+        return 'data:application/json;charset=utf-8;base64,' + json.dumps(data).encode('base64')
+
+    def return_uri_filter(self, data):
+        return self.json_data_uri(data)
+
+    def get_initial_dir(self, uri):
+        d = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
+        return {'initial_dir': d}
+
+    def list_files(self, uri, directory):
+        base = os.path.abspath(directory)
 
         prefix = 'file://' + urllib.quote(base) + '/'
         files = []
@@ -118,40 +132,40 @@ class MyHandler(URLHandler):
                 continue
 
             fullpath = base + '/' + filename
-            file = {
-                'filename': filename,
-                'fullpath': fullpath,
-                'display_name': os.path.splitext(filename)[0],
-            }
+
             real = os.path.realpath(os.path.abspath(fullpath))
             try:
                 mode = os.stat(real).st_mode
             except OSError:
-                # probably broken symlink
+                # broken symlink, among other things
                 continue
 
             if stat.S_ISDIR(mode):
-                file['type'] = 'directory'
+                filetype = 'directory'
             elif stat.S_ISREG(mode):
-                file['type'] = 'file'
+                filetype = 'file'
             else:
-                file['type'] = 'other'
+                filetype = 'other'
 
-            files.append(file)
+            files.append({
+                'filename': filename,
+                'fullpath': fullpath,
+                'display_name': (os.path.splitext(filename)[0]
+                                 if filetype == 'file' else filename),
+                'type': filetype,
+            })
 
         files.insert(0, {
             'filename': '..',
             'fullpath': base + '/' + '..',
-            'display_name': 'Up One Directory',
+            'display_name': '&#8593; Up One Directory',
             'type': 'directory',
         })
 
-        response = {
+        return {
             'prefix': prefix,
             'files': files,
         }
-
-        return 'data:application/json;charset=utf-8;base64,' + json.dumps(response).encode('base64')
         #return '''data:image/png;base64,
         #        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
         #        C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA

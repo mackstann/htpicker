@@ -55,10 +55,18 @@
                 load_files(fullpath);
             }
 
+            function htmlDecode(input)
+            {
+                var e = document.createElement('div');
+                e.innerHTML = input;
+                return e.childNodes[0].nodeValue;
+            }
+
+
             function load_files(path) {
                 var qs = '';
                 if(path)
-                    qs = '?dir=' + encodeURI(path);
+                    qs = '?directory=' + encodeURI(path);
 
                 $.getJSON('myapp://list_files' + qs, function(data) {
                     var prefix = data['prefix'];
@@ -81,7 +89,12 @@
                 });
             }
 
-            $(load_files());
+            $(function() {
+                $.getJSON('myapp://get_initial_dir', function(data) {
+                    var initial_dir = data['initial_dir'];
+                    load_files(initial_dir);
+                });
+            });
         </script>
     </body>
 </html>

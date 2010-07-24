@@ -63,19 +63,6 @@ class WebBrowser(gtk.Window):
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler.handle_request(resource.get_uri())
 
-#def zoom_in_cb(menu_item, web_view):
-#    """Zoom into the page"""
-#    web_view.zoom_in()
-#
-#def zoom_out_cb(menu_item, web_view):
-#    """Zoom out of the page"""
-#    web_view.zoom_out()
-#
-#def zoom_hundred_cb(menu_item, web_view):
-#    """Zoom 100%"""
-#    if not (web_view.get_zoom_level() == 1.0):
-#        web_view.set_zoom_level(1.0)
-
 class URLHandler(object):
     def __init__(self, scheme):
         self.scheme = scheme

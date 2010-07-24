@@ -16,13 +16,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import os
+import json
 import gtk
 import webkit
 
 gtk.gdk.threads_init()
 
 class WebBrowser(gtk.Window):
-
     def __init__(self, url, url_handler):
         gtk.Window.__init__(self)
 
@@ -39,8 +40,7 @@ class WebBrowser(gtk.Window):
         settings.set_property("enable-xss-auditor", False)
         #settings.set_property("tab-key-cycles-through-elements", False)
 
-        #web_view.open(url)
-        web_view.load_string('<html><body>hi<img src="myapp://foo"></body></html>', "text/html", "iso-8859-15", 'file:///foo/')
+        web_view.open(url)
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
@@ -61,21 +61,34 @@ class WebBrowser(gtk.Window):
         gtk.main_quit()
 
     def _resource_cb(self, view, frame, resource, request, response):
-        self.url_handler.handle_request(resource.get_uri())
+        print dir(request)
+        self.url_handler.handle_request(request)
 
 class URLHandler(object):
     def __init__(self, scheme):
         self.scheme = scheme
 
-    def handle_request(self, uri):
+    def handle_request(self, request):
+        uri = request.get_uri()
         if uri.startswith(self.scheme + '://'):
             action = uri.split('://', 1)[1]
-            getattr(self, action)()
+            getattr(self, action)(request)
+
+class MyHandler(URLHandler):
+    def foo(self, request):
+        files = os.listdir('.')
+        request.set_uri('data:text/plain;charset=utf-8;base64,' + json.dumps({'files': files}).encode('base64'))
+        #request.set_uri('''data:image/png;base64,
+        #        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
+        #        C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
+        #        AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
+        #        REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
+        #        ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
+        #        vr4MkhoXe0rZigAAAABJRU5ErkJggg==''')
+
+# bug! alert() hangs the app
 
 if __name__ == "__main__":
-    class MyHandler(URLHandler):
-        def foo(self):
-            print 'callback from a url request!'
     handler = MyHandler('myapp')
-    webbrowser = WebBrowser('http://google.com', handler)
+    webbrowser = WebBrowser('file://' + os.getcwd() + '/app.html', handler)
     gtk.main()

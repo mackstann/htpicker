@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.2.custom.css" />
+        <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui-1.8.2.custom.min.js"></script>
+        <style>
+            body {
+                background: #111;
+            }
+            div.item {
+                padding: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <script>
+            $(function() {
+                $.getJSON('myapp://foo', function(data) {
+                    var files = data['files'];
+                    for(var i = 0; i < files.length; i++)
+                    {
+                        var css_classes = 'ui-widget-header item';
+                        if(i == 3)
+                            css_classes += ' ui-state-active';
+
+                        $('body').append('<div id="one" class="' + css_classes + '">' + files[i] + '</div>');
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

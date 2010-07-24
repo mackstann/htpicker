@@ -79,7 +79,9 @@
                         var onclick = files[i]['type'] == 'directory' ? 'activate_dir' : 'activate_file';
 
                         $('#files').append(
-                            '<div id="one" class="' + css_classes + '">' +
+                            '<div id="one" class="' + css_classes + '" ' +
+                                ' onmouseover="$(this).addClass(\'ui-state-hover\');" ' +
+                                ' onmouseout="$(this).removeClass(\'ui-state-hover\');">' +
                                 '<a href="#" onclick="' + onclick + '(this.parentNode, \'' + prefix + '\', \'' + files[i]['filename'] + '\', \'' + files[i]['fullpath'] + '\');">' +
                                     files[i]['display_name'] +
                                 '</a>' +

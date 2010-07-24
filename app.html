@@ -15,10 +15,9 @@
     </head>
 
     <body>
-        <div id="player" style="display: none;"></div>
+        <center><div id="player" style="display: none;"></div></center>
         <div id="files"></div>
         <script>
-            var start_point = '.';
             var have_video = false;
             var old_el = null;
 
@@ -35,10 +34,10 @@
                 old_el = el;
 
                 var player = $('#player');
-                    $('body').append(full_url(prefix, filename));
+                $('body').append(full_url(prefix, filename)); // debug
                 if(!have_video)
                 {
-                    player.html('<video height="33%" width="50%" src="' + full_url(prefix, filename) + '" autoplay>');
+                    player.html('<video height="40%" width="75%" src="' + full_url(prefix, filename) + '" autoplay>');
                     player.slideDown('fast');
                     have_video = true;
                 }
@@ -46,7 +45,7 @@
                 {
                     $('#player > video')[0].pause();
                     player.fadeOut('fast');
-                    player.html('<video height="33%" width="50%" src="' + full_url(prefix, filename) + '" autoplay>');
+                    player.html('<video height="40%" width="75%" src="' + full_url(prefix, filename) + '" autoplay>');
                     $('#player > video')[0].play();
                     player.fadeIn('slow');
                 }
@@ -57,7 +56,11 @@
             }
 
             function load_files(path) {
-                $.getJSON('myapp://list_files?dir=' + encodeURI(path), function(data) {
+                var qs = '';
+                if(path)
+                    qs = '?dir=' + encodeURI(path);
+
+                $.getJSON('myapp://list_files' + qs, function(data) {
                     var prefix = data['prefix'];
                     var files = data['files'];
                     $('#files').html('');
@@ -78,7 +81,7 @@
                 });
             }
 
-            $(load_files('.'));
+            $(load_files());
         </script>
     </body>
 </html>

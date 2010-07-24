@@ -17,6 +17,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import os
+import sys
 import stat
 import json
 import urllib
@@ -105,7 +106,7 @@ class URLHandler(object):
 class MyHandler(URLHandler):
     def list_files(self, uri, dir=None):
         if not dir:
-            base = '/home/nick/nasty/Videos/Mateo'
+            base = sys.argv[1]
         else:
             base = os.path.abspath(dir)
 

@@ -1,0 +1,30 @@
+== Icons ==
+
+Thanks to Danny Allen and "Exdaix" for the G-Flat SVG icon set.
+
+These icons were obtained from <http://art.gnome.org/themes/icon/1281>.
+
+The license there is stated as CC-BY (Creative Commons Attribution).
+
+One of the icons (gsnes9x-icon.svg) has metadata stating that it is licensed
+under the LGPL.  I have created a derivative icon (emulator-game.svg) which
+would accordingly also be licensed under the LGPL.
+
+== Code ==
+
+browser.py was derived from demos/browser.py from pywebkitgtk SVN r161 on
+Google Code, which was copyrighted by Jan Michael Alonzo and licensed under
+GPL.  However, only a handful of lines remain of the original.  These six or so
+lines of code are not creative in nature, are not used for profit, are a
+trivial portion of the original work, and are not a substitute or competition
+for the original work.  Thus, I believe that this is a reasonably clear-cut
+instance of fair use, and that the original license does not apply.
+Furthermore, I disclaim my own copyright to the file and dedicate it to the
+public domain.
+
+app.html is my own original work, and I disclaim copyright to it and dedicate
+it to the public domain.
+
+All jQuery and jQuery UI code and assets are covered under the MIT license.
+See <http://jquery.org/license> and
+<http://jquery-ui.googlecode.com/svn/tags/latest/MIT-LICENSE.txt>.

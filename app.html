@@ -77,6 +77,11 @@
                             };
                         }(i);
 
+                        if(files[i]['type'] == 'directory')
+                            var icon = 'images/G-Flat-SVG/gnome-fs-directory.svg';
+                        else if(files[i]['type'] == 'file')
+                            var icon = 'images/G-Flat-SVG/gnome-mime-video.svg';
+
                         var div = ($('<div>')
                             .attr('id', 'file-'+i)
                             .attr('class', css_classes)
@@ -90,7 +95,7 @@
                                             activate(file['fullpath'], file['type']);
                                         };
                                     }(files[i]))
-                                    .html('<img src="images/G-Flat-SVG/gnome-fs-directory.svg"> <span>' + files[i]['display_name'] + '</span>')
+                                    .html('<img src="' + icon + '"> <span>' + files[i]['display_name'] + '</span>')
                             )
                         );
                         $('#files').append(div);

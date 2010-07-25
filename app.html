@@ -54,7 +54,7 @@
             var load_files = function(path) {
                 var qs = '';
                 if(path)
-                    qs = '?directory=' + encodeURI(path);
+                    qs = '?directory=' + encodeURIComponent(path);
 
                 $.getJSON('htpicker://list_files' + qs, function(data) {
                     var files = data['files'];
@@ -77,10 +77,14 @@
                             };
                         }(i);
 
-                        if(files[i]['type'] == 'directory')
+                        if(files[i]['icon'] == 'directory')
                             var icon = 'images/G-Flat-SVG/gnome-fs-directory.svg';
-                        else if(files[i]['type'] == 'file')
+                        else if(files[i]['icon'] == 'video')
                             var icon = 'images/G-Flat-SVG/gnome-mime-video.svg';
+                        else if(files[i]['icon'] == 'game')
+                            var icon = 'images/G-Flat-SVG/emulator-game.svg';
+                        else
+                            var icon = '';
 
                         var div = ($('<div>')
                             .attr('id', 'file-'+i)

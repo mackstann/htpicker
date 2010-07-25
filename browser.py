@@ -123,12 +123,13 @@ default_config = """
 #
 # Each section describes an external program used to play certain files, and
 # then lists which files should be played by that program.  Each section has up
-# to four lines.  Here is an example, followed by an explanation of each line.
+# to five lines.  Here is an example, followed by an explanation of each line.
 #
 # (Line 1) [mplayer]
 # (Line 2) command = mplayer -fs {file}
 # (Line 3) folders = ~/Videos, ~/Video
-# (Line 4) matches = *.avi, *.mpg, *.mp4, *.flv
+# (Line 4) matches = *.avi, *.mkv, *.mpg, *.mp4, *.flv
+# (Line 5) icon = video
 #
 # Line 1 contains the section name.  This is solely for your own reference.
 #
@@ -144,22 +145,28 @@ default_config = """
 # command can play.  These are a fallback, and are only obeyed in folders which
 # have not been specifically assigned somewhere in a "folders" line (line 3).
 #
+# Line 5 states which icon to show for these files.  Options are 'video' and
+# 'game'.
+#
 # A few reasonable defaults have been put here for you:
 
 [mplayer]
 command = mplayer -fs {file}
 folders = ~/Videos, ~/Video
-matches = *.avi, *.mpg, *.mp4, *.flv
+matches = *.avi, *.mkv, *.mpg, *.mp4, *.flv
+icon = video
 
 [zsnes]
 command = zsnes {file}
 folders = ~/ROMs/SNES
 matches = *.smc, *.fig, *.zip
+icon = game
 
 [fceu]
 command = fceu -fs 1 {file}
 folders = ~/ROMs/NES
 matches = *.nes *.nes.gz
+icon = game
 """
 
 class MyConfigParser(ConfigParser.RawConfigParser):
@@ -222,13 +229,13 @@ class MyHandler(URLHandler):
         else:
             subprocess.Popen(command, shell=True)
 
-    def play_file(self, fullpath):
+
+    def section_for_file(self, fullpath):
         for section in self.config.sections():
             folders = self.config.get_list(section, 'folders', [])
             for folder in folders:
                 if is_child_of(folder, fullpath):
-                    self.execute(section, fullpath)
-                    return
+                    return section
 
         # okay, didn't find it in a folder, so check the patterns
 
@@ -236,10 +243,14 @@ class MyHandler(URLHandler):
             patterns = self.config.get_list(section, 'matches', [])
             for pattern in patterns:
                 if fnmatch.fnmatch(fullpath, pattern):
-                    self.execute(section, fullpath)
-                    return
+                    return section
 
-        print "i don't know what command to play this file with: ", fullpath
+    def play_file(self, fullpath):
+        section = self.section_for_file(fullpath)
+        if section:
+            self.execute(section, fullpath)
+        else:
+            print "i don't know what command to play this file with: ", fullpath
 
     def list_files(self, directory):
         base = os.path.abspath(directory)
@@ -261,22 +272,31 @@ class MyHandler(URLHandler):
 
             if stat.S_ISDIR(mode):
                 filetype = 'directory'
+                icon = 'directory'
             elif stat.S_ISREG(mode):
                 filetype = 'file'
+                section = self.section_for_file(fullpath)
+                if section:
+                    icon = self.config.get(section, 'icon', '')
+                else:
+                    icon = ''
             else:
                 filetype = 'other'
+
 
             files.append({
                 'fullpath': fullpath,
                 'display_name': (os.path.splitext(filename)[0]
                                  if filetype == 'file' else filename),
                 'type': filetype,
+                'icon': icon,
             })
 
         files.insert(0, {
             'fullpath': base + '/' + '..',
             'display_name': '&#8593; Up One Directory',
             'type': 'directory',
+            'icon': 'directory',
         })
 
         return { 'files': files }

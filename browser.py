@@ -284,7 +284,7 @@ class MyHandler(URLHandler):
 # bug! alert() hangs the app... sometimes
 
 if __name__ == "__main__":
-    handler = MyHandler('myapp')
+    handler = MyHandler('htpicker')
     webbrowser = WebBrowser('file://' + os.getcwd() + '/app.html', handler)
     webbrowser.fullscreen()
     gtk.main()

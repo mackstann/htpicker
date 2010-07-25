@@ -294,7 +294,7 @@ class MyHandler(URLHandler):
 
         files.insert(0, {
             'fullpath': base + '/' + '..',
-            'display_name': '&#8593; Up One Directory',
+            'display_name': '&#8593; Parent Folder',
             'type': 'directory',
             'icon': 'directory',
         })

@@ -1,10 +1,14 @@
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.2.custom.css" />
+        <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.2.custom.css">
+        <link rel="stylesheet" type="text/css" href="video-js/video-js.css" charset="utf-8">
+
         <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.8.2.custom.min.js"></script>
+        <script type="text/javascript" src="video-js/video.js" charset="utf-8"></script>
+
         <style>
-            * { font-family: 'Droid Sans', sans-serif; font-size: xx-large; }
+            body, div, a { font-family: 'Droid Sans', sans-serif; font-size: xx-large; }
             body { background: #111; }
             div.item { padding: 10px; }
             div.item a:link,
@@ -15,7 +19,7 @@
     </head>
 
     <body>
-        <center><div id="player" style="display: none;"></div></center>
+        <center><div id="player" class="video-js-box" style="display: none;"></div></center>
         <div id="files"></div>
         <script>
             var have_video = false;
@@ -34,10 +38,9 @@
                 old_el = el;
 
                 var player = $('#player');
-                $('body').append(full_url(prefix, filename)); // debug
                 if(!have_video)
                 {
-                    player.html('<video height="40%" width="75%" src="' + full_url(prefix, filename) + '" autoplay>');
+                    player.html('<video class="video-js" height="400" width="600" src="' + full_url(prefix, filename) + '" autoplay>');
                     player.slideDown('fast');
                     have_video = true;
                 }
@@ -45,10 +48,12 @@
                 {
                     $('#player > video')[0].pause();
                     player.fadeOut('fast');
-                    player.html('<video height="40%" width="75%" src="' + full_url(prefix, filename) + '" autoplay>');
+                    player.html('<video class="video-js" height="400" width="600" src="' + full_url(prefix, filename) + '" autoplay>');
                     $('#player > video')[0].play();
                     player.fadeIn('slow');
                 }
+                // VideoJS.canPlaySource needs to be hard-coded to return true.
+                VideoJS.setup();
             }
             var activate_dir = function(el, prefix, filename, fullpath)
             {

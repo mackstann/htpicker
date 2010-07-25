@@ -1,3 +1,0 @@
-[submodule "video-js"]
-	path = video-js
-	url = git://github.com/zencoder/video-js.git

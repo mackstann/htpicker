@@ -16,6 +16,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
+import ConfigParser
+import fnmatch
 import gtk
 import json
 import os
@@ -116,7 +118,89 @@ class URLHandler(object):
             if new_uri:
                 request.set_uri(new_uri)
 
+default_config = """
+# How this config file works:
+#
+# Each section describes an external program used to play certain files, and
+# then lists which files should be played by that program.  Each section has up
+# to four lines.  Here is an example, followed by an explanation of each line.
+#
+# (Line 1) [mplayer]
+# (Line 2) command = mplayer -fs {file}
+# (Line 3) folders = ~/Videos
+# (Line 4) matches = *.avi, *.mpg, *.mp4, *.flv
+#
+# Line 1 contains the section name.  This is solely for your own reference.
+#
+# Line 2 contains a command to play files with.  The special term "{file}"
+# indicates where the filename should go when executing the command.
+#
+# Line 3 lists folders (comma-delimited) whose files this command should always
+# be used to play.
+#
+# Line 4 lists file types (filename glob patterns, comma-delimited) that this
+# command can play.  These are a fallback, and are only obeyed in folders which
+# have not been specifically assigned somewhere in a "folders" line (line 3).
+#
+# A few reasonable defaults have been put here for you:
+
+[mplayer]
+command = mplayer -fs {file}
+folders = ~/Videos, ~/Video
+matches = *.avi, *.mpg, *.mp4, *.flv
+
+[zsnes]
+command = zsnes {file}
+folders = ~/ROMs/SNES
+matches = *.smc, *.fig, *.zip
+
+[fceu]
+command = fceu -fs 1 {file}
+folders = ~/ROMs/NES
+matches = *.nes *.nes.gz
+"""
+
+class MyConfigParser(ConfigParser.RawConfigParser):
+    def get(self, section, option, default, **kwargs):
+        try:
+            return ConfigParser.RawConfigParser.get(self, section, option).format(**kwargs)
+        except ConfigParser.NoOptionError:
+            return default
+
+    def get_list(self, section, option, default, **kwargs):
+        val = self.get(section, option, default, **kwargs)
+        return map(str.strip, val.split(','))
+
+def is_child_of(dir_in_question, filename):
+    d = dir_in_question.rstrip('/') + '/'
+    f = filename
+    real = os.path.realpath
+    common = os.path.commonprefix
+
+    # try both given path and real path for both directory and file.
+    if d == common([d, f]): return True
+    if d == common([real(d), f]): return True
+    if d == common([d, real(f)]): return True
+    if d == common([real(d), real(f)]): return True
+
 class MyHandler(URLHandler):
+    def __init__(self, scheme):
+        super(MyHandler, self).__init__(scheme)
+        self.load_config()
+
+    def load_config(self):
+        filename = os.path.expanduser("~/.htpickerrc")
+
+        if not os.path.isfile(filename):
+            f = open(filename, 'w')
+            f.write(default_config)
+            f.close()
+            print "I have created a ~/.htpickerrc config file for you."
+            print "Take a look and edit it to your liking."
+
+        self.config = MyConfigParser()
+        self.config.read(filename)
+
     @staticmethod
     def json_data_uri(data):
         return 'data:application/json;charset=utf-8;base64,' + json.dumps(data).encode('base64')
@@ -128,8 +212,32 @@ class MyHandler(URLHandler):
         d = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
         return {'initial_dir': d}
 
+    def execute(self, section, fullpath):
+        kw = {'file': pipes.quote(fullpath)}
+        command = self.config.get(section, 'command', '', **kw)
+        if not command:
+            print "You need to define a command for '{0}'".format(section)
+        else:
+            subprocess.Popen(command, shell=True)
+
     def play_file(self, fullpath):
-        subprocess.Popen('mplayer -fs {0}'.format(pipes.quote(fullpath)), shell=True)
+        for section in self.config.sections():
+            folders = self.config.get_list(section, 'folders', [])
+            for folder in folders:
+                if is_child_of(folder, fullpath):
+                    self.execute(section, fullpath)
+                    return
+
+        # okay, didn't find it in a folder, so check the patterns
+
+        for section in self.config.sections():
+            patterns = self.config.get_list(section, 'matches', [])
+            for pattern in patterns:
+                if fnmatch.fnmatch(fullpath, pattern):
+                    self.execute(section, fullpath)
+                    return
+
+        print "i don't know what command to play this file with: ", fullpath
 
     def list_files(self, directory):
         base = os.path.abspath(directory)

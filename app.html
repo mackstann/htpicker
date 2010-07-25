@@ -1,11 +1,9 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.2.custom.css">
-        <link rel="stylesheet" type="text/css" href="video-js/video-js.css" charset="utf-8">
 
         <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
         <script type="text/javascript" src="js/jquery-ui-1.8.2.custom.min.js"></script>
-        <script type="text/javascript" src="video-js/video.js" charset="utf-8"></script>
 
         <style>
             body, div, a { font-family: 'Droid Sans', sans-serif; font-size: xx-large; }
@@ -19,45 +17,16 @@
     </head>
 
     <body>
-        <center><div id="player" class="video-js-box" style="display: none;"></div></center>
         <div id="files"></div>
         <script>
-            var have_video = false;
             var old_el = null;
 
-            var full_url = function(prefix, filename)
+            var activate = function(fullpath, type)
             {
-                return prefix + encodeURI(filename);
-            }
-
-            var activate_file = function(el, prefix, filename, fullpath)
-            {
-                if(old_el)
-                    old_el.removeClass('ui-state-active');
-                el.addClass('ui-state-active');
-                old_el = el;
-
-                var player = $('#player');
-                if(!have_video)
-                {
-                    player.html('<video class="video-js" height="400" width="600" src="' + full_url(prefix, filename) + '" autoplay>');
-                    player.slideDown('fast');
-                    have_video = true;
-                }
+                if(type == 'directory')
+                    load_files(fullpath);
                 else
-                {
-                    $('#player > video')[0].pause();
-                    player.fadeOut('fast');
-                    player.html('<video class="video-js" height="400" width="600" src="' + full_url(prefix, filename) + '" autoplay>');
-                    $('#player > video')[0].play();
-                    player.fadeIn('slow');
-                }
-                // VideoJS.canPlaySource needs to be hard-coded to return true.
-                VideoJS.setup();
-            }
-            var activate_dir = function(el, prefix, filename, fullpath)
-            {
-                load_files(fullpath);
+                    play_file(fullpath);
             }
 
             var htmlDecode = function(input)
@@ -67,19 +36,16 @@
                 return e.childNodes[0].nodeValue;
             }
 
-
             var load_files = function(path) {
                 var qs = '';
                 if(path)
                     qs = '?directory=' + encodeURI(path);
 
                 $.getJSON('myapp://list_files' + qs, function(data) {
-                    var prefix = data['prefix'];
                     var files = data['files'];
                     $('#files').html('');
                     for(var i = 0; i < files.length; i++)
                     {
-                        var onclick_func = files[i]['type'] == 'directory' ? activate_dir : activate_file;
                         var css_classes = 'ui-widget-header item';
 
                         $('#files').append(
@@ -99,11 +65,11 @@
                                 .append(
                                     $('<a>')
                                         .attr('href', '#')
-                                        .click(function(onclick_func, prefix, file) {
+                                        .click(function(file) {
                                             return function(ev) {
-                                                onclick_func($(ev.target).parent(), prefix, file['filename'], file['fullpath']);
+                                                activate(file['fullpath'], file['type']);
                                             };
-                                        }(onclick_func, prefix, files[i]))
+                                        }(files[i]))
                                         .html(files[i]['display_name'])
                                 )
                             )

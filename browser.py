@@ -20,7 +20,6 @@ import os
 import sys
 import stat
 import json
-import urllib
 import gtk
 import webkit
 import urlparse
@@ -130,7 +129,6 @@ class MyHandler(URLHandler):
     def list_files(self, directory):
         base = os.path.abspath(directory)
 
-        prefix = 'file://' + urllib.quote(base) + '/'
         files = []
 
         for i, filename in enumerate(sorted(os.listdir(base))):
@@ -154,7 +152,6 @@ class MyHandler(URLHandler):
                 filetype = 'other'
 
             files.append({
-                'filename': filename,
                 'fullpath': fullpath,
                 'display_name': (os.path.splitext(filename)[0]
                                  if filetype == 'file' else filename),
@@ -162,16 +159,12 @@ class MyHandler(URLHandler):
             })
 
         files.insert(0, {
-            'filename': '..',
             'fullpath': base + '/' + '..',
             'display_name': '&#8593; Up One Directory',
             'type': 'directory',
         })
 
-        return {
-            'prefix': prefix,
-            'files': files,
-        }
+        return { 'files': files }
         #return '''data:image/png;base64,
         #        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
         #        C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
@@ -180,7 +173,7 @@ class MyHandler(URLHandler):
         #        ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
         #        vr4MkhoXe0rZigAAAABJRU5ErkJggg=='''
 
-# bug! alert() hangs the app
+# bug! alert() hangs the app... sometimes
 
 if __name__ == "__main__":
     handler = MyHandler('myapp')

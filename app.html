@@ -12,7 +12,8 @@
             div.item a:link,
             div.item a:active,
             div.item a:hover,
-            div.item a:visited { text-decoration: none; }
+            div.item a:visited,
+            div.item a:focus { text-decoration: none; outline: none;}
         </style>
     </head>
 
@@ -41,6 +42,9 @@
                 return e.childNodes[0].nodeValue;
             }
 
+            var focus_index = 0;
+            var num_items = 0;
+
             var load_files = function(path) {
                 var qs = '';
                 if(path)
@@ -49,12 +53,14 @@
                 $.getJSON('htpicker://list_files' + qs, function(data) {
                     var files = data['files'];
                     $('#files').html('');
-                    for(var i = 0; i < files.length; i++)
+                    num_items = files.length;
+                    for(var i = 0; i < num_items; i++)
                     {
                         var css_classes = 'ui-widget-header item';
 
                         var focusin_cb = function(i) {
                             return function(ev) {
+                                focus_index = i;
                                 $('#file-'+i).addClass("ui-state-hover");
                             };
                         }(i);
@@ -65,26 +71,26 @@
                             };
                         }(i);
 
-                        $('#files').append(
-                            ($('<div>')
-                                .attr('id', 'file-'+i)
-                                .attr('class', css_classes)
-                                .focusin(focusin_cb)
-                                .focusout(focusout_cb)
-                                .mouseover(focusin_cb)
-                                .mouseout(focusout_cb)
-                                .append(
-                                    $('<a>')
-                                        .attr('href', '#')
-                                        .click(function(file) {
-                                            return function(ev) {
-                                                activate(file['fullpath'], file['type']);
-                                            };
-                                        }(files[i]))
-                                        .html(files[i]['display_name'])
-                                )
+                        var div = ($('<div>')
+                            .attr('id', 'file-'+i)
+                            .attr('class', css_classes)
+                            .focusin(focusin_cb)
+                            .focusout(focusout_cb)
+                            .append(
+                                $('<a>')
+                                    .attr('href', '#')
+                                    .click(function(file) {
+                                        return function(ev) {
+                                            activate(file['fullpath'], file['type']);
+                                        };
+                                    }(files[i]))
+                                    .html(files[i]['display_name'])
                             )
                         );
+                        $('#files').append(div);
+                        if(i == 0)
+                            div.children()[0].focus();
+                        focus_index = 0;
                     }
                 });
             }
@@ -93,6 +99,28 @@
                 $.getJSON('htpicker://get_initial_dir', function(data) {
                     var initial_dir = data['initial_dir'];
                     load_files(initial_dir);
+                });
+
+                $(document).keydown(function(ev) {
+                    if(ev.which == $.ui.keyCode.DOWN)
+                    {
+                        if(focus_index < num_items-1)
+                        {
+                            focus_index++;
+                            $('#file-'+focus_index).children()[0].focus();
+                        }
+                        return false;
+                    }
+
+                    if(ev.which == $.ui.keyCode.UP)
+                    {
+                        if(focus_index > 0)
+                        {
+                            focus_index--;
+                            $('#file-'+focus_index).children()[0].focus();
+                        }
+                        return false;
+                    }
                 });
             });
         </script>

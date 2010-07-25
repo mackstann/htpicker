@@ -7,7 +7,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="gsnes9x-icon.svg"
+   sodipodi:docname="emulator-game.svg"
    height="60.0000000"
    sodipodi:version="0.32"
    width="60.0000000"
@@ -20,13 +20,13 @@
   <sodipodi:namedview
      bordercolor="#666666"
      inkscape:pageshadow="2"
-     inkscape:window-y="25"
+     inkscape:window-y="37"
      pagecolor="#ffffff"
      inkscape:window-height="990"
      inkscape:zoom="6.9465337"
      inkscape:window-x="0"
      borderopacity="1.0"
-     inkscape:cx="35.507787"
+     inkscape:cx="-15.884751"
      inkscape:cy="22.064941"
      inkscape:window-width="1524"
      inkscape:pageopacity="0.0"
@@ -62,11 +62,11 @@
   <path
      id="path1048"
      d="M 52.771192,53.413202 C 47.858797,58.18763 39.997027,58.075656 35.2226,53.163262 30.448171,48.250866 30.560145,40.389096 35.47254,35.614669 c 4.912395,-4.774428 12.774165,-4.662455 17.548593,0.24994 4.774428,4.912395 4.662454,12.774165 -0.249941,17.548593 z"
-     style="font-size:12px;fill:#7f7f7f;fill-opacity:1;fill-rule:evenodd;stroke:#333333;stroke-width:3.12500501;stroke-linejoin:round;stroke-opacity:1" />
+     style="font-size:12px;fill:#6ba3c5;fill-opacity:1;fill-rule:evenodd;stroke:#333333;stroke-width:3.12500501000000019;stroke-linejoin:round;stroke-opacity:1" />
   <path
      id="path1047"
      d="M 24.80932,24.643302 C 19.896925,29.41773 12.035155,29.305756 7.2607276,24.393362 2.4862994,19.480966 2.5982728,11.619196 7.5106676,6.8447688 12.423063,2.0703406 20.284833,2.182314 25.059261,7.0947095 29.833689,12.007104 29.721715,19.868874 24.80932,24.643302 z"
-     style="font-size:12px;fill:#7f7f7f;fill-opacity:1;fill-rule:evenodd;stroke:#333333;stroke-width:3.12500024;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1" />
+     style="font-size:12px;fill:#6ba3c5;fill-opacity:1;fill-rule:evenodd;stroke:#333333;stroke-width:3.12500023999999987;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1" />
   <path
      style="font-size:12px;fill:#4c4c4c;fill-rule:evenodd;stroke:#4c4c4c;stroke-width:1.25;stroke-linejoin:round;stroke-opacity:1"
      d="m 41.463979,41.905665 c -0.975147,0.947759 -2.535766,0.925531 -3.483525,-0.04961 -0.947758,-0.975147 -0.92553,-2.535765 0.04962,-3.483524 0.975146,-0.947759 2.535765,-0.925531 3.483524,0.04962 0.947758,0.975147 0.925531,2.535765 -0.04962,3.483524 z"
@@ -97,7 +97,7 @@
     <rdf:RDF>
       <cc:Work
          rdf:about="">
-        <dc:title></dc:title>
+        <dc:title />
         <dc:description />
         <dc:subject>
           <rdf:Bag>

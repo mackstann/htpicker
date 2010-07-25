@@ -53,20 +53,26 @@
                     {
                         var css_classes = 'ui-widget-header item';
 
+                        var focusin_cb = function(i) {
+                            return function(ev) {
+                                $('#file-'+i).addClass("ui-state-hover");
+                            };
+                        }(i);
+
+                        var focusout_cb = function(i) {
+                            return function(ev) {
+                                $('#file-'+i).removeClass("ui-state-hover");
+                            };
+                        }(i);
+
                         $('#files').append(
                             ($('<div>')
                                 .attr('id', 'file-'+i)
                                 .attr('class', css_classes)
-                                .mouseover(function(i) {
-                                    return function(ev) {
-                                        $('#file-'+i).addClass("ui-state-hover");
-                                    };
-                                }(i))
-                                .mouseout(function(i) {
-                                    return function(ev) {
-                                        $('#file-'+i).removeClass("ui-state-hover");
-                                    };
-                                }(i))
+                                .focusin(focusin_cb)
+                                .focusout(focusout_cb)
+                                .mouseover(focusin_cb)
+                                .mouseout(focusout_cb)
                                 .append(
                                     $('<a>')
                                         .attr('href', '#')

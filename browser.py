@@ -16,13 +16,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-import os
-import sys
-import stat
-import json
 import gtk
-import webkit
+import json
+import os
+import pipes
+import stat
+import subprocess
+import sys
 import urlparse
+import webkit
 
 gtk.gdk.threads_init()
 
@@ -125,6 +127,9 @@ class MyHandler(URLHandler):
     def get_initial_dir(self):
         d = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
         return {'initial_dir': d}
+
+    def play_file(self, fullpath):
+        subprocess.Popen('mplayer -fs {0}'.format(pipes.quote(fullpath)), shell=True)
 
     def list_files(self, directory):
         base = os.path.abspath(directory)

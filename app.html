@@ -21,6 +21,11 @@
         <script>
             var old_el = null;
 
+            var play_file = function(fullpath)
+            {
+                $.get('myapp://play_file?fullpath=' + fullpath);
+            }
+
             var activate = function(fullpath, type)
             {
                 if(type == 'directory')

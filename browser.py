@@ -127,13 +127,15 @@ default_config = """
 #
 # (Line 1) [mplayer]
 # (Line 2) command = mplayer -fs {file}
-# (Line 3) folders = ~/Videos
+# (Line 3) folders = ~/Videos, ~/Video
 # (Line 4) matches = *.avi, *.mpg, *.mp4, *.flv
 #
 # Line 1 contains the section name.  This is solely for your own reference.
 #
 # Line 2 contains a command to play files with.  The special term "{file}"
-# indicates where the filename should go when executing the command.
+# indicates where the filename should go when executing the command.  Do not
+# put quotes around it -- the proper quoting and escaping will be done
+# automatically.
 #
 # Line 3 lists folders (comma-delimited) whose files this command should always
 # be used to play.
@@ -278,13 +280,6 @@ class MyHandler(URLHandler):
         })
 
         return { 'files': files }
-        #return '''data:image/png;base64,
-        #        iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
-        #        C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
-        #        AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
-        #        REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
-        #        ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
-        #        vr4MkhoXe0rZigAAAABJRU5ErkJggg=='''
 
 # bug! alert() hangs the app... sometimes
 

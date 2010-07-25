@@ -8,12 +8,18 @@
         <style>
             body, div, a { font-family: 'Droid Sans', sans-serif; font-size: xx-large; }
             body { background: #111; }
-            div.item { padding: 10px; }
+            div.item { padding: 0.2em; }
             div.item a:link,
             div.item a:active,
             div.item a:hover,
             div.item a:visited,
-            div.item a:focus { text-decoration: none; outline: none;}
+            div.item a:focus {
+                text-decoration: none;
+                outline: none;
+                vertical-align: middle;
+            }
+            div.item a img { vertical-align: middle; height: 1.8em; }
+            div.item a span { vertical-align: middle; }
         </style>
     </head>
 
@@ -84,7 +90,7 @@
                                             activate(file['fullpath'], file['type']);
                                         };
                                     }(files[i]))
-                                    .html(files[i]['display_name'])
+                                    .html('<img src="images/G-Flat-SVG/gnome-fs-directory.svg"> <span>' + files[i]['display_name'] + '</span>')
                             )
                         );
                         $('#files').append(div);

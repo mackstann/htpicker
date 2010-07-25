@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created with Sodipodi ("http://www.sodipodi.com/") -->
+<svg
+   version="1.0"
+   x="0"
+   y="0"
+   width="60"
+   height="60"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   sodipodi:version="0.32"
+   inkscape:version="0.40"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   sodipodi:docname="gnome-fs-directory.svg"
+   sodipodi:docbase="/home/poptones/.icons/Flat-SVG/scalable/filesystems">
+  <metadata
+     id="metadata15">
+    <rdf:RDF
+       id="RDF16">
+      <cc:Work
+         rdf:about=""
+         id="Work17">
+        <dc:format
+           id="format18">image/svg+xml</dc:format>
+        <dc:type
+           id="type20"
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.5625000"
+     inkscape:cx="24.000000"
+     inkscape:cy="24.000000"
+     inkscape:window-width="640"
+     inkscape:window-height="540"
+     inkscape:window-x="3"
+     inkscape:window-y="48"
+     inkscape:current-layer="svg1" />
+  <defs
+     id="defs3">
+    <linearGradient
+       id="linearGradient900">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop901" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="1"
+         id="stop902" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient903"
+       xlink:href="#linearGradient900" />
+    <linearGradient
+       id="linearGradient904"
+       xlink:href="#linearGradient900" />
+    <linearGradient
+       id="linearGradient905"
+       xlink:href="#linearGradient900" />
+    <linearGradient
+       id="linearGradient906"
+       xlink:href="#linearGradient900" />
+    <linearGradient
+       id="linearGradient907"
+       xlink:href="#linearGradient900" />
+  </defs>
+  <path
+     d="M 8.232319 8.486678 C 7.706071 8.486678 7.263569 8.92918 7.263569 9.455428 L 7.263569 14.33043 C 7.262418 14.35541 7.232319 14.36765 7.232319 14.39293 L 7.232319 51.39293 C 7.232319 52.27672 7.942275 52.98668 8.826069 52.98668 L 46.10732 52.98668 C 46.99111 52.98668 47.70107 52.27672 47.70107 51.39293 L 47.70107 14.39293 C 47.70107 13.50913 46.99111 12.79918 46.10732 12.79918 L 31.38857 12.79918 L 31.38857 9.455428 C 31.38857 8.92918 30.94607 8.486678 30.41982 8.486678 L 8.232319 8.486678 z "
+     transform="translate(-0.254482,0)"
+     style="font-size:12;fill:#b3b3b3;fill-rule:evenodd;stroke:#333333;stroke-width:3.125;stroke-linejoin:round;"
+     id="path938" />
+  <rect
+     width="40.4764328"
+     height="33.450367"
+     rx="1.59529591"
+     x="25.032259"
+     y="23.3980198"
+     transform="matrix(1,0,-0.169015,0.933087,-8.023231,0)"
+     style="font-size:12;fill:#7f7f7f;fill-rule:evenodd;stroke:#333333;stroke-width:3.23511;stroke-linejoin:round;"
+     id="rect922" />
+</svg>

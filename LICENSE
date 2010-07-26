@@ -12,14 +12,14 @@ would accordingly also be licensed under the LGPL.
 
 == Code ==
 
-browser.py was originally derived from demos/browser.py from pywebkitgtk SVN
+The 'htpicker' file was originally derived from demos/browser.py from pywebkitgtk SVN
 r161 on Google Code, which was copyrighted by Jan Michael Alonzo and licensed
 under the GPL.  However, at this point, no original code remains other than a
 couple trivial lines that would inevitably be written exactly the same way
 by any programmer.
 
-I disclaim copyright to browser.py and app.html and dedicate them to the public
-domain.
+I disclaim copyright to the 'htpicker' and 'app.html' files and dedicate them
+to the public domain.
 
 All jQuery and jQuery UI code and assets are covered under the MIT license.
 See <http://jquery.org/license> and

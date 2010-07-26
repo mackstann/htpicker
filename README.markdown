@@ -1,3 +1,10 @@
+Usage
+=====
+
+./htpicker [directory]
+
+[directory] is optional and defaults to the current directory.
+
 Motivation and Design
 =====================
 

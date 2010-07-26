@@ -1,3 +1,9 @@
+About
+=====
+
+HTPicker is a simple home theater frontend program that lets you browse
+directories and launch arbitrary files with programs of your choosing.
+
 Usage
 =====
 

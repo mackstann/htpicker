@@ -11,6 +11,9 @@ Usage
 
 [directory] is optional and defaults to the current directory.
 
+The arrow keys move the selection up and down, and the enter key will open the
+selected file/folder.
+
 Motivation and Design
 =====================
 

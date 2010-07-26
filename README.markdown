@@ -1,4 +1,5 @@
-== Motivation and Design ==
+Motivation and Design
+=====================
 
 I created HTPicker because I was unsatisfied with all other HTPC frontend
 software I've tried.  They're all complicated monstrosities and I seem to
@@ -20,7 +21,8 @@ executing a program to play a file.
 HTPicker also doesn't care about your screen resolution or anything else
 related to your video setup, any more than Firefox or Chrome or MPlayer would.
 
-== To do ==
+To do
+=====
 
 * There is currently no convenient way to exit the program, which is especially
   annoying since it runs full screen, so you don't have a window titlebar or

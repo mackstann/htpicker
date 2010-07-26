@@ -12,25 +12,35 @@ import sys
 import urlparse
 import webkit
 
-class WebBrowser(gtk.Window):
-    def __init__(self, url, url_handler):
-        gtk.Window.__init__(self)
+class RequestInterceptingWebView(webkit.WebView):
+    def __init__(self, url, url_handler_cb):
+        super(RequestInterceptingWebView, self).__init__()
+        self.url_handler_cb = url_handler_cb
 
-        self.url_handler = url_handler
-        self.connect('destroy', self._destroy_cb)
+        self.set_full_content_zoom(True)
+        self.connect('resource-request-starting', self._resource_cb)
+        self.open(url)
 
-        web_view = webkit.WebView()
-        web_view.set_full_content_zoom(True)
-        web_view.connect('resource-request-starting', self._resource_cb)
-        web_view.open(url)
+        settings = self.get_settings()
+        settings.set_property("enable-universal-access-from-file-uris", True)
+        settings.set_property("enable-xss-auditor", False)
 
-        settings = web_view.get_settings()
+        # i'd like to use these but they are apparently too new.
         #settings.set_property("enable-default-context-menu", False)
         #settings.set_property("enable-java-applet", False)
         #settings.set_property("enable-plugins", False)
-        settings.set_property("enable-universal-access-from-file-uris", True)
-        settings.set_property("enable-xss-auditor", False)
         #settings.set_property("tab-key-cycles-through-elements", False)
+
+    def _resource_cb(self, view, frame, resource, request, response):
+        self.url_handler_cb(request)
+
+class WebBrowser(gtk.Window):
+    def __init__(self, url, url_handler_cb):
+        gtk.Window.__init__(self)
+
+        self.connect('destroy', self._destroy_cb)
+
+        web_view = RequestInterceptingWebView(url, url_handler_cb)
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
@@ -43,9 +53,6 @@ class WebBrowser(gtk.Window):
     def _destroy_cb(self, window):
         window.destroy()
         gtk.main_quit()
-
-    def _resource_cb(self, view, frame, resource, request, response):
-        self.url_handler.handle_request(request)
 
 class URLHandler(object):
     """
@@ -284,7 +291,7 @@ if __name__ == "__main__":
     gtk.gdk.threads_init()
 
     handler = MyHandler('htpicker')
-    webbrowser = WebBrowser('file://' + os.getcwd() + '/app.html', handler)
+    webbrowser = WebBrowser('file://' + os.getcwd() + '/app.html', handler.handle_request)
     webbrowser.fullscreen()
 
     gtk.main()

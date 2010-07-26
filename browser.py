@@ -12,8 +12,6 @@ import sys
 import urlparse
 import webkit
 
-gtk.gdk.threads_init()
-
 class WebBrowser(gtk.Window):
     def __init__(self, url, url_handler):
         gtk.Window.__init__(self)
@@ -283,7 +281,10 @@ class MyHandler(URLHandler):
 # bug! alert() hangs the app... sometimes
 
 if __name__ == "__main__":
+    gtk.gdk.threads_init()
+
     handler = MyHandler('htpicker')
     webbrowser = WebBrowser('file://' + os.getcwd() + '/app.html', handler)
     webbrowser.fullscreen()
+
     gtk.main()

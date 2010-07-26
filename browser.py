@@ -130,6 +130,9 @@ default_config = """
 # Line 5 states which icon to show for these files.  Options are 'video' and
 # 'game'.
 #
+# For gritty details on what special characters may go into filename match
+# patterns, run the command 'pydoc fnmatch.fnmatch'.
+#
 # A few reasonable defaults have been put here for you:
 
 [mplayer]
@@ -149,17 +152,28 @@ command = fceu -fs 1 {file}
 folders = ~/ROMs/NES
 matches = *.nes *.nes.gz
 icon = game
+
+# And here is the global options section.
+[options]
+
+# File patterns to ignore.
+ignore = *~, *.bak, *.nfo, *.txt, *.url, *.sfv, *.part*.rar
 """
 
 class MyConfigParser(ConfigParser.RawConfigParser):
     def get(self, section, option, default, **kwargs):
         try:
             return ConfigParser.RawConfigParser.get(self, section, option).format(**kwargs)
-        except ConfigParser.NoOptionError:
+        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             return default
 
     def get_list(self, section, option, default, **kwargs):
         val = self.get(section, option, default, **kwargs)
+
+        # the default is passed as a list type, so don't text-manipulate it.
+        if val == default:
+            return default
+
         return map(str.strip, val.split(','))
 
 def is_child_of(dir_in_question, filename):
@@ -239,8 +253,19 @@ class MyHandler(URLHandler):
 
         files = []
 
+        ignores = self.config.get_list('options', 'ignore', [])
         for i, filename in enumerate(sorted(os.listdir(base))):
             if filename.startswith('.'):
+                continue
+
+            nextfile = False
+            for ignore in ignores:
+                if fnmatch.fnmatch(filename, ignore):
+                    # crude multi-level loop continue
+                    nextfile = True
+                    break
+
+            if nextfile:
                 continue
 
             fullpath = base + '/' + filename

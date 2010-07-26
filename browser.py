@@ -22,14 +22,12 @@ class RequestInterceptingWebView(webkit.WebView):
         self.open(url)
 
         settings = self.get_settings()
+        settings.set_property("enable-default-context-menu", False)
+        settings.set_property("enable-java-applet", False)
+        settings.set_property("enable-plugins", False)
         settings.set_property("enable-universal-access-from-file-uris", True)
         settings.set_property("enable-xss-auditor", False)
-
-        # i'd like to use these but they are apparently too new.
-        #settings.set_property("enable-default-context-menu", False)
-        #settings.set_property("enable-java-applet", False)
-        #settings.set_property("enable-plugins", False)
-        #settings.set_property("tab-key-cycles-through-elements", False)
+        settings.set_property("tab-key-cycles-through-elements", False)
 
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)

@@ -17,7 +17,6 @@ class RequestInterceptingWebView(webkit.WebView):
         super(RequestInterceptingWebView, self).__init__()
         self.url_handler_cb = url_handler_cb
 
-        self.set_full_content_zoom(True)
         self.connect('resource-request-starting', self._resource_cb)
         self.open(url)
 

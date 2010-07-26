@@ -21,12 +21,24 @@ class RequestInterceptingWebView(webkit.WebView):
         self.open(url)
 
         settings = self.get_settings()
-        settings.set_property("enable-default-context-menu", False)
-        settings.set_property("enable-java-applet", False)
-        settings.set_property("enable-plugins", False)
-        settings.set_property("enable-universal-access-from-file-uris", True)
-        settings.set_property("enable-xss-auditor", False)
-        settings.set_property("tab-key-cycles-through-elements", False)
+
+        settings_values = (
+            ("enable-default-context-menu",           False, '1.1.18'),
+            ("enable-java-applet",                    False, '1.1.22'),
+            ("enable-plugins",                        False, '???'   ),
+            ("enable-universal-access-from-file-uris", True, '1.1.13'),
+            ("enable-xss-auditor",                    False, '1.1.11'),
+            ("tab-key-cycles-through-elements",       False, '1.1.17'),
+        )
+
+        for key, val, version in settings_values:
+            try:
+                settings.set_property(key, val)
+            except TypeError:
+                print "Your version of WebKit does not support the setting '{0}'.".format(key)
+                print "This setting requires version {0}.".format(version)
+                print "For best compatibility, use at least version 1.1.22."
+                print
 
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)

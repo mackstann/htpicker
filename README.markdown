@@ -37,3 +37,7 @@ To do
   means are at your disposal.
 
 * I'm not very happy with the icons.
+
+* Remote (lirc) support, or at least documentation of how to do it.
+
+* Joystick support

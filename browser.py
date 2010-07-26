@@ -35,9 +35,12 @@ class WebBrowser(gtk.Window):
         gtk.Window.__init__(self)
 
         self.url_handler = url_handler
+        self.connect('destroy', self._destroy_cb)
 
         web_view = webkit.WebView()
         web_view.set_full_content_zoom(True)
+        web_view.connect('resource-request-starting', self._resource_cb)
+        web_view.open(url)
 
         settings = web_view.get_settings()
         #settings.set_property("enable-default-context-menu", False)
@@ -47,20 +50,12 @@ class WebBrowser(gtk.Window):
         settings.set_property("enable-xss-auditor", False)
         #settings.set_property("tab-key-cycles-through-elements", False)
 
-        web_view.open(url)
-
         scrolled_window = gtk.ScrolledWindow()
-        scrolled_window.props.hscrollbar_policy = gtk.POLICY_AUTOMATIC
-        scrolled_window.props.vscrollbar_policy = gtk.POLICY_AUTOMATIC
+        scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         scrolled_window.add(web_view)
         scrolled_window.show_all()
 
         self.add(scrolled_window)
-
-        self.set_default_size(800, 600)
-        self.connect('destroy', self._destroy_cb)
-        web_view.connect('resource-request-starting', self._resource_cb)
-
         self.show_all()
 
     def _destroy_cb(self, window):

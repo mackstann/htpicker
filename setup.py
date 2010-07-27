@@ -10,7 +10,7 @@ setup(
         'htpicker': [
             'data/js/*.js',
             'data/css/*/*.css',
-            'data/css/*/images/*'
+            'data/css/*/images/*',
             'data/images/*/*',
             'data/app.html',
         ],

@@ -48,6 +48,7 @@ class WebBrowser(gtk.Window):
         gtk.Window.__init__(self)
 
         self.connect('destroy', self._destroy_cb)
+        self.set_default_size(800, 600)
 
         web_view = RequestInterceptingWebView(url, url_handler_cb)
 

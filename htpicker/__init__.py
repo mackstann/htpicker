@@ -6,12 +6,13 @@ import gtk
 import json
 import os
 import pipes
+import pkg_resources
 import stat
 import subprocess
 import sys
+import types
 import urlparse
 import webkit
-import pkg_resources
 
 class RequestInterceptingWebView(webkit.WebView):
     def __init__(self, url_handler_cb, url=None, content=None, mime_type=None, encoding=None, base_uri=None):
@@ -225,12 +226,25 @@ class MyHandler(URLHandler):
         super(MyHandler, self).__init__(scheme)
         self.config = config
 
+    def file_resource(self, filepath, mime_type):
+        # sadly there appears to be no way to sniff the mime type from the
+        # Accept header (or access request headers in general), so we must also
+        # ask for it in the URL.
+        data = pkg_resources.resource_string(__name__, 'data/'+filepath)
+        return self.data_uri(data, mime_type)
+
     @staticmethod
-    def json_data_uri(data):
-        return 'data:application/json;charset=utf-8;base64,' + json.dumps(data).encode('base64')
+    def data_uri(data, mime_type, encoding='utf-8'):
+        return 'data:{0};charset={1};base64,'.format(mime_type, encoding) + data.encode('base64')
+
+    @classmethod
+    def json_data_uri(cls, data):
+        return cls.data_uri(json.dumps(data), 'application/json')
 
     def return_uri_filter(self, data):
-        return self.json_data_uri(data)
+        if isinstance(data, types.DictType):
+            return self.json_data_uri(data)
+        return data
 
     def get_initial_dir(self):
         d = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()

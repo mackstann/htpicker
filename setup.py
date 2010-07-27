@@ -3,7 +3,6 @@ setup(
     name = "HTPicker",
     version = "0.1alpha",
     packages = find_packages(),
-    scripts = ['htpicker'],
 
     install_requires = ['distribute'],
 

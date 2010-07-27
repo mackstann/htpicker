@@ -11,14 +11,18 @@ import subprocess
 import sys
 import urlparse
 import webkit
+import pkg_resources
 
 class RequestInterceptingWebView(webkit.WebView):
-    def __init__(self, url, url_handler_cb):
+    def __init__(self, url_handler_cb, url=None, content=None, mime_type=None, encoding=None, base_uri=None):
         super(RequestInterceptingWebView, self).__init__()
         self.url_handler_cb = url_handler_cb
 
         self.connect('resource-request-starting', self._resource_cb)
-        self.open(url)
+        if url is not None:
+            self.open(url)
+        else:
+            self.load_string(content, mime_type, encoding, base_uri)
 
         settings = self.get_settings()
 
@@ -44,13 +48,13 @@ class RequestInterceptingWebView(webkit.WebView):
         self.url_handler_cb(request)
 
 class WebBrowser(gtk.Window):
-    def __init__(self, url, url_handler_cb):
+    def __init__(self, url_handler_cb, **kw):
         gtk.Window.__init__(self)
 
         self.connect('destroy', self._destroy_cb)
         self.set_default_size(800, 600)
 
-        web_view = RequestInterceptingWebView(url, url_handler_cb)
+        web_view = RequestInterceptingWebView(url_handler_cb, **kw)
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
@@ -85,10 +89,19 @@ class URLHandler(object):
     def __init__(self, scheme):
         self.scheme = scheme
 
+    def return_uri_filter(self, uri):
+        return uri
+
     def handle_request(self, request):
         # i don't use urlparse.urlsplit() because it doesn't parse the
         # netloc/path of non-http:// URLs in the usual way.
-        scheme, rest = request.get_uri().split('://', 1)
+        uri = request.get_uri()
+
+        if not uri.startswith(self.scheme+'://'):
+            return
+
+        scheme, rest = uri.split('://', 1)
+
         if '?' in rest:
             action, qs = rest.split('?')
         else:
@@ -101,16 +114,15 @@ class URLHandler(object):
         for key, values in q.items():
             params[key] = values[0] if len(values) == 1 else values
 
-        if scheme == self.scheme:
-            ret = getattr(self, action)(**params)
+        ret = getattr(self, action)(**params)
 
-            if hasattr(self, 'return_uri_filter'):
-                new_uri = self.return_uri_filter(ret)
-            else:
-                new_uri = ret
+        if hasattr(self, 'return_uri_filter'):
+            new_uri = self.return_uri_filter(ret)
+        else:
+            new_uri = ret
 
-            if new_uri:
-                request.set_uri(new_uri)
+        if new_uri:
+            request.set_uri(new_uri)
 
 default_config = """
 # How this config file works:
@@ -337,7 +349,11 @@ def main():
     config = load_config()
 
     handler = MyHandler('htpicker', config)
-    webbrowser = WebBrowser('file://' + os.getcwd() + '/app.html', handler.handle_request)
+
+    html = pkg_resources.resource_string(__name__, 'data/app.html')
+
+    webbrowser = WebBrowser(handler.handle_request, content=html,
+            mime_type='text/html', encoding='utf-8', base_uri='file://')
 
     if config.getboolean_default('options', 'fullscreen', '0'):
         webbrowser.fullscreen()

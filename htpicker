@@ -169,23 +169,31 @@ icon = game
 
 # File patterns to ignore.
 ignore = *~, *.bak, *.nfo, *.txt, *.url, *.sfv, *.part*.rar
+fullscreen = off
 """
 
 class MyConfigParser(ConfigParser.RawConfigParser):
-    def get(self, section, option, default, **kwargs):
+    def get_default(self, section, option, default, **kwargs):
         try:
             return ConfigParser.RawConfigParser.get(self, section, option).format(**kwargs)
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             return default
 
+    def getboolean_default(self, section, option, default):
+        try:
+            return ConfigParser.RawConfigParser.getboolean(self, section, option)
+        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
+            return default
+
     def get_list(self, section, option, default, **kwargs):
-        val = self.get(section, option, default, **kwargs)
+        val = self.get_default(section, option, default, **kwargs)
 
         # the default is passed as a list type, so don't text-manipulate it.
         if val == default:
             return default
 
         return map(str.strip, val.split(','))
+
 
 def is_child_of(dir_in_question, filename):
     d = dir_in_question.rstrip('/') + '/'
@@ -200,22 +208,9 @@ def is_child_of(dir_in_question, filename):
     if d == common([real(d), real(f)]): return True
 
 class MyHandler(URLHandler):
-    def __init__(self, scheme):
+    def __init__(self, scheme, config):
         super(MyHandler, self).__init__(scheme)
-        self.load_config()
-
-    def load_config(self):
-        filename = os.path.expanduser("~/.htpickerrc")
-
-        if not os.path.isfile(filename):
-            f = open(filename, 'w')
-            f.write(default_config)
-            f.close()
-            print "I have created a ~/.htpickerrc config file for you."
-            print "Take a look and edit it to your liking."
-
-        self.config = MyConfigParser()
-        self.config.read(filename)
+        self.config = config
 
     @staticmethod
     def json_data_uri(data):
@@ -230,7 +225,7 @@ class MyHandler(URLHandler):
 
     def execute(self, section, fullpath):
         kw = {'file': pipes.quote(fullpath)}
-        command = self.config.get(section, 'command', '', **kw)
+        command = self.config.get_default(section, 'command', '', **kw)
         if not command:
             print "You need to define a command for '{0}'".format(section)
         else:
@@ -295,7 +290,7 @@ class MyHandler(URLHandler):
                 filetype = 'file'
                 section = self.section_for_file(fullpath)
                 if section:
-                    icon = self.config.get(section, 'icon', '')
+                    icon = self.config.get_default(section, 'icon', '')
                 else:
                     icon = ''
             else:
@@ -321,11 +316,29 @@ class MyHandler(URLHandler):
 
 # bug! alert() hangs the app... sometimes
 
+def load_config():
+    filename = os.path.expanduser("~/.htpickerrc")
+
+    if not os.path.isfile(filename):
+        f = open(filename, 'w')
+        f.write(default_config)
+        f.close()
+        print "I have created a ~/.htpickerrc config file for you."
+        print "Take a look and edit it to your liking."
+
+    config = MyConfigParser()
+    config.read(filename)
+    return config
+
 if __name__ == "__main__":
     gtk.gdk.threads_init()
 
-    handler = MyHandler('htpicker')
+    config = load_config()
+
+    handler = MyHandler('htpicker', config)
     webbrowser = WebBrowser('file://' + os.getcwd() + '/app.html', handler.handle_request)
-    webbrowser.fullscreen()
+
+    if config.getboolean_default('options', 'fullscreen', '0'):
+        webbrowser.fullscreen()
 
     gtk.main()

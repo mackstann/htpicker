@@ -331,7 +331,7 @@ def load_config():
     config.read(filename)
     return config
 
-if __name__ == "__main__":
+def main():
     gtk.gdk.threads_init()
 
     config = load_config()
@@ -342,4 +342,12 @@ if __name__ == "__main__":
     if config.getboolean_default('options', 'fullscreen', '0'):
         webbrowser.fullscreen()
 
-    gtk.main()
+    try:
+        gtk.main()
+    except KeyboardInterrupt:
+        pass
+
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())

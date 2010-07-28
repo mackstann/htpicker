@@ -16,6 +16,9 @@ setup(
         ],
     },
 
+    # so we can safely serve data files through file:// URLs
+    zip_safe = False,
+
     entry_points = {
         'console_scripts': ['htpicker = htpicker:main'],
     },

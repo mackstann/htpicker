@@ -11,6 +11,7 @@ import stat
 import subprocess
 import sys
 import types
+import urllib
 import urlparse
 import webkit
 
@@ -230,8 +231,8 @@ class MyHandler(URLHandler):
         # sadly there appears to be no way to sniff the mime type from the
         # Accept header (or access request headers in general), so we must also
         # ask for it in the URL.
-        data = pkg_resources.resource_string(__name__, 'data/'+filepath)
-        return self.data_uri(data, mime_type)
+        filename = pkg_resources.resource_filename(__name__, 'data/'+filepath)
+        return 'file://' + urllib.quote(filename)
 
     @staticmethod
     def data_uri(data, mime_type, encoding='utf-8'):

@@ -109,13 +109,20 @@ class URLHandler(object):
             action = rest
             qs = ''
 
-        q = urlparse.parse_qs(qs)
+        kwargs = {}
 
-        params = {}
-        for key, values in q.items():
-            params[key] = values[0] if len(values) == 1 else values
+        if '/' in action:
+            # a special case to handle serving files referenced relatively in
+            # third-party libraries using <base href="myscheme://...">
+            action, kwargs['filepath'] = action.split('/', 1)
+        else:
+            q = urlparse.parse_qs(qs)
 
-        ret = getattr(self, action)(**params)
+            for key, values in q.items():
+                kwargs[key] = values[0] if len(values) == 1 else values
+
+        print uri, action, kwargs
+        ret = getattr(self, action)(**kwargs)
 
         if hasattr(self, 'return_uri_filter'):
             new_uri = self.return_uri_filter(ret)
@@ -226,12 +233,17 @@ class MyHandler(URLHandler):
         super(MyHandler, self).__init__(scheme)
         self.config = config
 
-    def file_resource(self, filepath, mime_type):
+    def file_resource(self, filepath, mime_type=None):
+        print filepath
         # sadly there appears to be no way to sniff the mime type from the
         # Accept header (or access request headers in general), so we must also
         # ask for it in the URL.
+
+        # we should (optionally?) sniff filename for mime type.  that way we
+        # can use the base url to make relative urls (like for images
+        # referenced in css) work.
         data = pkg_resources.resource_string(__name__, 'data/'+filepath)
-        return self.data_uri(data, mime_type)
+        return self.data_uri(data, 'application/octet-stream' if mime_type is None else mime_type)
 
     @staticmethod
     def data_uri(data, mime_type, encoding='utf-8'):

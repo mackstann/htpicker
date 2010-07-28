@@ -8,18 +8,18 @@
         <style>
             body, div, a { font-family: 'Droid Sans', sans-serif; font-size: xx-large; }
             body { background: #111; }
-            div.item { padding: 0.2em; }
-            div.item a:link,
-            div.item a:active,
-            div.item a:hover,
-            div.item a:visited,
-            div.item a:focus {
+            a.item { display: block; padding: 0.2em; }
+            a.item:link,
+            a.item:active,
+            a.item:hover,
+            a.item:visited,
+            a.item:focus {
                 text-decoration: none;
                 outline: none;
                 vertical-align: middle;
             }
-            div.item a img { vertical-align: middle; height: 1.8em; }
-            div.item a span { vertical-align: middle; }
+            a.item img { vertical-align: middle; height: 1.8em; }
+            a.item span { vertical-align: middle; }
         </style>
     </head>
 
@@ -86,25 +86,23 @@
                         else
                             var icon = '';
 
-                        var div = ($('<div>')
-                            .attr('id', 'file-'+i)
-                            .attr('class', css_classes)
-                            .focusin(focusin_cb)
-                            .focusout(focusout_cb)
-                            .append(
-                                $('<a>')
-                                    .attr('href', '#')
-                                    .click(function(file) {
-                                        return function(ev) {
-                                            activate(file['fullpath'], file['type']);
-                                        };
-                                    }(files[i]))
-                                    .html('<img src="' + icon + '"> <span>' + files[i]['display_name'] + '</span>')
-                            )
+                        var item = (
+                            $('<a>')
+                                .attr('id', 'file-'+i)
+                                .attr('class', css_classes)
+                                .focusin(focusin_cb)
+                                .focusout(focusout_cb)
+                                .attr('href', '#')
+                                .click(function(file) {
+                                    return function(ev) {
+                                        activate(file['fullpath'], file['type']);
+                                    };
+                                }(files[i]))
+                                .html('<img src="' + icon + '"> <span>' + files[i]['display_name'] + '</span>')
                         );
-                        $('#files').append(div);
+                        $('#files').append(item);
                         if(i == 0)
-                            div.children()[0].focus();
+                            item.focus();
                         focus_index = 0;
                     }
                 });
@@ -122,7 +120,7 @@
                         if(focus_index < num_items-1)
                         {
                             focus_index++;
-                            $('#file-'+focus_index).children()[0].focus();
+                            $('#file-'+focus_index).focus();
                         }
                         return false;
                     }
@@ -132,7 +130,7 @@
                         if(focus_index > 0)
                         {
                             focus_index--;
-                            $('#file-'+focus_index).children()[0].focus();
+                            $('#file-'+focus_index).focus();
                         }
                         return false;
                     }

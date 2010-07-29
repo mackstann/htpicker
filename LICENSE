@@ -1,14 +1,11 @@
 == Icons ==
 
-Thanks to Danny Allen and "Exdaix" for the G-Flat SVG icon set.
+Folder and Video icons are from the Nuvola icon pack (downloaded via
+<http://ftp.gnome.org/pub/GNOME/sources/gnome-themes-extras/0.9/
+gnome-themes-extras-0.9.0.tar.gz>) and are licensed under the LGPL.
 
-These icons were obtained from <http://art.gnome.org/themes/icon/1281>.
-
-The license there is stated as CC-BY (Creative Commons Attribution).
-
-One of the icons (gsnes9x-icon.svg) has metadata stating that it is licensed
-under the LGPL.  I have created a derivative icon (emulator-game.svg) which
-would accordingly also be licensed under the LGPL.
+The gamepad icon is from http://commons.wikimedia.org/wiki/File:Gamepad.svg,
+which is a derivation of a Nuvola icon, and also licensed under the LGPL.
 
 == Code ==
 

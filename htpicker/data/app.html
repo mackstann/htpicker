@@ -28,6 +28,24 @@
         <script>
             var old_el = null;
 
+            var icon_urls = {
+                'directory': 'htpicker://file_resource?filepath=images/nuvola/gnome-fs-directory-visiting.svg&mime_type=image/svg+xml',
+                'video': 'htpicker://file_resource?filepath=images/nuvola/mplayer.svg&mime_type=image/svg+xml',
+                'game': 'htpicker://file_resource?filepath=images/nuvola/gamepad.svg&mime_type=image/svg+xml'
+            };
+
+            var icons = {};
+
+            var preload_images = function()
+            {
+                for(var key in icon_urls)
+                {
+                    var img = document.createElement('img');
+                    img.src = icon_urls[key];
+                    icons[key] = img;
+                }
+            }
+
             var play_file = function(fullpath)
             {
                 $.get('htpicker://play_file?fullpath=' + fullpath);
@@ -93,14 +111,8 @@
                             };
                         }(i);
 
-                        if(files[i]['icon'] == 'directory')
-                            var icon = 'htpicker://file_resource?filepath=images/nuvola/gnome-fs-directory-visiting.svg&mime_type=image/svg+xml';
-                        else if(files[i]['icon'] == 'video')
-                            var icon = 'htpicker://file_resource?filepath=images/nuvola/mplayer.svg&mime_type=image/svg+xml';
-                        else if(files[i]['icon'] == 'game')
-                            var icon = 'htpicker://file_resource?filepath=images/nuvola/gamepad.svg&mime_type=image/svg+xml';
-                        else
-                            var icon = '';
+                        var icon_name = files[i]['icon'];
+                        var icon_url = icon_name ? icons[icon_name].src : '';
 
                         var item = (
                             $('<a>')
@@ -114,8 +126,9 @@
                                         activate(file['fullpath'], file['type']);
                                     };
                                 }(files[i]))
-                                .html('<img src="' + icon + '"> <span>' + files[i]['display_name'] + '</span>')
+                                .html('<img src="' + icon_url + '"> <span>' + files[i]['display_name'] + '</span>')
                         );
+
                         $('#files').append(item);
                         if(i == 0)
                             item.focus();
@@ -125,6 +138,8 @@
             }
 
             $(function() {
+                preload_images();
+
                 $.getJSON('htpicker://get_initial_dir', function(data) {
                     var initial_dir = data['initial_dir'];
                     load_files(initial_dir);

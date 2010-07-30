@@ -48,6 +48,19 @@
                 return e.childNodes[0].nodeValue;
             }
 
+            var scrollCentered = function(el, percentage, sweep_pct)
+            {
+                var win = $(window);
+                var sweep_area = win.height() * sweep_pct;
+
+                // *0.5 because half of the buffer goes above
+                // and the other half implicitly goes below
+                var modifier = -(percentage * sweep_area - sweep_area/2);
+
+                var offset = el.offset().top - win.height()/2 + el.outerHeight()/2 + modifier;
+                win.scrollTop(offset);
+            }
+
             var focus_index = 0;
             var num_items = 0;
 
@@ -66,10 +79,11 @@
 
                         var focusin_cb = function(i, num_items) {
                             return function(ev) {
-                                focus_index = i;
                                 var el = $('#file-'+i);
                                 el.addClass("ui-state-active");
-                                $('body').scrollTop(Math.max(0, el.position().top - 10));
+                                var percentage = 1.0 * i / num_items;
+                                scrollCentered(el, percentage, 0.5);
+                                focus_index = i;
                             };
                         }(i, num_items);
 

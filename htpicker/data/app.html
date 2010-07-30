@@ -57,9 +57,9 @@
                     load_files(fullpath);
                 else
                 {
-                    $('body').fadeOut(250);
+                    $('#files').hide();
                     play_file(fullpath);
-                    setTimeout(function() { $('body').fadeIn(10); }, 2000);
+                    setTimeout(function() { $('#files').show(); }, 5000);
                 }
             }
 
@@ -101,6 +101,7 @@
 
                         var focusin_cb = function(i, num_items) {
                             return function(ev) {
+                                $('#files').show();
                                 var el = $('#file-'+i);
                                 el.addClass("ui-state-active");
                                 var percentage = 1.0 * i / num_items;

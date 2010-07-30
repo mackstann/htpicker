@@ -64,12 +64,14 @@
                     {
                         var css_classes = 'ui-widget-header item';
 
-                        var focusin_cb = function(i) {
+                        var focusin_cb = function(i, num_items) {
                             return function(ev) {
                                 focus_index = i;
-                                $('#file-'+i).addClass("ui-state-active");
+                                var el = $('#file-'+i);
+                                el.addClass("ui-state-active");
+                                $('body').scrollTop(Math.max(0, el.position().top - 10));
                             };
-                        }(i);
+                        }(i, num_items);
 
                         var focusout_cb = function(i) {
                             return function(ev) {

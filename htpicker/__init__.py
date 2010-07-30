@@ -59,7 +59,8 @@ class WebBrowser(gtk.Window):
         web_view = RequestInterceptingWebView(url_handler_cb, **kw)
 
         scrolled_window = gtk.ScrolledWindow()
-        scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+
         scrolled_window.add(web_view)
         scrolled_window.show_all()
 

@@ -26,7 +26,7 @@
     <body>
         <div id="files"></div>
         <script>
-            var old_el = null;
+            var last_folder_entry_action = null;
 
             var icon_urls = {
                 'directory': 'htpicker://file_resource?filepath=images/nuvola/gnome-fs-directory-visiting.svg&mime_type=image/svg+xml',
@@ -51,10 +51,21 @@
                 $.get('htpicker://play_file?fullpath=' + fullpath);
             }
 
-            var activate = function(fullpath, type)
+            var activate = function(fullpath, type, display_name)
             {
                 if(type == 'directory')
+                {
+                    if(display_name == '&#8593; Parent Folder')
+                        last_folder_entry_action = 'ascend';
+                    else
+                        last_folder_entry_action = 'descend';
+
+                    $('#files').hide("slide", {
+                        'direction': last_folder_entry_action == 'descend' ? 'left' : 'right',
+                        'mode': 'hide' }, 150);
+
                     load_files(fullpath);
+                }
                 else
                 {
                     $('#files').hide();
@@ -128,17 +139,24 @@
                                 .attr('href', '#')
                                 .click(function(file) {
                                     return function(ev) {
-                                        activate(file['fullpath'], file['type']);
+                                        activate(file['fullpath'], file['type'], file['display_name']);
                                     };
                                 }(files[i]))
                                 .html('<img src="' + icon_url + '"> <span>' + files[i]['display_name'] + '</span>')
                         );
 
                         $('#files').append(item);
-                        if(i == 0)
-                            item.focus();
-                        focus_index = 0;
                     }
+
+                    if(last_folder_entry_action)
+                        $('#files').show("slide", {
+                            'direction': last_folder_entry_action == 'descend' ? 'right' : 'left',
+                            'mode': 'show'
+                        }, 250, function() { $('#files > a')[0].focus(); });
+                    else
+                        $('#files > a')[0].focus();
+
+                    focus_index = 0;
                 });
             }
 

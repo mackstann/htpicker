@@ -186,7 +186,7 @@ icon = game
 [options]
 
 # File patterns to ignore.
-ignore = *~, *.bak, *.nfo, *.txt, *.url, *.sfv, *.part*.rar
+ignore = .*, *~, *.bak, *.nfo, *.txt, *.url, *.sfv, *.part*.rar
 fullscreen = off
 """
 
@@ -286,26 +286,19 @@ class MyHandler(URLHandler):
             print "i don't know what command to play this file with: ", fullpath
 
     def list_files(self, directory):
-        base = os.path.abspath(directory)
+        directory = os.path.abspath(directory)
 
         files = []
 
         ignores = self.config.get_list('options', 'ignore', [])
-        for i, filename in enumerate(sorted(os.listdir(base), key=str.lower)):
-            if filename.startswith('.'):
-                continue
 
-            nextfile = False
-            for ignore in ignores:
-                if fnmatch.fnmatch(filename, ignore):
-                    # crude multi-level loop continue
-                    nextfile = True
-                    break
+        listing = sorted([
+            filename for filename in os.listdir(directory)
+            if not any(fnmatch.fnmatch(filename, ignore) for ignore in ignores)
+        ], key=str.lower)
 
-            if nextfile:
-                continue
-
-            fullpath = base + '/' + filename
+        for i, filename in enumerate(listing):
+            fullpath = directory + '/' + filename
 
             real = os.path.realpath(os.path.abspath(fullpath))
             try:
@@ -337,7 +330,7 @@ class MyHandler(URLHandler):
             })
 
         files.insert(0, {
-            'fullpath': base + '/' + '..',
+            'fullpath': directory + '/' + '..',
             'display_name': '&#8593; Parent Folder',
             'type': 'directory',
             'icon': 'directory',

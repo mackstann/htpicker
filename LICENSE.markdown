@@ -1,4 +1,5 @@
-== Code ==
+Code
+====
 
 The 'htpicker' file was originally derived from demos/browser.py from
 pywebkitgtk SVN r161 on Google Code, which was copyrighted by Jan Michael
@@ -17,7 +18,8 @@ All jQuery and jQuery UI code and assets are covered under the MIT license.
 See <http://jquery.org/license> and
 <http://jquery-ui.googlecode.com/svn/tags/latest/MIT-LICENSE.txt>.
 
-== Icons ==
+Icons
+=====
 
 Folder and Video icons are from the Nuvola icon pack (downloaded via
 <http://ftp.gnome.org/pub/GNOME/sources/gnome-themes-extras/0.9/

@@ -6,8 +6,12 @@ Alonzo and licensed under the GPL.  However, at this point, no original code
 remains other than a couple trivial lines that would inevitably be written
 exactly the same way by any programmer.
 
-I disclaim copyright to the 'htpicker' and 'app.html' files and dedicate them
-to the public domain.
+I disclaim copyright to the following files and dedicate them to the public
+domain:
+
+* htpicker/__init__.py
+* htpicker/data/app.html
+* Everything in the "experiments" subdirectory.
 
 All jQuery and jQuery UI code and assets are covered under the MIT license.
 See <http://jquery.org/license> and

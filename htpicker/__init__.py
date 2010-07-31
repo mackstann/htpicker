@@ -163,7 +163,9 @@ default_config = """
 # A few reasonable defaults have been put here for you:
 
 [mplayer]
-command = mplayer -fs {file}
+# this -geometry option is highly recommended, otherwise you will often get a
+# briefly visible "phantom" mplayer window, before mplayer goes full screen.
+command = mplayer -geometry 1x1+4000+4000 -fs {file}
 folders = ~/Videos, ~/Video
 matches = *.avi, *.mkv, *.mpg, *.mp4, *.flv
 icon = video

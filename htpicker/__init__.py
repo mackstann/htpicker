@@ -289,7 +289,7 @@ class MyHandler(URLHandler):
         files = []
 
         ignores = self.config.get_list('options', 'ignore', [])
-        for i, filename in enumerate(sorted(os.listdir(base))):
+        for i, filename in enumerate(sorted(os.listdir(base), key=str.lower)):
             if filename.startswith('.'):
                 continue
 

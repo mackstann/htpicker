@@ -71,6 +71,15 @@ class WebBrowser(gtk.Window):
         window.destroy()
         gtk.main_quit()
 
+
+from functools import wraps
+def URLAction(f):
+    f._is_url_action = True
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        return f(*args, **kwargs)
+    return wrapper
+
 class URLHandler(object):
     """
     A URL Handler for a given network scheme.
@@ -87,12 +96,24 @@ class URLHandler(object):
     will become:
 
         yourmethod(a=['one', 'two'], b='three')
+
+    You must decorate your action methods with the URLAction decorator.  It
+    should look something like this:
+
+        @URLAction
+        def yourmethod(a, b):
+            ...
     """
 
     def __init__(self, scheme):
         self.scheme = scheme
 
     def return_uri_filter(self, uri):
+        """
+        If all of your methods are going to do something similar with their
+        results, such as formatting a data: URI, then you can consolidate that
+        logic here.
+        """
         return uri
 
     def handle_request(self, request):
@@ -117,7 +138,10 @@ class URLHandler(object):
         for key, values in q.items():
             params[key] = values[0] if len(values) == 1 else values
 
-        ret = getattr(self, action)(**params)
+        method = getattr(self, action)
+        if not hasattr(method, '_is_url_action'):
+            raise RuntimeError("method {0} needs to be decorated with @URLAction.".format(action))
+        ret = method(**params)
 
         if hasattr(self, 'return_uri_filter'):
             new_uri = self.return_uri_filter(ret)
@@ -230,6 +254,7 @@ class MyHandler(URLHandler):
         super(MyHandler, self).__init__(scheme)
         self.config = config
 
+    @URLAction
     def file_resource(self, filepath, mime_type):
         # sadly there appears to be no way to sniff the mime type from the
         # Accept header (or access request headers in general), so we must also
@@ -250,10 +275,12 @@ class MyHandler(URLHandler):
             return self.json_data_uri(data)
         return data
 
+    @URLAction
     def get_initial_dir(self):
         d = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
         return {'initial_dir': d}
 
+    @URLAction
     def execute(self, section, fullpath):
         kw = {'file': pipes.quote(fullpath)}
         command = self.config.get_default(section, 'command', '', **kw)
@@ -278,6 +305,7 @@ class MyHandler(URLHandler):
                 if fnmatch.fnmatch(fullpath, pattern):
                     return section
 
+    @URLAction
     def play_file(self, fullpath):
         section = self.section_for_file(fullpath)
         if section:
@@ -285,6 +313,7 @@ class MyHandler(URLHandler):
         else:
             print "i don't know what command to play this file with: ", fullpath
 
+    @URLAction
     def list_files(self, directory):
         directory = os.path.abspath(directory)
 

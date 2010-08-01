@@ -56,7 +56,7 @@ class MyHandler(URLHandler):
 
     def section_for_file(self, fullpath):
         for section in self.config.sections():
-            folders = self.config.get_list(section, 'folders', [])
+            folders = self.config.getlist_default(section, 'folders', [])
             for folder in folders:
                 if is_child_of(folder, fullpath):
                     return section
@@ -64,7 +64,7 @@ class MyHandler(URLHandler):
         # okay, didn't find it in a folder, so check the patterns
 
         for section in self.config.sections():
-            patterns = self.config.get_list(section, 'matches', [])
+            patterns = self.config.getlist_default(section, 'matches', [])
             for pattern in patterns:
                 if fnmatch.fnmatch(fullpath, pattern):
                     return section
@@ -83,7 +83,7 @@ class MyHandler(URLHandler):
 
         files = []
 
-        ignores = self.config.get_list('options', 'ignore', [])
+        ignores = self.config.getlist_default('options', 'ignore', [])
 
         listing = sorted([
             filename for filename in os.listdir(directory)

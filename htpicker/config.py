@@ -16,7 +16,7 @@ class MyConfigParser(ConfigParser.RawConfigParser):
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             return default
 
-    def get_list(self, section, option, default, **kwargs):
+    def getlist_default(self, section, option, default, **kwargs):
         val = self.get_default(section, option, default, **kwargs)
 
         # the default is passed as a list type, so don't text-manipulate it.

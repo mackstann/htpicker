@@ -21,7 +21,7 @@ def main():
     webbrowser = WebBrowser(handler.handle_request, content=html,
             mime_type='text/html', encoding='utf-8', base_uri='file://')
 
-    if config.getboolean_default('options', 'fullscreen', '0'):
+    if config.getboolean_default('options', 'fullscreen', False):
         webbrowser.fullscreen()
 
     try:

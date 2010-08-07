@@ -50,11 +50,6 @@
                 }
             }
 
-            var play_file = function(fullpath)
-            {
-                $.get('htpicker://play_file?fullpath=' + fullpath);
-            }
-
             var activate = function(fullpath, type, display_name)
             {
                 if(type == 'directory')
@@ -73,16 +68,9 @@
                 else
                 {
                     $('#files').hide();
-                    play_file(fullpath);
+                    $.get('htpicker://play_file?fullpath=' + fullpath);
                     setTimeout(function() { $('#files').show(); }, 5000);
                 }
-            }
-
-            var htmlDecode = function(input)
-            {
-                var e = document.createElement('div');
-                e.innerHTML = input;
-                return e.childNodes[0].nodeValue;
             }
 
             var scrollCentered = function(el, percentage, sweep_pct)
@@ -112,8 +100,6 @@
                     num_items = files.length;
                     for(var i = 0; i < num_items; i++)
                     {
-                        var css_classes = 'ui-widget-header item';
-
                         var focusin_cb = function(i, num_items) {
                             return function(ev) {
                                 $('#files').show();
@@ -137,7 +123,7 @@
                         var item = (
                             $('<a>')
                                 .attr('id', 'file-'+i)
-                                .attr('class', css_classes)
+                                .attr('class', 'ui-widget-header item')
                                 .focusin(focusin_cb)
                                 .focusout(focusout_cb)
                                 .attr('href', '#')

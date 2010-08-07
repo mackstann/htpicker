@@ -7,13 +7,13 @@ directories and launch arbitrary files with programs of your choosing.
 Installation
 ============
 
-$ python setup.py build
-$ sudo python setup.py install
+    $ python setup.py build
+    $ sudo python setup.py install
 
 Usage
 =====
 
-$ htpicker [directory]
+    $ htpicker [directory]
 
 [directory] is optional and defaults to the current directory.
 

@@ -10,9 +10,17 @@ Dependencies
 You will need Python, the WebKit library (libwebkit) as well as the Python GTK
 bindings for it (pywebkitgtk; the Ubuntu package is python-webkit).
 
+Downloading
+===========
+
+There are no releases yet, so you will need git installed, and do a git clone:
+
+    $ git clone git@github.com:mackstann/htpicker.git
+
 Installation
 ============
 
+    $ cd htpicker
     $ python setup.py build
     $ sudo python setup.py install
 

@@ -4,6 +4,12 @@ About
 HTPicker is a simple home theater frontend program that lets you browse
 directories and launch arbitrary files with programs of your choosing.
 
+Dependencies
+============
+
+You will need Python, the WebKit library (libwebkit) as well as the Python GTK
+bindings for it (pywebkitgtk; the Ubuntu package is python-webkit).
+
 Installation
 ============
 

@@ -131,10 +131,7 @@ class URLHandler(object):
             raise RuntimeError("method {0} needs to be decorated with @URLAction.".format(action))
         ret = method(**params)
 
-        if hasattr(self, 'return_uri_filter'):
-            new_uri = self.return_uri_filter(ret)
-        else:
-            new_uri = ret
+        new_uri = self.return_uri_filter(ret)
 
         if new_uri:
             request.set_uri(new_uri)

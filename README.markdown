@@ -26,6 +26,10 @@ Usage
 The arrow keys move the selection up and down, and the enter key will open the
 selected file/folder.
 
+After its first run, you will now have a ~/.htpickerrc config file that you can
+edit to add support for more file types and programs to play them, as well as
+file patterns to ignore, and toggling fullscreen mode.
+
 Motivation and Design
 =====================
 

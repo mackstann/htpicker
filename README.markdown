@@ -4,10 +4,16 @@ About
 HTPicker is a simple home theater frontend program that lets you browse
 directories and launch arbitrary files with programs of your choosing.
 
+Installation
+============
+
+$ python setup.py build
+$ sudo python setup.py install
+
 Usage
 =====
 
-./htpicker [directory]
+$ htpicker [directory]
 
 [directory] is optional and defaults to the current directory.
 
@@ -44,8 +50,6 @@ To do
   annoying since it runs full screen, so you don't have a window titlebar or
   close button.  Ctrl-C it if you run it from a shell, or kill it via whatever
   means are at your disposal.
-
-* I'm not very happy with the icons.
 
 * Remote (lirc) support, or at least documentation of how to do it.
 

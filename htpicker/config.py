@@ -95,7 +95,7 @@ default_config = """
 # this -geometry option is highly recommended, otherwise you will often get a
 # briefly visible "phantom" mplayer window, before mplayer goes full screen.
 command = mplayer -geometry 1x1+4000+4000 -fs {file}
-matches = ~/Videos/*, ~/Video/*, *.avi, *.mkv, *.mpg, *.mp4, *.flv, *.divx
+matches = ~/Videos/*, ~/Video/*, *.avi, *.mkv, *.mpg, *.mp4, *.flv, *.divx, *.wmv
 icon = video
 
 [zsnes]

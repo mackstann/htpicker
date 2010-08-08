@@ -57,9 +57,11 @@ class MyHandler(URLHandler):
 
     def section_for_file(self, fullpath):
         for section in self.config.sections():
+            # TODO: loading this config file at startup and lower-casing it all
+            # then would be faster.  also, use fnmatch.filter.
             patterns = self.config.getlist_default(section, 'matches', [])
             for pattern in patterns:
-                if fnmatch.fnmatch(fullpath, pattern):
+                if fnmatch.fnmatch(fullpath.lower(), pattern.lower()):
                     return section
 
     @URLAction

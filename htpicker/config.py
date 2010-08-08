@@ -85,9 +85,10 @@ default_config = """
 # characters may go into filename match patterns, run the command 'pydoc
 # fnmatch.fnmatch'.
 #
-# Line 4 states which icon to show for these files.  The only current options
-# are 'video', 'game', and 'folder'; though htpicker automatically uses the
-# folder icon for directories, so you probably won't have any use for it.
+# Line 4 (optional) states which icon to show for these files.  The only
+# current options are 'video', 'game', and 'folder'; though htpicker
+# automatically uses the folder icon for directories, so you probably won't
+# have any use for it.
 #
 # A few reasonable defaults have been put here for you:
 

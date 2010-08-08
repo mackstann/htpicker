@@ -2,6 +2,7 @@
 
 import os
 import fnmatch
+import itertools
 import json
 import pipes
 import pkg_resources
@@ -80,10 +81,11 @@ class MyHandler(URLHandler):
 
         ignores = self.config.getlist_default('options', 'ignore', [])
 
-        listing = sorted([
-            filename for filename in os.listdir(directory)
-            if not any(fnmatch.fnmatch(filename, ignore) for ignore in ignores)
-        ], key=str.lower)
+        listing = os.listdir(directory)
+        ignore_files = set(itertools.chain(*[fnmatch.filter(listing, ignore) for ignore in ignores]))
+        listing = set(listing)
+        listing.difference_update(ignore_files)
+        listing = sorted(listing, key=str.lower)
 
         for i, filename in enumerate(listing):
             fullpath = directory + '/' + filename

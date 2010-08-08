@@ -31,6 +31,10 @@ def test_fnmatch():
         for pattern in fnmatch_patterns:
             fnmatch.fnmatch(filename, pattern)
 
+def test_fnmatch_filter():
+    for pattern in fnmatch_patterns:
+        fnmatch.filter(lines, pattern)
+
 def test_regex():
     for filename in lines:
         regex.match(filename)
@@ -43,6 +47,9 @@ def test_separate_regexes():
 t = timeit.Timer(stmt=test_fnmatch)
 print "fnmatch: %.2f usec per file" % (1000000 * t.timeit(number=num_iterations)/num_iterations/num_files)
 
+t = timeit.Timer(stmt=test_fnmatch_filter)
+print "fnmatch filter: %.2f usec per file" % (1000000 * t.timeit(number=num_iterations)/num_iterations/num_files)
+
 t = timeit.Timer(stmt=test_regex)
 print "regex: %.2f usec per file" % (1000000 * t.timeit(number=num_iterations)/num_iterations/num_files)
 
@@ -50,6 +57,7 @@ t = timeit.Timer(stmt=test_separate_regexes)
 print "separate regexes: %.2f usec per file" % (1000000 * t.timeit(number=num_iterations)/num_iterations/num_files)
 
 # and the results are...
-# fnmatch: 18.60 usec per file
-# regex: 14.21 usec per file
-# separate regexes: 22.80 usec per file
+# fnmatch: 19.68 usec per file
+# fnmatch filter: 4.75 usec per file
+# regex: 13.68 usec per file
+# separate regexes: 16.95 usec per file

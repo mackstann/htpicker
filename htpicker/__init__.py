@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import gtk
+import os
 import pkg_resources
 
 from htpicker.browser import WebBrowser
@@ -12,7 +13,7 @@ from htpicker.handler import MyHandler
 def main():
     gtk.gdk.threads_init()
 
-    config = load_config()
+    config = load_config(os.path.expanduser("~/.htpickerrc"))
 
     handler = MyHandler('htpicker', config)
 

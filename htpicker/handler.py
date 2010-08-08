@@ -12,6 +12,7 @@ import types
 import urllib
 
 from htpicker.browser import URLHandler, URLAction
+from htpicker.config import write_default_config
 
 class MyHandler(URLHandler):
     def __init__(self, scheme, config):
@@ -55,14 +56,6 @@ class MyHandler(URLHandler):
 
 
     def section_for_file(self, fullpath):
-        for section in self.config.sections():
-            folders = self.config.getlist_default(section, 'folders', [])
-            for folder in folders:
-                if is_child_of(folder, fullpath):
-                    return section
-
-        # okay, didn't find it in a folder, so check the patterns
-
         for section in self.config.sections():
             patterns = self.config.getlist_default(section, 'matches', [])
             for pattern in patterns:
@@ -130,15 +123,3 @@ class MyHandler(URLHandler):
         })
 
         return { 'files': files }
-
-def is_child_of(dir_in_question, filename):
-    d = dir_in_question.rstrip('/') + '/'
-    f = filename
-    real = os.path.realpath
-    common = os.path.commonprefix
-
-    # try both given path and real path for both directory and file.
-    if d == common([d, f]): return True
-    if d == common([real(d), f]): return True
-    if d == common([d, real(f)]): return True
-    if d == common([real(d), real(f)]): return True

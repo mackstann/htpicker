@@ -43,11 +43,20 @@ Motivation and Design
 
 I created htpicker because I was unsatisfied with all other HTPC frontend
 software I've tried.  They're all complicated monstrosities and I seem to
-attract their bugs.
+have a talent for finding their bugs.  All I really wanted was a way to browse
+a directory structure in a TV-friendly visual format, and launch files with
+external programs (e.g. a video with mplayer, or a video game ROM with an
+emulator).
 
-All I really wanted was a way to browse a directory structure in a TV-friendly
-visual format, and launch files with external programs (e.g. a video with
-mplayer, or a video game ROM with an emulator).
+There are no over-complicated plugins, scripts, XML files, or anything like
+that.  There is one small configuration file located at ~/.htpickerrc.  This
+file will be created for you the first time you run htpicker.  The meat of this
+config file is mapping certain directories and/or file extensions to programs
+that can play them.  The stock config file sets up a few reasonable defaults,
+such as using mplayer to play files in ~/Videos as well as files with common
+video filename extensions, and playing a couple types of video game ROMs with
+their respective console emulators.  You can change or expand these settings to
+play any file with any program you want.
 
 And why not just use HTML and Javascript for the UI?  So that's what I've done.
 The program you run consists of three parts:  The first is a generic browser
@@ -58,17 +67,22 @@ requests from the webpage and executes actions that are impossible from within
 a webpage, such as reading the contents of a directory on the filesystem, or
 executing a program to play a file.
 
-htpicker also doesn't care about your screen resolution or anything else
-related to your video setup, any more than Firefox or Chrome or MPlayer would.
+Since htpicker's GUI is written in HTML and JavaScript (using WebKit), it does
+not engage any special video modes or cause problems with switching to other
+programs. It can run in a window or fullscreen (the toggle is in the config
+file). Despite using WebKit for its GUI, it is not a web application, and does
+not access the network in any way.
 
 To do
 =====
 
+* Joystick support
+* Remote (lirc) support
+* Theming via CSS
+* JavaScript hacking/hooks
+* Thumbnails (maybe)
+* Perhaps expanding the UI to be more than just a file list.
 * There is currently no convenient way to exit the program, which is especially
-  annoying since it runs full screen, so you don't have a window titlebar or
+  annoying when it runs full screen, since you don't have a window titlebar or
   close button.  Ctrl-C it if you run it from a shell, or kill it via whatever
   means are at your disposal.
-
-* Remote (lirc) support, or at least documentation of how to do it.
-
-* Joystick support

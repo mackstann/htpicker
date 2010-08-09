@@ -17,7 +17,7 @@ Now, if I make a symlink for Banshee like this:
 
     $ ln -s /usr/bin/banshee ~/programs/Banshee
     $ ls -l ~/programs
-    lrwxrwxrwx 1 nick nick 16 2010-08-08 20:56 Banshee -> /usr/bin/banshee*
+    lrwxrwxrwx 1 nick nick 16 2010-08-08 20:56 Banshee -> /usr/bin/banshee
 
 Then I will now have an item "Banshee" inside of ~/programs that will launch
 /usr/bin/banshee.

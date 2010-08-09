@@ -13,8 +13,9 @@ example:
     command = {file}
     matches = ~/programs/*
 
-Now, if I have the following symlink for Banshee:
+Now, if I make a symlink for Banshee like this:
 
+    $ ln -s /usr/bin/banshee ~/programs/Banshee
     $ ls -l ~/programs
     lrwxrwxrwx 1 nick nick 16 2010-08-08 20:56 Banshee -> /usr/bin/banshee*
 

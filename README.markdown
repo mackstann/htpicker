@@ -1,7 +1,7 @@
 About
 =====
 
-HTPicker is a simple home theater frontend program that lets you browse
+htpicker is a simple home theater frontend program that lets you browse
 directories and launch arbitrary files with programs of your choosing.
 
 Dependencies
@@ -41,7 +41,7 @@ file patterns to ignore, and toggling fullscreen mode.
 Motivation and Design
 =====================
 
-I created HTPicker because I was unsatisfied with all other HTPC frontend
+I created htpicker because I was unsatisfied with all other HTPC frontend
 software I've tried.  They're all complicated monstrosities and I seem to
 attract their bugs.
 
@@ -58,7 +58,7 @@ requests from the webpage and executes actions that are impossible from within
 a webpage, such as reading the contents of a directory on the filesystem, or
 executing a program to play a file.
 
-HTPicker also doesn't care about your screen resolution or anything else
+htpicker also doesn't care about your screen resolution or anything else
 related to your video setup, any more than Firefox or Chrome or MPlayer would.
 
 To do

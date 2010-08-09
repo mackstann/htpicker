@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 setup(
-    name = "HTPicker",
+    name = "htpicker",
     version = "0.1alpha",
     packages = find_packages(),
 

@@ -62,6 +62,7 @@ class MyHandler(URLHandler):
             # then would be faster.  also, use fnmatch.filter.
             patterns = self.config.getlist_default(section, 'matches', [])
             for pattern in patterns:
+                pattern = os.path.expanduser(pattern)
                 if fnmatch.fnmatch(fullpath.lower(), pattern.lower()):
                     return section
 

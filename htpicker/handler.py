@@ -12,7 +12,6 @@ import types
 import urllib
 
 from htpicker.browser import URLHandler, URLAction
-from htpicker.config import write_default_config
 
 class MyHandler(URLHandler):
     def __init__(self, scheme, config):

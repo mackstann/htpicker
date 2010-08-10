@@ -7,7 +7,6 @@ import json
 import pipes
 import pkg_resources
 import stat
-import subprocess
 import sys
 import types
 import urllib
@@ -53,7 +52,17 @@ class MyHandler(URLHandler):
         if not command:
             print "You need to define a command for '{0}'".format(section)
         else:
-            subprocess.Popen(command, shell=True)
+            #subprocess.Popen(command, shell=True)
+            #os.waitpid(proc.pid, 0)
+
+            # the following "should" work but results in a mysterious situation
+            # on my eeepc: mplayer outputs one line ("MPlayer SVN-r29237-4.4.1
+            # (C) 2000-2009 MPlayer Team") to the shell, and then everything
+            # stops.  mplayer is hung, and htpicker has mysteriously received a
+            # SIGSTOP from somewhere.  i don't get it AT ALL.
+
+            # the following is uglier but works just fine.
+            os.system(command + ' &')
 
 
     def section_for_file(self, fullpath):

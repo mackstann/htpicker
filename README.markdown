@@ -77,7 +77,6 @@ To do
 =====
 
 * Joystick support
-* Remote (lirc) support
 * Theming via CSS
 * JavaScript hacking/hooks
 * Thumbnails (maybe)

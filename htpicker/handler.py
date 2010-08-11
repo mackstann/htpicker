@@ -26,6 +26,10 @@ class MyHandler(URLHandler):
         filename = pkg_resources.resource_filename(__name__, 'data/'+filepath)
         return 'file://' + urllib.quote(filename)
 
+    @URLAction
+    def show_animations(self):
+        return {'show_animations': int(self.config.getboolean_default('options', 'animations', True))}
+
     @staticmethod
     def data_uri(data, mime_type, encoding='utf-8'):
         return 'data:{0};charset={1};base64,'.format(mime_type, encoding) + data.encode('base64')

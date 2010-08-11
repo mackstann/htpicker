@@ -31,6 +31,7 @@
         <div id="files"></div>
         <script>
             var last_folder_entry_action = null;
+            var show_animations = null;
 
             var icon_urls = {
                 'directory': 'htpicker://file_resource?filepath=images/nuvola/gnome-fs-directory-visiting.svg&mime_type=image/svg+xml',
@@ -59,9 +60,13 @@
                     else
                         last_folder_entry_action = 'descend';
 
-                    $('#files').hide("slide", {
-                        'direction': last_folder_entry_action == 'descend' ? 'left' : 'right',
-                        'mode': 'hide' }, 150);
+                    if(show_animations)
+                    {
+                        $('#files').hide("slide", {
+                            'direction': last_folder_entry_action == 'descend' ? 'left' : 'right',
+                            'mode': 'hide'
+                        }, 150);
+                    }
 
                     load_files(fullpath);
                 }
@@ -166,11 +171,13 @@
                         $('#files').append(item);
                     }
 
-                    if(last_folder_entry_action)
+                    if(last_folder_entry_action && show_animations)
+                    {
                         $('#files').show("slide", {
                             'direction': last_folder_entry_action == 'descend' ? 'right' : 'left',
                             'mode': 'show'
                         }, 250, function() { $('#files > a')[0].focus(); });
+                    }
                     else
                         $('#files > a')[0].focus();
 
@@ -180,6 +187,13 @@
 
             $(function() {
                 preload_images();
+
+                $.ajax({
+                    'url': 'htpicker://show_animations',
+                    'dataType': 'json',
+                    'async': false,
+                    'success': function(data) { show_animations = data['show_animations']; }
+                });
 
                 $.getJSON('htpicker://get_initial_dir', function(data) {
                     var initial_dir = data['initial_dir'];

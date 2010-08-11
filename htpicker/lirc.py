@@ -16,8 +16,9 @@ class LIRCEventSource(object):
             events.extend(more_events)
 
 class LIRCEventHandler(object):
-    def __init__(self, source, web_view):
+    def __init__(self, source, window, web_view):
         self.source = source
+        self.window = window
         self.web_view = web_view
 
     def __call__(self, fd, io_condition):
@@ -32,6 +33,11 @@ class LIRCEventHandler(object):
             self.handle_event(e)
 
     def handle_event(self, e):
+        # lirc is totally ignorant of window focus, so we must enforce it
+        # ourselves.
+        if not self.window.has_toplevel_focus():
+            return
+
         if e == 'back':
             self.web_view.call_js_function('go_parent_directory')
         elif e == 'up':

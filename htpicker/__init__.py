@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import glib
 import gtk
 import os
 import pkg_resources
@@ -24,6 +25,16 @@ def main():
 
     if config.getboolean_default('options', 'fullscreen', False):
         webbrowser.fullscreen()
+
+    try:
+        import pylirc
+    except ImportError:
+        print "pylirc is not installed. Install it if you wish to use a remote."
+    else:
+        from htpicker.lirc import LIRCEventSource, LIRCEventHandler
+        lirc_source = LIRCEventSource('htpicker')
+        lirc_handler = LIRCEventHandler(lirc_source, webbrowser.web_view)
+        glib.io_add_watch(lirc_source.fileno, glib.IO_IN, lirc_handler)
 
     try:
         gtk.main()

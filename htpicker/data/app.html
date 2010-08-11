@@ -73,6 +73,34 @@
                 }
             }
 
+            var go_parent_directory = function()
+            {
+                $('#files a').first().click();
+            }
+
+            var move_selection_up = function()
+            {
+                if(focus_index > 0)
+                {
+                    focus_index--;
+                    $('#file-'+focus_index).focus();
+                }
+            }
+
+            var move_selection_down = function()
+            {
+                if(focus_index < num_items-1)
+                {
+                    focus_index++;
+                    $('#file-'+focus_index).focus();
+                }
+            }
+
+            var activate_current_selection = function()
+            {
+                $('#file-'+focus_index).click();
+            }
+
             var scrollCentered = function(el, percentage, sweep_pct)
             {
                 var win = $(window);
@@ -161,21 +189,12 @@
                 $(document).keydown(function(ev) {
                     if(ev.which == $.ui.keyCode.DOWN)
                     {
-                        if(focus_index < num_items-1)
-                        {
-                            focus_index++;
-                            $('#file-'+focus_index).focus();
-                        }
+                        move_selection_down();
                         return false;
                     }
-
                     if(ev.which == $.ui.keyCode.UP)
                     {
-                        if(focus_index > 0)
-                        {
-                            focus_index--;
-                            $('#file-'+focus_index).focus();
-                        }
+                        move_selection_up();
                         return false;
                     }
                 });

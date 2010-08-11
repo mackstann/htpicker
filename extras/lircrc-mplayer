@@ -1,4 +1,11 @@
-# This config works well for my MCE remote.  Paste it into your ~/.lircrc file.
+# Sample mplayer lircrc configuration.
+
+# This config assumes an MCE remote.  You may need to change the button names
+# if you have a different remote.  Use the irw command to find the names for
+# your remote's buttons.
+#
+# To use this config, paste it to the end of your ~/.lircrc (create the file if
+# it doesn't exist).
 
 begin
     prog = mplayer

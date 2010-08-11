@@ -1,0 +1,53 @@
+# Sample htpicker lircrc configuration.
+
+# This config assumes an MCE remote.  You may need to change the button names
+# if you have a different remote.  Use the irw command to find the names for
+# your remote's buttons.
+#
+# To use this config, paste it to the end of your ~/.lircrc (create the file if
+# it doesn't exist).
+
+# To enable the exiting (killing) of lirc-ignorant programs that get launched
+# by htpicker with your remote's back button, you must have irexec running.
+# Launch it with 'irexec --daemon' in your startup scripts.  You will also need
+# to add your programs' name(s) to the 'pkill' command if you launch any
+# lirc-ignorant apps other than zsnes and fceu.
+
+begin
+    prog = htpicker
+    button = Back
+    config = back
+    repeat = 2
+end
+
+begin
+    prog = htpicker
+    button = Up
+    config = up
+    repeat = 2
+end
+
+begin
+    prog = htpicker
+    button = Down
+    config = down
+    repeat = 2
+end
+
+begin
+    prog = htpicker
+    button = OK
+    config = select
+    repeat = 2
+end
+
+begin
+    prog = irexec
+    button = Back
+    repeat = 2
+
+    # Add any other app name(s) here that need to be killed when pressing the
+    # back button.  Put them inside the parentheses and separate them with the
+    # pipe (|) character.
+    config = pkill '(zsnes|fceu)' || true
+end

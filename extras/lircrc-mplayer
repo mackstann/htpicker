@@ -1,0 +1,73 @@
+# This config works well for my MCE remote.  Paste it into your ~/.lircrc file.
+
+begin
+    prog = mplayer
+    button = Back
+    config = quit
+    repeat = 0
+end
+
+begin
+    prog = mplayer
+    button = Stop
+    config = quit
+    repeat = 0
+end
+
+begin
+    prog = mplayer
+    button = Pause
+    config = pause
+    repeat = 0
+end
+
+begin
+    prog = mplayer
+    button = Play
+    config = pause
+    repeat = 0
+end
+
+begin
+    prog = mplayer
+    button = Rewind
+    config = seek -10
+    repeat = 3
+end
+
+begin
+    prog = mplayer
+    button = Forward
+    config = seek +20
+    repeat = 3
+end
+
+begin
+    prog = mplayer
+    button = Replay
+    config = seek -300
+    repeat = 3
+end
+
+begin
+    prog = mplayer
+    button = Skip
+    config = seek +300
+    repeat = 3
+end
+
+begin
+    prog = mplayer
+    button = More
+    config = osd
+    repeat = 0
+end
+
+begin
+    prog = mplayer
+    button = Clear
+    config = switch_ratio 1.33333
+    config = switch_ratio 1.77778
+    config = switch_ratio 1
+    repeat = 0
+end

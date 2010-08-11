@@ -10,9 +10,11 @@ exactly the same way by any programmer.
 I disclaim copyright to the following files and dedicate them to the public
 domain:
 
-* htpicker/__init__.py
+* AUTHORS, FAQ.markdown, LICENSE (this file), and README.markdown.
+* All Python (.py) files.
 * htpicker/data/app.html
 * Everything in the "experiments" subdirectory.
+* Everything in the "extras" subdirectory.
 
 All jQuery and jQuery UI code and assets are covered under the MIT license.
 See <http://jquery.org/license> and

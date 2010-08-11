@@ -27,9 +27,7 @@ class LIRCEventHandler(object):
 
     def handle_events(self):
         events = self.source.get_events()
-        print "got", len(events), "lirc events"
         for e in events:
-            print "EVENT:", e
             self.handle_event(e)
 
     def handle_event(self, e):

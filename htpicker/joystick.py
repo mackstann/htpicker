@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import glib
 import glob
 import struct
 
@@ -28,28 +29,42 @@ class JoystickEvent(object):
     BUTTON_RELEASE = 0
     BUTTON_PRESS = 1
 
+    HORIZONTAL_AXIS = 0 # even numbered axes are horizontal,
+    VERTICAL_AXIS = 1   # odd are vertical.  generally.
     MAX_AXIS_VALUE = 32767
 
     def __init__(self, bytestring, axis_threshold, digitize):
         self.time, self.value, self.rawtype, self.number = struct.unpack(self.struct_format, bytestring)
+        self.is_initial = bool(self.rawtype & self.INIT)
         self.rawtype &= ~self.INIT
 
         if self.rawtype == JoystickEvent.AXIS:
             if abs(self.value) / float(self.MAX_AXIS_VALUE) < axis_threshold:
                 self.value = 0
             if digitize and self.value:
-                self.value /= abs(self.value) # now it is one of [-1, 0, 1]
+                self.value = self.digitize(self.value)
 
         if self.rawtype == self.BUTTON:
             self.type = [self.BUTTON_RELEASE, self.BUTTON_PRESS][self.value]
         else:
             self.type = self.rawtype
 
+    @staticmethod
+    def digitize(axis_value):
+        """simplify any number down to -1, 0, or 1"""
+        if axis_value == 0:
+            return 0
+        return axis_value / abs(axis_value)
+
 class JoystickEventHandler(object):
-    def __init__(self, source, window, web_view):
+    def __init__(self, source, window, web_view, repeat_delay, repeat_interval):
         self.source = source
         self.window = window
         self.web_view = web_view
+        self.repeat_delay = repeat_delay
+        self.repeat_interval = repeat_interval
+        self.event_id = None
+        self.last_axis_event = None
 
     def __call__(self, fd, io_condition):
         self.handle_event()
@@ -62,13 +77,38 @@ class JoystickEventHandler(object):
         if not self.window.has_toplevel_focus():
             return
 
-        if e.type == JoystickEvent.BUTTON_PRESS:
+        if e.type == JoystickEvent.BUTTON_PRESS and not e.is_initial:
+            self.disable_repeat()
             if e.number == 1:
-                self.web_view.call_js_function('go_parent_directory')
+                self.fire('go_parent_directory')
             else:
-                self.web_view.call_js_function('activate_current_selection')
-        elif e.type == JoystickEvent.AXIS and e.number % 2 == 1:
-            if e.value < 0:
-                self.web_view.call_js_function('move_selection_up')
-            elif e.value > 0:
-                self.web_view.call_js_function('move_selection_down')
+                self.fire('activate_current_selection')
+
+        elif e.type == JoystickEvent.AXIS and e.number == JoystickEvent.VERTICAL_AXIS:
+            axis_event = (e.number, JoystickEvent.digitize(e.value))
+            if axis_event != self.last_axis_event:
+                self.last_axis_event = axis_event
+                self.disable_repeat()
+                if e.value < 0:
+                    self.start_repeat('move_selection_up')
+                elif e.value > 0:
+                    self.start_repeat('move_selection_down')
+
+    def fire(self, function=None):
+        self.web_view.call_js_function(function if function else self.repeated_function)
+
+    def start_repeat(self, repeated_function):
+        self.disable_repeat()
+        self.repeated_function = repeated_function
+        self.fire()
+        self.event_id = glib.timeout_add(self.repeat_delay, self.continue_repeat)
+
+    def continue_repeat(self):
+        self.fire()
+        self.event_id = glib.timeout_add(self.repeat_interval, self.continue_repeat)
+        return False
+
+    def disable_repeat(self):
+        if self.event_id is not None:
+            glib.source_remove(self.event_id)
+            self.event_id = None

@@ -39,7 +39,7 @@ def main():
 
     joysticks = Joystick.create_all()
     for joystick in joysticks:
-        joystick_handler = JoystickEventHandler(joystick, webbrowser, webbrowser.web_view)
+        joystick_handler = JoystickEventHandler(joystick, webbrowser, webbrowser.web_view, 250, 100)
         glib.io_add_watch(joystick.device_file, glib.IO_IN, joystick_handler)
 
     try:

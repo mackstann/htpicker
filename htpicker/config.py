@@ -25,6 +25,26 @@ class MyConfigParser(ConfigParser.RawConfigParser):
 
         return map(str.strip, val.split(','))
 
+class HTPickerConfig(MyConfigParser):
+    def __init__(self, filename, argv):
+        MyConfigParser.__init__(self)
+
+        if not os.path.isfile(filename):
+            write_default_config(filename)
+            print "I have created a ~/.htpickerrc config file for you."
+            print "Take a look and edit it to your liking."
+
+        if not self.has_section('options'):
+            self.add_section('options')
+
+        if len(argv) > 1:
+            self.set('options', 'initial_dir', argv[1])
+        elif self.get_default('options', 'initial_dir', None) is None:
+            self.set('options', 'initial_dir', os.getcwd())
+
+        self.read(filename)
+        back_compat_check_folders_setting(self)
+
 def write_default_config(filename):
     f = open(filename, 'w')
     f.write(default_config)
@@ -45,17 +65,6 @@ def back_compat_check_folders_setting(config):
             print "         in case you want to examine it for further"
             print "         clarification."
             return
-
-def load_config(filename):
-    if not os.path.isfile(filename):
-        write_default_config(filename)
-        print "I have created a ~/.htpickerrc config file for you."
-        print "Take a look and edit it to your liking."
-
-    config = MyConfigParser()
-    config.read(filename)
-    back_compat_check_folders_setting(config)
-    return config
 
 default_config = """
 # How this config file works:
@@ -113,4 +122,8 @@ icon = game
 [options]
 ignore = .*, *~, *.bak, *.nfo, *.txt, *.url, *.sfv, *.part*.rar
 fullscreen = off
+
+# if you set this, htpicker will start in the specified directory.  if you pass
+# a directory name on the command line, though, it will override this setting.
+#initial_dir = /path/to/somewhere
 """

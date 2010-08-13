@@ -46,8 +46,7 @@ class MyHandler(URLHandler):
 
     @URLAction
     def get_initial_dir(self):
-        d = sys.argv[1] if len(sys.argv) > 1 else os.getcwd()
-        return {'initial_dir': d}
+        return {'initial_dir': self.config.get('options', 'initial_dir')}
 
     @URLAction
     def execute(self, section, fullpath):

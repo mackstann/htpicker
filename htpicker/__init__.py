@@ -4,9 +4,10 @@ import glib
 import gtk
 import os
 import pkg_resources
+import sys
 
 from htpicker.browser import WebBrowser
-from htpicker.config import load_config
+from htpicker.config import HTPickerConfig
 from htpicker.handler import MyHandler
 from htpicker.joystick import Joystick, JoystickEventHandler
 from htpicker.inotify import GlibNotifier, INotifyHandler
@@ -23,7 +24,7 @@ def main():
     def dir_change_cb(directory):
         ihandler.change_dir(directory)
 
-    config = load_config(os.path.expanduser("~/.htpickerrc"))
+    config = HTPickerConfig(os.path.expanduser("~/.htpickerrc"), sys.argv)
 
     handler = MyHandler('htpicker', config, dir_change_cb)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import os
 import pyinotify
+import time
 
 class GlibNotifier(pyinotify.Notifier):
     def __init__(self, handler):
@@ -24,12 +24,20 @@ class GlibNotifier(pyinotify.Notifier):
         return True # stay attached to the main loop
 
 class INotifyHandler(pyinotify.ProcessEvent):
+    throttle_interval = 0.6
+
     def __init__(self, web_view):
         self.web_view = web_view
+        self.last_refresh = 0
+
+    def throttled_refresh(self):
+        now = time.time()
+        if now - self.last_refresh > self.throttle_interval:
+            self.web_view.call_js_function('load_files')
+            self.last_refresh = now
 
     def process_IN_CREATE(self, event):
-        self.web_view.call_js_function('load_files')
+        self.throttled_refresh()
 
     def process_IN_DELETE(self, event):
-        self.web_view.call_js_function('load_files')
-
+        self.throttled_refresh()

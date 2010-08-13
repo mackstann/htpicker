@@ -14,9 +14,10 @@ import urllib
 from htpicker.browser import URLHandler, URLAction
 
 class MyHandler(URLHandler):
-    def __init__(self, scheme, config):
+    def __init__(self, scheme, config, dir_change_cb):
         super(MyHandler, self).__init__(scheme)
         self.config = config
+        self.dir_change_cb = dir_change_cb
 
     @URLAction
     def file_resource(self, filepath, mime_type):
@@ -138,5 +139,7 @@ class MyHandler(URLHandler):
             'type': 'directory',
             'icon': 'directory',
         })
+
+        self.dir_change_cb(directory)
 
         return { 'files': files }

@@ -16,9 +16,16 @@ from htpicker.inotify import GlibNotifier, INotifyHandler
 def main():
     gtk.gdk.threads_init()
 
+    ihandler = INotifyHandler()
+    inotifier = GlibNotifier(ihandler)
+    glib.io_add_watch(inotifier.get_fd(), glib.IO_IN, inotifier)
+
+    def dir_change_cb(directory):
+        ihandler.change_dir(directory)
+
     config = load_config(os.path.expanduser("~/.htpickerrc"))
 
-    handler = MyHandler('htpicker', config)
+    handler = MyHandler('htpicker', config, dir_change_cb)
 
     html = pkg_resources.resource_string(__name__, 'data/app.html')
 
@@ -42,9 +49,6 @@ def main():
     for joystick in joysticks:
         joystick_handler = JoystickEventHandler(joystick, webbrowser, webbrowser.web_view, 250, 100)
         glib.io_add_watch(joystick.device_file, glib.IO_IN, joystick_handler)
-
-    notifier = GlibNotifier(INotifyHandler())
-    glib.io_add_watch(notifier.get_fd(), glib.IO_IN, notifier)
 
     try:
         gtk.main()

@@ -23,3 +23,6 @@ class INotifyHandler(pyinotify.ProcessEvent):
     def process_IN_DELETE(self, event):
         print "deleted:", event.pathname
 
+    def change_dir(self, directory):
+        print 'new dir:', directory
+

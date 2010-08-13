@@ -89,7 +89,7 @@
                 if(focus_index > 0)
                 {
                     focus_index--;
-                    $('#file-'+focus_index).focus();
+                    focus_current_index();
                 }
             }
 
@@ -98,8 +98,13 @@
                 if(focus_index < num_items-1)
                 {
                     focus_index++;
-                    $('#file-'+focus_index).focus();
+                    focus_current_index();
                 }
+            }
+
+            var focus_current_index = function()
+            {
+                $('#file-'+focus_index).focus();
             }
 
             var activate_current_selection = function()
@@ -120,6 +125,13 @@
                 win.scrollTop(offset);
             }
 
+            var scroll_to_focus = function()
+            {
+                var el = $('#file-'+focus_index);
+                var percentage = 1.0 * focus_index / num_items;
+                scrollCentered(el, percentage, 0.5);
+            }
+
             var focus_index = 0;
             var num_items = 0;
 
@@ -137,12 +149,10 @@
                     {
                         var focusin_cb = function(i, num_items) {
                             return function(ev) {
-                                $('#files').show();
-                                var el = $('#file-'+i);
-                                el.addClass("ui-state-active");
-                                var percentage = 1.0 * i / num_items;
-                                scrollCentered(el, percentage, 0.5);
                                 focus_index = i;
+                                $('#files').show();
+                                $('#file-'+focus_index).addClass("ui-state-active");
+                                scroll_to_focus();
                             };
                         }(i, num_items);
 
@@ -175,15 +185,28 @@
 
                     if(show_animations && (last_folder_entry_action == 'ascend' || last_folder_entry_action == 'descend'))
                     {
+                        // ascend/descend
+                        focus_index = 0;
                         $('#files').show("slide", {
                             'direction': last_folder_entry_action == 'descend' ? 'right' : 'left',
                             'mode': 'show'
                         }, 250, function() { $('#files > a')[0].focus(); });
                     }
                     else
-                        $('#files > a')[0].focus();
-
-                    focus_index = 0;
+                    {
+                        if(path)
+                        {
+                            // initial load
+                            focus_index = 0;
+                            focus_current_index();
+                        }
+                        else
+                        {
+                            // refresh
+                            focus_current_index();
+                            scroll_to_focus();
+                        }
+                    }
                 });
             }
 

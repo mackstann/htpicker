@@ -126,6 +126,8 @@
             var load_files = function(path) {
                 if(path)
                     current_dir = path;
+                else
+                    last_folder_entry_action = 'load';
 
                 $.getJSON('htpicker://list_files?directory=' + encodeURIComponent(current_dir), function(data) {
                     var files = data['files'];
@@ -171,7 +173,7 @@
                         $('#files').append(item);
                     }
 
-                    if(last_folder_entry_action && show_animations)
+                    if(show_animations && (last_folder_entry_action == 'ascend' || last_folder_entry_action == 'descend'))
                     {
                         $('#files').show("slide", {
                             'direction': last_folder_entry_action == 'descend' ? 'right' : 'left',

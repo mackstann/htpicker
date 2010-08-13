@@ -34,6 +34,12 @@
             var show_animations = null;
             var current_dir = null;
 
+            var focus_name = null;
+            var new_index_matching_focus_name = null;
+
+            var focus_index = 0;
+            var num_items = 0;
+
             var icon_urls = {
                 'directory': 'htpicker://file_resource?filepath=images/nuvola/gnome-fs-directory-visiting.svg&mime_type=image/svg+xml',
                 'video': 'htpicker://file_resource?filepath=images/nuvola/mplayer.svg&mime_type=image/svg+xml',
@@ -104,7 +110,10 @@
 
             var focus_current_index = function()
             {
-                $('#file-'+focus_index).focus();
+                var el = $('#file-'+focus_index);
+                el.focus();
+                focus_name = el.children().last().text();
+                console.log(focus_name);
             }
 
             var activate_current_selection = function()
@@ -132,9 +141,6 @@
                 scrollCentered(el, percentage, 0.5);
             }
 
-            var focus_index = 0;
-            var num_items = 0;
-
             var load_files = function(path) {
                 if(path)
                     current_dir = path;
@@ -144,6 +150,7 @@
                 $.getJSON('htpicker://list_files?directory=' + encodeURIComponent(current_dir), function(data) {
                     var files = data['files'];
                     $('#files').html('');
+                    new_index_matching_focus_name = null;
                     num_items = files.length;
                     for(var i = 0; i < num_items; i++)
                     {
@@ -180,6 +187,9 @@
                                 .html('<img src="' + icon_url + '"> <span>' + files[i]['display_name'] + '</span>')
                         );
 
+                        if(files[i]['display_name'] == focus_name)
+                            new_index_matching_focus_name = i;
+
                         $('#files').append(item);
                     }
 
@@ -203,6 +213,8 @@
                         else
                         {
                             // refresh
+                            if(new_index_matching_focus_name != null)
+                                focus_index = new_index_matching_focus_name;
                             focus_current_index();
                             scroll_to_focus();
                         }

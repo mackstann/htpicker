@@ -17,14 +17,14 @@ from htpicker.inotify import GlibNotifier, INotifyHandler
 def main():
     gtk.gdk.threads_init()
 
+    config = HTPickerConfig(os.path.expanduser("~/.htpickerrc"), sys.argv)
+
     ihandler = INotifyHandler()
     inotifier = GlibNotifier(ihandler)
     glib.io_add_watch(inotifier.get_fd(), glib.IO_IN, inotifier)
 
     def dir_change_cb(directory):
-        ihandler.change_dir(directory)
-
-    config = HTPickerConfig(os.path.expanduser("~/.htpickerrc"), sys.argv)
+        inotifier.change_dir(directory)
 
     handler = MyHandler('htpicker', config, dir_change_cb)
 

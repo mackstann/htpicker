@@ -6,10 +6,18 @@ class GlibNotifier(pyinotify.Notifier):
     def __init__(self, handler):
         self.wm = pyinotify.WatchManager()
         super(GlibNotifier, self).__init__(self.wm, handler)
-        self.mywd = self.wm.add_watch('/tmp', pyinotify.IN_DELETE | pyinotify.IN_CREATE)
+        self.wd = None
 
     def get_fd(self):
         return self.wm.get_fd()
+
+    def change_dir(self, directory):
+        print 'new dir:', directory
+        if self.wd is not None:
+            print self.wd
+            self.wm.rm_watch(self.wd)
+        wd_dict = self.wm.add_watch(directory, pyinotify.IN_DELETE | pyinotify.IN_CREATE)
+        self.wd = wd_dict.values()[0] # we will only ever have one to deal with at a time.
 
     def __call__(self, fd, io_condition):
         self.read_events()
@@ -22,7 +30,4 @@ class INotifyHandler(pyinotify.ProcessEvent):
 
     def process_IN_DELETE(self, event):
         print "deleted:", event.pathname
-
-    def change_dir(self, directory):
-        print 'new dir:', directory
 

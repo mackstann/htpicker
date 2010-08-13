@@ -112,8 +112,7 @@
             {
                 var el = $('#file-'+focus_index);
                 el.focus();
-                focus_name = el.children().last().text();
-                console.log(focus_name);
+                focus_name = el.attr('data-fullpath');
             }
 
             var activate_current_selection = function()
@@ -179,6 +178,7 @@
                                 .focusin(focusin_cb)
                                 .focusout(focusout_cb)
                                 .attr('href', '#')
+                                .attr('data-fullpath', files[i]['fullpath'])
                                 .click(function(file) {
                                     return function(ev) {
                                         activate(file['fullpath'], file['type'], file['display_name']);
@@ -187,7 +187,7 @@
                                 .html('<img src="' + icon_url + '"> <span>' + files[i]['display_name'] + '</span>')
                         );
 
-                        if(files[i]['display_name'] == focus_name)
+                        if(files[i]['fullpath'] == focus_name)
                             new_index_matching_focus_name = i;
 
                         $('#files').append(item);

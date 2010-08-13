@@ -19,10 +19,6 @@ def main():
 
     config = HTPickerConfig(os.path.expanduser("~/.htpickerrc"), sys.argv)
 
-    ihandler = INotifyHandler()
-    inotifier = GlibNotifier(ihandler)
-    glib.io_add_watch(inotifier.get_fd(), glib.IO_IN, inotifier)
-
     def dir_change_cb(directory):
         inotifier.change_dir(directory)
 
@@ -32,6 +28,10 @@ def main():
 
     webbrowser = WebBrowser(handler.handle_request, content=html,
             mime_type='text/html', encoding='utf-8', base_uri='file://')
+
+    ihandler = INotifyHandler(webbrowser.web_view)
+    inotifier = GlibNotifier(ihandler)
+    glib.io_add_watch(inotifier.get_fd(), glib.IO_IN, inotifier)
 
     if config.getboolean_default('options', 'fullscreen', False):
         webbrowser.fullscreen()

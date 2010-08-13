@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 import pyinotify
 
 class GlibNotifier(pyinotify.Notifier):
@@ -25,9 +26,14 @@ class GlibNotifier(pyinotify.Notifier):
         return True # stay attached to the main loop
 
 class INotifyHandler(pyinotify.ProcessEvent):
+    def __init__(self, web_view):
+        self.web_view = web_view
+
     def process_IN_CREATE(self, event):
         print "created:", event.pathname
+        self.web_view.call_js_function('load_files')
 
     def process_IN_DELETE(self, event):
         print "deleted:", event.pathname
+        self.web_view.call_js_function('load_files')
 

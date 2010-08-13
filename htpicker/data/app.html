@@ -32,6 +32,7 @@
         <script>
             var last_folder_entry_action = null;
             var show_animations = null;
+            var current_dir = null;
 
             var icon_urls = {
                 'directory': 'htpicker://file_resource?filepath=images/nuvola/gnome-fs-directory-visiting.svg&mime_type=image/svg+xml',
@@ -123,11 +124,10 @@
             var num_items = 0;
 
             var load_files = function(path) {
-                var qs = '';
                 if(path)
-                    qs = '?directory=' + encodeURIComponent(path);
+                    current_dir = path;
 
-                $.getJSON('htpicker://list_files' + qs, function(data) {
+                $.getJSON('htpicker://list_files?directory=' + encodeURIComponent(current_dir), function(data) {
                     var files = data['files'];
                     $('#files').html('');
                     num_items = files.length;

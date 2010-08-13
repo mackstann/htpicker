@@ -9,6 +9,7 @@ from htpicker.browser import WebBrowser
 from htpicker.config import load_config
 from htpicker.handler import MyHandler
 from htpicker.joystick import Joystick, JoystickEventHandler
+from htpicker.inotify import GlibNotifier, INotifyHandler
 
 # bug! alert() hangs the app... sometimes
 
@@ -41,6 +42,9 @@ def main():
     for joystick in joysticks:
         joystick_handler = JoystickEventHandler(joystick, webbrowser, webbrowser.web_view, 250, 100)
         glib.io_add_watch(joystick.device_file, glib.IO_IN, joystick_handler)
+
+    notifier = GlibNotifier(INotifyHandler())
+    glib.io_add_watch(notifier.get_fd(), glib.IO_IN, notifier)
 
     try:
         gtk.main()

@@ -4,7 +4,7 @@ setup(
     version = "0.1alpha",
     packages = find_packages(),
 
-    install_requires = ['distribute'],
+    install_requires = ['distribute', 'pyinotify'],
 
     package_data = {
         'htpicker': [

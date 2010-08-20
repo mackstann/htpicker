@@ -43,28 +43,11 @@ class HTPickerConfig(MyConfigParser):
             self.set('options', 'initial_dir', os.getcwd())
 
         self.read(filename)
-        back_compat_check_folders_setting(self)
 
 def write_default_config(filename):
     f = open(filename, 'w')
     f.write(default_config)
     f.close()
-
-def back_compat_check_folders_setting(config):
-    warn = False
-    for section in config.sections():
-        if config.getlist_default(section, 'folders', None) != None:
-            write_default_config('/tmp/htpickerrc-new-default')
-            print "Warning: The 'folders' setting is no longer supported."
-            print "         It has been consolidated with the 'matches'"
-            print "         setting.  Simply take the folders in the"
-            print "         'folders' setting, add a '/*' to them, and put"
-            print "         them into the 'matches' setting.  E.g. '~/Videos'"
-            print "         would become '~/Videos/*'.  I have written the new"
-            print "         default config file to /tmp/htpickerrc-new-default"
-            print "         in case you want to examine it for further"
-            print "         clarification."
-            return
 
 default_config = """
 # How this config file works:

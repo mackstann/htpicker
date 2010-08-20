@@ -10,7 +10,7 @@ class GlibNotifier(pyinotify.Notifier):
         self.wd = None
 
     def get_fd(self):
-        return self.wm.get_fd()
+        return self.wm._fd
 
     def change_dir(self, directory):
         if self.wd is not None:

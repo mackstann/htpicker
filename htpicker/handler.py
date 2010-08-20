@@ -4,6 +4,7 @@ import os
 import fnmatch
 import itertools
 import json
+import logging
 import pipes
 import pkg_resources
 import stat
@@ -53,7 +54,7 @@ class MyHandler(URLHandler):
         kw = {'file': pipes.quote(fullpath)}
         command = self.config.get_default(section, 'command', '', **kw)
         if not command:
-            print "You need to define a command for '{0}'".format(section)
+            logging.warn("You need to define a command for '{0}'".format(section))
         else:
             #subprocess.Popen(command, shell=True)
             #os.waitpid(proc.pid, 0)
@@ -84,7 +85,7 @@ class MyHandler(URLHandler):
         if section:
             self.execute(section, fullpath)
         else:
-            print "i don't know what command to play this file with: ", fullpath
+            logging.warn("I don't know what command to play this file with: " + fullpath)
 
     @URLAction
     def list_files(self, directory):

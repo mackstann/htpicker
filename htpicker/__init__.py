@@ -2,6 +2,7 @@
 
 import glib
 import gtk
+import logging
 import os
 import pkg_resources
 import sys
@@ -22,8 +23,7 @@ class HTPicker(object):
         try:
             import pyinotify
         except ImportError:
-            print "pyinotify is not installed. Install it if you want automatic"
-            print "re-scaning of directories when files change."
+            logging.info("pyinotify is not installed. Install it if you want automatic re-scaning of directories when files change.")
             self.inotifier = None
         else:
             from htpicker.inotify import GlibNotifier, INotifyHandler
@@ -35,7 +35,7 @@ class HTPicker(object):
         try:
             import pylirc
         except ImportError:
-            print "pylirc is not installed. Install it if you wish to use a remote."
+            logging.info("pylirc is not installed. Install it if you wish to use a remote.")
         else:
             from htpicker.lirc import LIRCEventSource, LIRCEventHandler
             lirc_source = LIRCEventSource('htpicker')
@@ -50,6 +50,8 @@ class HTPicker(object):
 
     def run(self):
         gtk.gdk.threads_init()
+
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
         self.config = HTPickerConfig(os.path.expanduser("~/.htpickerrc"), sys.argv)
 

@@ -2,6 +2,7 @@
 
 import functools
 import gtk
+import logging
 import urlparse
 import webkit
 
@@ -30,11 +31,12 @@ class RequestInterceptingWebView(webkit.WebView):
         for key, val, version in settings_values:
             try:
                 settings.set_property(key, val)
+                raise TypeError
             except TypeError:
-                print "Your version of WebKit does not support the setting '{0}'.".format(key)
-                print "This setting requires version {0}.".format(version)
-                print "For best compatibility, use at least version 1.1.22."
-                print
+                logging.warn(("Your version of WebKit does not support "
+                    "the setting '{0}'.  This setting requires version "
+                    "{1}.  For best compatibility, use at least version "
+                    "1.1.22.").format(key, version))
 
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)

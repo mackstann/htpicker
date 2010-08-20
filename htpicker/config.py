@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import ConfigParser
+import logging
 import os
 
 class MyConfigParser(ConfigParser.RawConfigParser):
@@ -31,8 +32,8 @@ class HTPickerConfig(MyConfigParser):
 
         if not os.path.isfile(filename):
             write_default_config(filename)
-            print "I have created a ~/.htpickerrc config file for you."
-            print "Take a look and edit it to your liking."
+            logging.info("I have created a ~/.htpickerrc config file for you.  "
+                    "Take a look and edit it to your liking.")
 
         if not self.has_section('options'):
             self.add_section('options')

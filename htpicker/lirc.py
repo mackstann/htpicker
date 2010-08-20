@@ -44,5 +44,3 @@ class LIRCEventHandler(object):
             self.web_view.call_js_function('move_selection_down')
         elif e == 'select':
             self.web_view.call_js_function('activate_current_selection')
-        else:
-            print "unknown lirc event:", e

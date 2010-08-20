@@ -8,7 +8,6 @@ import logging
 import pipes
 import pkg_resources
 import stat
-import sys
 import types
 import urllib
 

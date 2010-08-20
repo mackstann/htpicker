@@ -3,6 +3,7 @@
 import functools
 import gtk
 import logging
+import time
 import urlparse
 import webkit
 
@@ -63,11 +64,15 @@ class WebBrowser(gtk.Window):
 
         self.add(scrolled_window)
 
+        self.iconify()
+        self.show_all()
+
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)
 
     def _ready_cb(self, *a, **k):
-        self.show_all()
+        time.sleep(0.2)
+        self.deiconify()
 
     def _destroy_cb(self, window):
         window.destroy()

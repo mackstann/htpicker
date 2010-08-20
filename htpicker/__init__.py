@@ -10,7 +10,6 @@ from htpicker.browser import WebBrowser
 from htpicker.config import HTPickerConfig
 from htpicker.handler import MyHandler
 from htpicker.joystick import Joystick, JoystickEventHandler
-from htpicker.inotify import GlibNotifier, INotifyHandler
 
 # bug! alert() hangs the app... sometimes
 
@@ -19,8 +18,11 @@ def main():
 
     config = HTPickerConfig(os.path.expanduser("~/.htpickerrc"), sys.argv)
 
+    # this keeps getting uglier
+    inotifier = None
     def dir_change_cb(directory):
-        inotifier.change_dir(directory)
+        if inotifier:
+            inotifier.change_dir(directory)
 
     handler = MyHandler('htpicker', config, dir_change_cb)
 
@@ -29,12 +31,19 @@ def main():
     webbrowser = WebBrowser(handler.handle_request, content=html,
             mime_type='text/html', encoding='utf-8', base_uri='file://')
 
-    ihandler = INotifyHandler(webbrowser.web_view)
-    inotifier = GlibNotifier(ihandler)
-    glib.io_add_watch(inotifier.get_fd(), glib.IO_IN, inotifier)
-
     if config.getboolean_default('options', 'fullscreen', False):
         webbrowser.fullscreen()
+
+    try:
+        import pyinotify
+    except ImportError:
+        print "pyinotify is not installed. Install it if you want automatic"
+        print "re-scaning of directories when files change."
+    else:
+        from htpicker.inotify import GlibNotifier, INotifyHandler
+        ihandler = INotifyHandler(webbrowser.web_view)
+        inotifier = GlibNotifier(ihandler)
+        glib.io_add_watch(inotifier.get_fd(), glib.IO_IN, inotifier)
 
     try:
         import pylirc

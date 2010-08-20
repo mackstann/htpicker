@@ -18,6 +18,36 @@ class HTPicker(object):
         if self.inotifier is not None:
             self.inotifier.change_dir(directory)
 
+    def init_inotify(self, webbrowser):
+        try:
+            import pyinotify
+        except ImportError:
+            print "pyinotify is not installed. Install it if you want automatic"
+            print "re-scaning of directories when files change."
+            self.inotifier = None
+        else:
+            from htpicker.inotify import GlibNotifier, INotifyHandler
+            ihandler = INotifyHandler(webbrowser.web_view)
+            self.inotifier = GlibNotifier(ihandler)
+            glib.io_add_watch(self.inotifier.get_fd(), glib.IO_IN, self.inotifier)
+
+    def init_lirc(self, webbrowser):
+        try:
+            import pylirc
+        except ImportError:
+            print "pylirc is not installed. Install it if you wish to use a remote."
+        else:
+            from htpicker.lirc import LIRCEventSource, LIRCEventHandler
+            lirc_source = LIRCEventSource('htpicker')
+            lirc_handler = LIRCEventHandler(lirc_source, webbrowser, webbrowser.web_view)
+            glib.io_add_watch(lirc_source.fileno, glib.IO_IN, lirc_handler)
+
+    def init_joysticks(self, webbrowser):
+        joysticks = Joystick.create_all()
+        for joystick in joysticks:
+            joystick_handler = JoystickEventHandler(joystick, webbrowser, webbrowser.web_view, 250, 100)
+            glib.io_add_watch(joystick.device_file, glib.IO_IN, joystick_handler)
+
     def run(self):
         gtk.gdk.threads_init()
 
@@ -33,32 +63,9 @@ class HTPicker(object):
         if self.config.getboolean_default('options', 'fullscreen', False):
             webbrowser.fullscreen()
 
-        try:
-            import pyinotify
-        except ImportError:
-            print "pyinotify is not installed. Install it if you want automatic"
-            print "re-scaning of directories when files change."
-            self.inotifier = None
-        else:
-            from htpicker.inotify import GlibNotifier, INotifyHandler
-            ihandler = INotifyHandler(webbrowser.web_view)
-            self.inotifier = GlibNotifier(ihandler)
-            glib.io_add_watch(self.inotifier.get_fd(), glib.IO_IN, self.inotifier)
-
-        try:
-            import pylirc
-        except ImportError:
-            print "pylirc is not installed. Install it if you wish to use a remote."
-        else:
-            from htpicker.lirc import LIRCEventSource, LIRCEventHandler
-            lirc_source = LIRCEventSource('htpicker')
-            lirc_handler = LIRCEventHandler(lirc_source, webbrowser, webbrowser.web_view)
-            glib.io_add_watch(lirc_source.fileno, glib.IO_IN, lirc_handler)
-
-        joysticks = Joystick.create_all()
-        for joystick in joysticks:
-            joystick_handler = JoystickEventHandler(joystick, webbrowser, webbrowser.web_view, 250, 100)
-            glib.io_add_watch(joystick.device_file, glib.IO_IN, joystick_handler)
+        self.init_inotify(webbrowser)
+        self.init_lirc(webbrowser)
+        self.init_joysticks(webbrowser)
 
         try:
             gtk.main()

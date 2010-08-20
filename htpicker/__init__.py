@@ -9,7 +9,7 @@ import sys
 
 from htpicker.browser import WebBrowser
 from htpicker.config import HTPickerConfig
-from htpicker.handler import MyHandler
+from htpicker.handler import HTPickerURLHandler
 from htpicker.joystick import Joystick, JoystickEventHandler
 
 # bug! alert() hangs the app... sometimes
@@ -55,7 +55,7 @@ class HTPicker(object):
 
         self.config = HTPickerConfig(os.path.expanduser("~/.htpickerrc"), sys.argv)
 
-        handler = MyHandler('htpicker', self.config, self.dir_change_cb)
+        handler = HTPickerURLHandler('htpicker', self.config, self.dir_change_cb)
 
         html = pkg_resources.resource_string(__name__, 'data/app.html')
 

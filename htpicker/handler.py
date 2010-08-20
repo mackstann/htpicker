@@ -13,9 +13,9 @@ import urllib
 
 from htpicker.browser import URLHandler, URLAction
 
-class MyHandler(URLHandler):
+class HTPickerURLHandler(URLHandler):
     def __init__(self, scheme, config, dir_change_cb):
-        super(MyHandler, self).__init__(scheme)
+        super(HTPickerURLHandler, self).__init__(scheme)
         self.config = config
         self.dir_change_cb = dir_change_cb
 

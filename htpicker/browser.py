@@ -31,7 +31,6 @@ class RequestInterceptingWebView(webkit.WebView):
         for key, val, version in settings_values:
             try:
                 settings.set_property(key, val)
-                raise TypeError
             except TypeError:
                 logging.warn(("Your version of WebKit does not support "
                     "the setting '{0}'.  This setting requires version "

@@ -6,18 +6,13 @@ import logging
 import urlparse
 import webkit
 
-class RequestInterceptingWebView(webkit.WebView):
-    def __init__(self, url_handler_cb, url=None, content=None):
+class HTPickerWebView(webkit.WebView):
+    def __init__(self, url=None, content=None):
         """content arg is a tuple: (content, mime_type, encoding, base_uri)"""
-        super(RequestInterceptingWebView, self).__init__()
-        self.url_handler_cb = url_handler_cb
-
-        self.connect('resource-request-starting', self._resource_cb)
+        super(HTPickerWebView, self).__init__()
 
         self.url = url
         self.content = content
-
-        settings = self.get_settings()
 
         settings_values = (
             ("enable-default-context-menu",           False, '1.1.18'),
@@ -28,6 +23,7 @@ class RequestInterceptingWebView(webkit.WebView):
             ("tab-key-cycles-through-elements",       False, '1.1.17'),
         )
 
+        settings = self.get_settings()
         for key, val, version in settings_values:
             try:
                 settings.set_property(key, val)
@@ -43,21 +39,20 @@ class RequestInterceptingWebView(webkit.WebView):
         else:
             self.load_string(*self.content)
 
-    def _resource_cb(self, view, frame, resource, request, response):
-        self.url_handler_cb(request)
-
     def call_js_function(self, name):
         self.execute_script(name + '()')
 
 class WebBrowser(gtk.Window):
     def __init__(self, url_handler_cb, **kw):
         gtk.Window.__init__(self)
+        self.url_handler_cb = url_handler_cb
 
         self.connect('destroy', self._destroy_cb)
         self.set_default_size(800, 600)
 
-        self.web_view = RequestInterceptingWebView(url_handler_cb, **kw)
+        self.web_view = HTPickerWebView(**kw)
         self.web_view.connect('document-load-finished', self._ready_cb)
+        self.web_view.connect('resource-request-starting', self._resource_cb)
         self.web_view.load()
 
         scrolled_window = gtk.ScrolledWindow()
@@ -67,6 +62,9 @@ class WebBrowser(gtk.Window):
         scrolled_window.show_all()
 
         self.add(scrolled_window)
+
+    def _resource_cb(self, view, frame, resource, request, response):
+        self.url_handler_cb(request)
 
     def _ready_cb(self, *a, **k):
         self.show_all()

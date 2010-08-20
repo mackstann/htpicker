@@ -7,15 +7,15 @@ import urlparse
 import webkit
 
 class RequestInterceptingWebView(webkit.WebView):
-    def __init__(self, url_handler_cb, url=None, content=None, mime_type=None, encoding=None, base_uri=None):
+    def __init__(self, url_handler_cb, url=None, content=None):
+        """content arg is a tuple: (content, mime_type, encoding, base_uri)"""
         super(RequestInterceptingWebView, self).__init__()
         self.url_handler_cb = url_handler_cb
 
         self.connect('resource-request-starting', self._resource_cb)
-        if url is not None:
-            self.open(url)
-        else:
-            self.load_string(content, mime_type, encoding, base_uri)
+
+        self.url = url
+        self.content = content
 
         settings = self.get_settings()
 
@@ -37,6 +37,12 @@ class RequestInterceptingWebView(webkit.WebView):
                     "{1}.  For best compatibility, use at least version "
                     "1.1.22.").format(key, version))
 
+    def load(self):
+        if self.url is not None:
+            self.open(self.url)
+        else:
+            self.load_string(*self.content)
+
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)
 
@@ -51,6 +57,8 @@ class WebBrowser(gtk.Window):
         self.set_default_size(800, 600)
 
         self.web_view = RequestInterceptingWebView(url_handler_cb, **kw)
+        self.web_view.connect('document-load-finished', self._ready_cb)
+        self.web_view.load()
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
@@ -59,6 +67,8 @@ class WebBrowser(gtk.Window):
         scrolled_window.show_all()
 
         self.add(scrolled_window)
+
+    def _ready_cb(self, *a, **k):
         self.show_all()
 
     def _destroy_cb(self, window):

@@ -59,8 +59,8 @@ class HTPicker(object):
 
         html = pkg_resources.resource_string(__name__, 'data/app.html')
 
-        webbrowser = WebBrowser(handler.handle_request, content=html,
-                mime_type='text/html', encoding='utf-8', base_uri='file://')
+        webbrowser = WebBrowser(handler.handle_request,
+                content=(html, 'text/html', 'utf-8', 'file://'))
 
         if self.config.getboolean_default('options', 'fullscreen', False):
             webbrowser.fullscreen()

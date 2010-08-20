@@ -1,0 +1,32 @@
+<menu>
+    <item dir="~/Videos" name="Videos" />
+    <item dir="~/Games" name="Games" />
+    <item exec="chromium-browser" name="Browser" icon="browser" />
+    <submenu name="Emulators" icon="gamepad">
+        <item dir="~/ROMs/SNES" name="Super Nintendo" />
+        <item dir="~/ROMs/NES" name="Nintendo" />
+    </submenu>
+    <item function="settings" name="Settings" />
+    <item function="confirm_exit" name="Exit" />
+</menu>
+
+- { name: Videos, dir: ~/Videos }
+- { name: Games, dir: ~/Games }
+- { name: Browser, exec: chromium-browser, icon: browser }
+- { name: Emulators, submenu: yes, icon: gamepad, items:
+  - { name: Super Nintendo, dir: ~/ROMs/SNES }
+  - { name: Nintendo, dir: ~/ROMs/NES } }
+
+menu = [
+    dir('~/Videos', name='Videos'),
+    dir('~/Games', name='Games'),
+    exec('chromium-browser', name='Browser', icon='browser'),
+    submenu('emulators', name='Emulators', icon='gamepad'),
+    settings(name='Settings'),
+    confirm_exit(name='Exit'),
+]
+
+emulators = [
+    dir('~/ROMs/SNES', name='Super Nintendo'),
+    dir('~/ROMs/NES', name='Nintendo'),
+]

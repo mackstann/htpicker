@@ -50,6 +50,7 @@ class WebBrowser(gtk.Window):
 
         self.connect('destroy', self._destroy_cb)
         self.set_default_size(800, 600)
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0x11*0xff, 0x11*0xff, 0x11*0xff))
 
         self.web_view = HTPickerWebView(**kw)
         self.web_view.connect('document-load-finished', self._ready_cb)
@@ -58,22 +59,15 @@ class WebBrowser(gtk.Window):
 
         scrolled_window = gtk.ScrolledWindow()
         scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-
         scrolled_window.add(self.web_view)
-        scrolled_window.show_all()
 
         self.add(scrolled_window)
-
-        self.iconify()
-        self.show_all()
-        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0x11*0xff, 0x11*0xff, 0x11*0xff))
 
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)
 
     def _ready_cb(self, *a, **k):
-        time.sleep(0.2)
-        self.deiconify()
+        self.show_all()
 
     def _destroy_cb(self, window):
         window.destroy()

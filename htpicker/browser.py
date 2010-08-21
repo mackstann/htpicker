@@ -66,6 +66,7 @@ class WebBrowser(gtk.Window):
 
         self.iconify()
         self.show_all()
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0x11*0xff, 0x11*0xff, 0x11*0xff))
 
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)

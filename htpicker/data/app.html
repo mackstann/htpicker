@@ -11,6 +11,7 @@
                 font-size: xx-large;
                 cursor: none;
             }
+            #files { display: none; }
             body { background: #111; overflow: hidden; }
             a.item { display: block; padding: 0.2em; }
             a.item:link,
@@ -235,6 +236,7 @@
                 $.getJSON('htpicker://get_initial_dir', function(data) {
                     var initial_dir = data['initial_dir'];
                     load_files(initial_dir);
+                    $('#files').fadeIn(1000);
                 });
 
                 $(document).keydown(function(ev) {

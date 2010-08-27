@@ -9,6 +9,7 @@ setup(
     package_data = {
         'htpicker': [
             'data/js/*.js',
+            'data/css/*.css',
             'data/css/*/*.css',
             'data/css/*/images/*',
             'data/images/*/*',

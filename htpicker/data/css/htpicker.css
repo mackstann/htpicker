@@ -1,0 +1,18 @@
+body, div, a {
+    font-family: 'Droid Sans', sans-serif;
+    font-size: xx-large;
+    cursor: none;
+}
+body { background: #111; overflow: hidden; }
+a.item { display: block; padding: 0.2em; }
+a.item:link,
+a.item:active,
+a.item:hover,
+a.item:visited,
+a.item:focus {
+    text-decoration: none;
+    outline: none;
+    vertical-align: middle;
+}
+a.item img { vertical-align: middle; height: 1.8em; }
+a.item span { vertical-align: middle; }

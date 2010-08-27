@@ -5,6 +5,7 @@ var current_dir = null;
 var focus_name = null;
 var new_index_matching_focus_name = null;
 
+var menu_focus_index = 0;
 var focus_index = 0;
 var num_items = 0;
 
@@ -63,19 +64,43 @@ var go_parent_directory = function()
 
 var move_selection_up = function()
 {
-    if(focus_index > 0)
+    if(menu_showing)
     {
-        focus_index--;
-        focus_current_index();
+        if(menu_focus_index > 0)
+        {
+            menu_focus_index--;
+            console.log("focus " + menu_focus_index);
+            $('#menu a').eq(menu_focus_index).focus();
+        }
+    }
+    else
+    {
+        if(focus_index > 0)
+        {
+            focus_index--;
+            focus_current_index();
+        }
     }
 }
 
 var move_selection_down = function()
 {
-    if(focus_index < num_items-1)
+    if(menu_showing)
     {
-        focus_index++;
-        focus_current_index();
+        if(menu_focus_index < 1) /* XXX */
+        {
+            menu_focus_index++;
+            console.log("focus " + menu_focus_index);
+            $('#menu a').eq(menu_focus_index).focus();
+        }
+    }
+    else
+    {
+        if(focus_index < num_items-1)
+        {
+            focus_index++;
+            focus_current_index();
+        }
     }
 }
 
@@ -230,7 +255,18 @@ $(function() {
         fullscreen = !fullscreen;
     });
 
+    $('#fullscreen-toggle').attr('href', '#');
     $('#exit').attr('href', 'htpicker://exit');
+
+    $('#menu a').focusin(function(ev) {
+        console.log("focus " + $(this).html());
+        $(this).addClass("ui-state-active");
+    });
+
+    $('#menu a').focusout(function(ev) {
+        console.log("unfocus " + $(this).html());
+        $(this).removeClass("ui-state-active");
+    });
 
     $(document).keydown(function(ev) {
         if(ev.which == $.ui.keyCode.DOWN)
@@ -248,9 +284,16 @@ $(function() {
             if(!menu_showing)
             {
                 if(show_animations)
-                    $('#menu').show("slide", { direction: "right" }, 400);
+                {
+                    $('#menu').show("slide", { direction: "right" }, 300, function() {
+                        $('#menu a').eq(menu_focus_index).focus();
+                    });
+                }
                 else
+                {
                     $('#menu').show();
+                    $('#menu a').eq(menu_focus_index).focus();
+                }
             }
             menu_showing = true;
             return false;
@@ -259,8 +302,9 @@ $(function() {
         {
             if(menu_showing)
             {
+                $('#files > a').eq(focus_index).focus();
                 if(show_animations)
-                    $('#menu').hide("slide", { direction: "right" }, 400);
+                    $('#menu').hide("slide", { direction: "right" }, 300);
                 else
                     $('#menu').hide();
             }

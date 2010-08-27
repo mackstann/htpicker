@@ -1,21 +1,26 @@
+/* general */
+a:link,
+a:active,
+a:hover,
+a:visited,
+a:focus {
+    text-decoration: none;
+    outline: none;
+    vertical-align: middle;
+}
 body, div, a {
     font-family: 'Droid Sans', sans-serif;
     font-size: xx-large;
     cursor: none;
 }
 body { background: #111; overflow: hidden; }
+
+/* file listing */
 a.item { display: block; padding: 0.2em; }
-a.item:link,
-a.item:active,
-a.item:hover,
-a.item:visited,
-a.item:focus {
-    text-decoration: none;
-    outline: none;
-    vertical-align: middle;
-}
 a.item img { vertical-align: middle; height: 1.8em; }
 a.item span { vertical-align: middle; }
+
+/* side menu */
 div#menu {
     display: none;
     position: absolute;
@@ -28,6 +33,14 @@ div#menu {
     -webkit-border-bottom-left-radius: 10px;
             border-bottom-left-radius: 10px;
     width: 12em;
-    padding: 0.6em;
+    padding: 0.1em 0.6em 0.1em 0.6em;
     line-height: 1.6em;
+}
+div#menu li { list-style: none; }
+div#menu a:link,
+div#menu a:active,
+div#menu a:hover,
+div#menu a:visited,
+div#menu a:focus {
+    color: #ddd;
 }

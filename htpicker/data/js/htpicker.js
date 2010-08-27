@@ -214,6 +214,8 @@ $(function() {
         load_files(initial_dir);
     });
 
+    $('#fullscreen-checkbox').html(fullscreen ? '&#x2714;' : '');
+
     $('#fullscreen-toggle').click(function(ev) {
         if(fullscreen)
         {
@@ -227,6 +229,7 @@ $(function() {
         }
         fullscreen = !fullscreen;
     });
+
     $('#exit').attr('href', 'htpicker://exit');
 
     $(document).keydown(function(ev) {

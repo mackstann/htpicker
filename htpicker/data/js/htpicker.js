@@ -260,12 +260,12 @@ $(function() {
 
     $('#menu a').focusin(function(ev) {
         console.log("focus " + $(this).html());
-        $(this).addClass("ui-state-active");
+        $(this).parent().addClass("ui-state-hover");
     });
 
     $('#menu a').focusout(function(ev) {
         console.log("unfocus " + $(this).html());
-        $(this).removeClass("ui-state-active");
+        $(this).parent().removeClass("ui-state-hover");
     });
 
     $(document).keydown(function(ev) {

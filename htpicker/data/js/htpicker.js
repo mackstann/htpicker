@@ -14,6 +14,8 @@ var icon_urls = {
     'game': 'htpicker://file_resource?filepath=images/nuvola/gamepad.svg&mime_type=image/svg+xml'
 };
 
+var menu_showing = false;
+
 var icons = {};
 
 var preload_images = function()
@@ -214,6 +216,20 @@ $(function() {
         if(ev.which == $.ui.keyCode.UP)
         {
             move_selection_up();
+            return false;
+        }
+        if(ev.which == $.ui.keyCode.RIGHT)
+        {
+            if(!menu_showing)
+                $('#menu').show("slide", { direction: "right" }, 400);
+            menu_showing = true;
+            return false;
+        }
+        if(ev.which == $.ui.keyCode.LEFT)
+        {
+            if(menu_showing)
+                $('#menu').hide("slide", { direction: "right" }, 400);
+            menu_showing = false;
             return false;
         }
     });

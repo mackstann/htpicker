@@ -16,3 +16,18 @@ a.item:focus {
 }
 a.item img { vertical-align: middle; height: 1.8em; }
 a.item span { vertical-align: middle; }
+div#menu {
+    display: none;
+    position: absolute;
+    right: 0px;
+    top: 100px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#1d1d1d), to(#000));
+    color: #ddd;
+    -webkit-border-top-left-radius: 10px;
+            border-top-left-radius: 10px;
+    -webkit-border-bottom-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+    width: 20em;
+    padding: 0.6em;
+    line-height: 1.6em;
+}

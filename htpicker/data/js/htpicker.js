@@ -205,7 +205,7 @@ $(function() {
     $.ajax({
         'url': 'htpicker://fullscreen',
         'dataType': 'json',
-        'async': 'false',
+        'async': false,
         'success': function(data) { fullscreen = data['fullscreen']; }
     });
 

@@ -69,7 +69,6 @@ var move_selection_up = function()
         if(menu_focus_index > 0)
         {
             menu_focus_index--;
-            console.log("focus " + menu_focus_index);
             $('#menu a').eq(menu_focus_index).focus();
         }
     }
@@ -90,7 +89,6 @@ var move_selection_down = function()
         if(menu_focus_index < 1) /* XXX */
         {
             menu_focus_index++;
-            console.log("focus " + menu_focus_index);
             $('#menu a').eq(menu_focus_index).focus();
         }
     }
@@ -259,12 +257,10 @@ $(function() {
     $('#exit').attr('href', 'htpicker://exit');
 
     $('#menu a').focusin(function(ev) {
-        console.log("focus " + $(this).html());
         $(this).parent().addClass("ui-state-hover");
     });
 
     $('#menu a').focusout(function(ev) {
-        console.log("unfocus " + $(this).html());
         $(this).parent().removeClass("ui-state-hover");
     });
 

@@ -24,16 +24,28 @@ class HTPickerURLHandler(URLHandler):
         raise SystemExit
 
     @URLAction
+    def fullscreen(self):
+        return {'fullscreen': int(self.config.get_fullscreen())}
+
+    @URLAction
+    def enable_fullscreen(self):
+        self.browser.fullscreen()
+
+    @URLAction
+    def disable_fullscreen(self):
+        self.browser.unfullscreen()
+
+    @URLAction
+    def show_animations(self):
+        return {'show_animations': int(self.config.get_show_animations())}
+
+    @URLAction
     def file_resource(self, filepath, mime_type):
         # sadly there appears to be no way to sniff the mime type from the
         # Accept header (or access request headers in general), so we must also
         # ask for it in the URL.
         filename = pkg_resources.resource_filename(__name__, 'data/'+filepath)
         return 'file://' + urllib.quote(filename)
-
-    @URLAction
-    def show_animations(self):
-        return {'show_animations': int(self.config.getboolean_default('options', 'animations', True))}
 
     @staticmethod
     def data_uri(data, mime_type, encoding='utf-8'):

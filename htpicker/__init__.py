@@ -62,6 +62,8 @@ class HTPicker(object):
         webbrowser = WebBrowser(handler.handle_request,
                 content=(html, 'text/html', 'utf-8', 'file://'))
 
+        handler.browser = webbrowser # ugly workaround for mutual dependency
+
         if self.config.getboolean_default('options', 'fullscreen', False):
             webbrowser.fullscreen()
 

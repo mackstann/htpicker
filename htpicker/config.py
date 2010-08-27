@@ -45,6 +45,12 @@ class HTPickerConfig(MyConfigParser):
 
         self.read(filename)
 
+    def get_fullscreen(self):
+        return self.getboolean_default('options', 'fullscreen', False)
+
+    def get_show_animations(self):
+        return self.getboolean_default('options', 'animations', True)
+
 def write_default_config(filename):
     f = open(filename, 'w')
     f.write(default_config)

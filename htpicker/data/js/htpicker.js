@@ -15,6 +15,7 @@ var icon_urls = {
 };
 
 var menu_showing = false;
+var fullscreen = null;
 
 var icons = {};
 
@@ -201,6 +202,12 @@ $(function() {
         'async': false,
         'success': function(data) { show_animations = data['show_animations']; }
     });
+    $.ajax({
+        'url': 'htpicker://fullscreen',
+        'dataType': 'json',
+        'async': 'false',
+        'success': function(data) { fullscreen = data['fullscreen']; }
+    });
 
     $.getJSON('htpicker://get_initial_dir', function(data) {
         var initial_dir = data['initial_dir'];
@@ -208,7 +215,17 @@ $(function() {
     });
 
     $('#fullscreen-toggle').click(function(ev) {
-        $('#fullscreen-checkbox').html('&#x2714;');
+        if(fullscreen)
+        {
+            $.getJSON('htpicker://disable_fullscreen');
+            $('#fullscreen-checkbox').html('');
+        }
+        else
+        {
+            $.getJSON('htpicker://enable_fullscreen');
+            $('#fullscreen-checkbox').html('&#x2714;');
+        }
+        fullscreen = !fullscreen;
     });
     $('#exit').attr('href', 'htpicker://exit');
 

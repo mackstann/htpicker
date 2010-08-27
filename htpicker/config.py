@@ -112,6 +112,7 @@ icon = game
 [options]
 ignore = .*, *~, *.bak, *.nfo, *.txt, *.url, *.sfv, *.part*.rar
 fullscreen = off
+animations = on
 
 # if you set this, htpicker will start in the specified directory.  if you pass
 # a directory name on the command line, though, it will override this setting.

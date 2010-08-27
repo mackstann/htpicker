@@ -246,14 +246,24 @@ $(function() {
         if(ev.which == $.ui.keyCode.RIGHT)
         {
             if(!menu_showing)
-                $('#menu').show("slide", { direction: "right" }, 400);
+            {
+                if(show_animations)
+                    $('#menu').show("slide", { direction: "right" }, 400);
+                else
+                    $('#menu').show();
+            }
             menu_showing = true;
             return false;
         }
         if(ev.which == $.ui.keyCode.LEFT)
         {
             if(menu_showing)
-                $('#menu').hide("slide", { direction: "right" }, 400);
+            {
+                if(show_animations)
+                    $('#menu').hide("slide", { direction: "right" }, 400);
+                else
+                    $('#menu').hide();
+            }
             menu_showing = false;
             return false;
         }

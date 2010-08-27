@@ -207,6 +207,11 @@ $(function() {
         load_files(initial_dir);
     });
 
+    $('#fullscreen-toggle').click(function(ev) {
+        $('#fullscreen-checkbox').html('&#x2714;');
+    });
+    $('#exit').attr('href', 'htpicker://exit');
+
     $(document).keydown(function(ev) {
         if(ev.which == $.ui.keyCode.DOWN)
         {

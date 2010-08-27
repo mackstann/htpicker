@@ -20,6 +20,10 @@ class HTPickerURLHandler(URLHandler):
         self.dir_change_cb = dir_change_cb
 
     @URLAction
+    def exit(self):
+        raise SystemExit
+
+    @URLAction
     def file_resource(self, filepath, mime_type):
         # sadly there appears to be no way to sniff the mime type from the
         # Accept header (or access request headers in general), so we must also

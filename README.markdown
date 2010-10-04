@@ -38,6 +38,38 @@ After its first run, you will now have a ~/.htpickerrc config file that you can
 edit to add support for more file types and programs to play them, as well as
 file patterns to ignore, and toggling fullscreen mode.
 
+General Controls
+================
+
+You can control htpicker by any combination of keyboard, joystick, or remote
+control.  It only cares about 6 buttons: left, right, up, down, "select", and
+"back".  Up and down scroll through menu choices.  Right displays the options
+menu.  Left closes it.  "Select" and "back" should be self-explanatory.
+
+Keyboard Controls
+=================
+
+The enter key acts as "select".  There is no keyboard mapping for a "back"
+button, but it will be coming soon.  You can get around this by scrolling to
+the top and selecting the parent directory.
+
+Joystick Controls
+=================
+
+Any standard USB HID joystick recognized by Linux should work.  The button
+numbered #1 by the hardware will act as a "back" button, and every other button
+will act as a select/OK button.  The jstest program (not a part of htpicker)
+may be helpful in figuring out the button configuration of your joystick.  If
+multiple joysticks are present, htpicker will listen to all of them.
+
+Remote Control
+==============
+
+htpicker can be controlled by a remote control via LIRC.  Get LIRC installed
+and configured for your remote, then see the example config file in htpicker's
+extras directory.  There's one config file for htpicker itself, and another
+that you may find useful for controlling mplayer.
+
 Motivation and Design
 =====================
 

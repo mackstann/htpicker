@@ -104,16 +104,3 @@ not engage any special video modes or cause problems with switching to other
 programs. It can run in a window or fullscreen (the toggle is in the config
 file). Despite using WebKit for its GUI, it is not a web application, and does
 not access the network in any way.
-
-To do
-=====
-
-* Joystick support
-* Theming via CSS
-* JavaScript hacking/hooks
-* Thumbnails (maybe)
-* Perhaps expanding the UI to be more than just a file list.
-* There is currently no convenient way to exit the program, which is especially
-  annoying when it runs full screen, since you don't have a window titlebar or
-  close button.  Ctrl-C it if you run it from a shell, or kill it via whatever
-  means are at your disposal.

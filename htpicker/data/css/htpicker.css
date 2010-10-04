@@ -24,7 +24,7 @@ a.item span { vertical-align: middle; }
 /* side menu */
 div#menu {
     display: none;
-    position: absolute;
+    position: fixed;
     right: 0px;
     top: 100px;
     background: -webkit-gradient(linear, left top, left bottom, from(#262626), to(#000));

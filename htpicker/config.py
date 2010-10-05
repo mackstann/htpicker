@@ -5,9 +5,9 @@ import logging
 import os
 
 class MyConfigParser(ConfigParser.RawConfigParser):
-    def get_default(self, section, option, default, **kwargs):
+    def get_default(self, section, option, default):
         try:
-            return ConfigParser.RawConfigParser.get(self, section, option).format(**kwargs)
+            return ConfigParser.RawConfigParser.get(self, section, option)
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             return default
 
@@ -17,13 +17,10 @@ class MyConfigParser(ConfigParser.RawConfigParser):
         except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
             return default
 
-    def getlist_default(self, section, option, default, **kwargs):
-        val = self.get_default(section, option, default, **kwargs)
-
-        # the default is passed as a list type, so don't text-manipulate it.
-        if val == default:
-            return default
-
+    def getlist(self, section, option):
+        val = self.get_default(section, option, '')
+        if not val:
+            return []
         return map(str.strip, val.split(','))
 
 class HTPickerConfig(MyConfigParser):

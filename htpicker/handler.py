@@ -66,8 +66,7 @@ class HTPickerURLHandler(URLHandler):
 
     @URLAction
     def execute(self, section, fullpath):
-        kw = {'file': pipes.quote(fullpath)}
-        command = self.config.get_default(section, 'command', '', **kw)
+        command = self.config.get_default(section, 'command', '').format(file=pipes.quote(fullpath))
         if not command:
             logging.warn("You need to define a command for '{0}'".format(section))
         else:
@@ -86,7 +85,7 @@ class HTPickerURLHandler(URLHandler):
 
     def section_for_file(self, fullpath):
         for section in self.config.sections():
-            patterns = self.config.getlist_default(section, 'matches', [])
+            patterns = self.config.getlist(section, 'matches')
             for pattern in patterns:
                 pattern = os.path.expanduser(pattern)
                 if fnmatch.fnmatch(fullpath.lower(), pattern.lower()):
@@ -106,7 +105,7 @@ class HTPickerURLHandler(URLHandler):
 
         files = []
 
-        ignores = self.config.getlist_default('options', 'ignore', [])
+        ignores = self.config.getlist('options', 'ignore')
 
         listing = os.listdir(directory)
         ignore_files = set(itertools.chain(*[fnmatch.filter(listing, ignore) for ignore in ignores]))

@@ -266,8 +266,7 @@ $(function() {
     });
     $('#fullscreen-checkbox').html(fullscreen ? '&#x2714;' : '');
     $.getJSON('htpicker://get_initial_dir', function(data) {
-        var initial_dir = data['initial_dir'];
-        load_files(initial_dir);
+        load_files(data['initial_dir']);
     });
     // end
 

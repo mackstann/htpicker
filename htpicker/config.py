@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import ConfigParser
+import fnmatch
 import logging
 import os
 import pipes
@@ -23,6 +24,8 @@ class MyConfigParser(ConfigParser.RawConfigParser):
         if not val:
             return []
         return map(str.strip, val.split(','))
+
+class NoMatchingSectionForCommand(Exception): pass
 
 class HTPickerConfig(MyConfigParser):
     def __init__(self, filename, argv):
@@ -49,8 +52,26 @@ class HTPickerConfig(MyConfigParser):
     def get_show_animations(self):
         return self.getboolean_default('options', 'animations', True)
 
-    def get_command(self, section, file_path):
+    def get_command(self, file_path):
+        section = self._section_for_file(file_path)
+        if not section:
+            raise NoMatchingSectionForCommand()
         return self.get_default(section, 'command', '').format(file=pipes.quote(file_path))
+
+    def get_icon(self, file_path):
+        section = self._section_for_file(file_path)
+        if section:
+            return self.get_default(section, 'icon', '')
+        return ''
+
+    def _section_for_file(self, file_path):
+        for section in self.sections():
+            patterns = self.getlist(section, 'matches')
+            for pattern in patterns:
+                pattern = os.path.expanduser(pattern)
+                if fnmatch.fnmatch(file_path.lower(), pattern.lower()):
+                    return section
+
 
 def write_default_config(filename):
     f = open(filename, 'w')

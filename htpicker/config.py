@@ -3,6 +3,7 @@
 import ConfigParser
 import logging
 import os
+import pipes
 
 class MyConfigParser(ConfigParser.RawConfigParser):
     def get_default(self, section, option, default):
@@ -47,6 +48,9 @@ class HTPickerConfig(MyConfigParser):
 
     def get_show_animations(self):
         return self.getboolean_default('options', 'animations', True)
+
+    def get_command(self, section, file_path):
+        return self.get_default(section, 'command', '').format(file=pipes.quote(file_path))
 
 def write_default_config(filename):
     f = open(filename, 'w')

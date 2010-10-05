@@ -5,7 +5,6 @@ import fnmatch
 import itertools
 import json
 import logging
-import pipes
 import pkg_resources
 import stat
 import types
@@ -66,7 +65,7 @@ class HTPickerURLHandler(URLHandler):
 
     @URLAction
     def execute(self, section, fullpath):
-        command = self.config.get_default(section, 'command', '').format(file=pipes.quote(fullpath))
+        command = self.config.get_command(section, fullpath)
         if not command:
             logging.warn("You need to define a command for '{0}'".format(section))
         else:

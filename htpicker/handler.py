@@ -24,10 +24,6 @@ class HTPickerURLHandler(URLHandler):
         raise SystemExit
 
     @URLAction
-    def fullscreen(self):
-        return {'fullscreen': int(self.config.get_fullscreen())}
-
-    @URLAction
     def enable_fullscreen(self):
         self.browser.fullscreen()
 
@@ -38,6 +34,14 @@ class HTPickerURLHandler(URLHandler):
     @URLAction
     def show_animations(self):
         return {'show_animations': int(self.config.get_show_animations())}
+
+    @URLAction
+    def fullscreen(self):
+        return {'fullscreen': int(self.config.get_fullscreen())}
+
+    @URLAction
+    def get_initial_dir(self):
+        return {'initial_dir': self.config.get_initial_dir()}
 
     @URLAction
     def file_resource(self, filepath, mime_type):
@@ -59,10 +63,6 @@ class HTPickerURLHandler(URLHandler):
         if isinstance(data, types.DictType):
             return self.json_data_uri(data)
         return data
-
-    @URLAction
-    def get_initial_dir(self):
-        return {'initial_dir': self.config.get_initial_dir()}
 
     @URLAction
     def play_file(self, fullpath):

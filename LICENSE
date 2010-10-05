@@ -7,8 +7,8 @@ Alonzo and licensed under the GPL.  However, at this point, no original code
 remains other than a couple trivial lines that would inevitably be written
 exactly the same way by any programmer.
 
-I disclaim copyright to the following files and dedicate them to the public
-domain:
+I disclaim copyright to the following files under the terms of the Creative
+Commons CC0 license <http://creativecommons.org/publicdomain/zero/1.0/>:
 
 * AUTHORS, FAQ.markdown, LICENSE (this file), and README.markdown.
 * All Python (.py) files.

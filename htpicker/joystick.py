@@ -84,15 +84,22 @@ class JoystickEventHandler(object):
             else:
                 self.fire('activate_current_selection')
 
-        elif e.type == JoystickEvent.AXIS and e.number == JoystickEvent.VERTICAL_AXIS:
+        elif e.type == JoystickEvent.AXIS:
             axis_event = (e.number, JoystickEvent.digitize(e.value))
             if axis_event != self.last_axis_event:
                 self.last_axis_event = axis_event
                 self.disable_repeat()
+
+            if e.number == JoystickEvent.VERTICAL_AXIS:
                 if e.value < 0:
                     self.start_repeat('move_selection_up')
                 elif e.value > 0:
                     self.start_repeat('move_selection_down')
+            elif e.number == JoystickEvent.HORIZONTAL_AXIS:
+                if e.value < 0:
+                    self.fire('hide_menu')
+                elif e.value > 0:
+                    self.fire('show_menu')
 
     def fire(self, function=None):
         self.web_view.call_js_function(function if function else self.repeated_function)

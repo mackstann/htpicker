@@ -13,6 +13,8 @@ domain:
 * AUTHORS, FAQ.markdown, LICENSE (this file), and README.markdown.
 * All Python (.py) files.
 * htpicker/data/app.html
+* htpicker/data/js/htpicker.js
+* htpicker/data/css/htpicker.css
 * Everything in the "experiments" subdirectory.
 * Everything in the "extras" subdirectory.
 

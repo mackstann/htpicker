@@ -46,6 +46,9 @@ class HTPickerConfig(object):
 
         self.cfg.read(filename)
 
+    def get_initial_dir(self):
+        return self.cfg.get('options', 'initial_dir')
+
     def get_fullscreen(self):
         return self.cfg.getboolean_default('options', 'fullscreen', False)
 

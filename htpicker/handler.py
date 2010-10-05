@@ -62,7 +62,7 @@ class HTPickerURLHandler(URLHandler):
 
     @URLAction
     def get_initial_dir(self):
-        return {'initial_dir': self.config.get('options', 'initial_dir')}
+        return {'initial_dir': self.config.get_initial_dir()}
 
     @URLAction
     def play_file(self, fullpath):

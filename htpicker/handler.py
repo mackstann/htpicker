@@ -146,12 +146,13 @@ class HTPickerURLHandler(URLHandler):
                 'icon': icon,
             })
 
-        files.insert(0, {
-            'fullpath': '/' + directory.rsplit('/', 1)[0].lstrip('/'),
-            'display_name': '&#8593; Parent Folder',
-            'type': 'directory',
-            'icon': 'directory',
-        })
+        if directory != '/':
+            files.insert(0, {
+                'fullpath': '/' + directory.rsplit('/', 1)[0].lstrip('/'),
+                'display_name': '&#8593; Parent Folder',
+                'type': 'directory',
+                'icon': 'directory',
+            })
 
         self.dir_change_cb(directory)
 

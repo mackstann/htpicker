@@ -102,6 +102,38 @@ var move_selection_down = function()
     }
 }
 
+var show_menu = function()
+{
+    if(!menu_showing)
+    {
+        if(show_animations)
+        {
+            $('#menu').show("slide", { direction: "right" }, 300, function() {
+                $('#menu a').eq(menu_focus_index).focus();
+            });
+        }
+        else
+        {
+            $('#menu').show();
+            $('#menu a').eq(menu_focus_index).focus();
+        }
+    }
+    menu_showing = true;
+}
+
+var hide_menu = function()
+{
+    if(menu_showing)
+    {
+        $('#files > a').eq(focus_index).focus();
+        if(show_animations)
+            $('#menu').hide("slide", { direction: "right" }, 300);
+        else
+            $('#menu').hide();
+    }
+    menu_showing = false;
+}
+
 var focus_current_index = function()
 {
     var el = $('#file-'+focus_index);
@@ -277,34 +309,12 @@ $(function() {
         }
         if(ev.which == $.ui.keyCode.RIGHT)
         {
-            if(!menu_showing)
-            {
-                if(show_animations)
-                {
-                    $('#menu').show("slide", { direction: "right" }, 300, function() {
-                        $('#menu a').eq(menu_focus_index).focus();
-                    });
-                }
-                else
-                {
-                    $('#menu').show();
-                    $('#menu a').eq(menu_focus_index).focus();
-                }
-            }
-            menu_showing = true;
+            show_menu();
             return false;
         }
         if(ev.which == $.ui.keyCode.LEFT)
         {
-            if(menu_showing)
-            {
-                $('#files > a').eq(focus_index).focus();
-                if(show_animations)
-                    $('#menu').hide("slide", { direction: "right" }, 300);
-                else
-                    $('#menu').hide();
-            }
-            menu_showing = false;
+            hide_menu();
             return false;
         }
     });

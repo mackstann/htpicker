@@ -91,7 +91,7 @@ class HTPickerURLHandler(URLHandler):
 
         files = []
 
-        ignores = self.config.getlist('options', 'ignore')
+        ignores = self.config.get_ignores()
 
         listing = os.listdir(directory)
         ignore_files = set(itertools.chain(*[fnmatch.filter(listing, ignore) for ignore in ignores]))

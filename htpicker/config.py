@@ -52,6 +52,9 @@ class HTPickerConfig(MyConfigParser):
     def get_show_animations(self):
         return self.getboolean_default('options', 'animations', True)
 
+    def get_ignores(self):
+        return self.getlist('options', 'ignore')
+
     def get_command(self, file_path):
         section = self._section_for_file(file_path)
         if not section:

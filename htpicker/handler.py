@@ -5,13 +5,13 @@ import fnmatch
 import itertools
 import json
 import logging
-import pipes
 import pkg_resources
 import stat
 import types
 import urllib
 
 from htpicker.browser import URLHandler, URLAction
+from htpicker.config import NoMatchingSectionForCommand
 
 class HTPickerURLHandler(URLHandler):
     def __init__(self, scheme, config, dir_change_cb):
@@ -62,54 +62,41 @@ class HTPickerURLHandler(URLHandler):
 
     @URLAction
     def get_initial_dir(self):
-        return {'initial_dir': self.config.get('options', 'initial_dir')}
-
-    @URLAction
-    def execute(self, section, fullpath):
-        command = self.config.get_default(section, 'command', '').format(file=pipes.quote(fullpath))
-        if not command:
-            logging.warn("You need to define a command for '{0}'".format(section))
-        else:
-            #subprocess.Popen(command, shell=True)
-            #os.waitpid(proc.pid, 0)
-
-            # the following "should" work but results in a mysterious situation
-            # on my eeepc: mplayer outputs one line ("MPlayer SVN-r29237-4.4.1
-            # (C) 2000-2009 MPlayer Team") to the shell, and then everything
-            # stops.  mplayer is hung, and htpicker has mysteriously received a
-            # SIGSTOP from somewhere.  i don't get it AT ALL.
-
-            # the following is uglier but works just fine.
-            os.system(command + ' &')
-
-
-    def section_for_file(self, fullpath):
-        for section in self.config.sections():
-            patterns = self.config.getlist(section, 'matches')
-            for pattern in patterns:
-                pattern = os.path.expanduser(pattern)
-                if fnmatch.fnmatch(fullpath.lower(), pattern.lower()):
-                    return section
+        return {'initial_dir': self.config.get_initial_dir()}
 
     @URLAction
     def play_file(self, fullpath):
-        section = self.section_for_file(fullpath)
-        if section:
-            self.execute(section, fullpath)
-        else:
+        try:
+            command = self.config.get_command(fullpath)
+        except NoMatchingSectionForCommand:
             logging.warn("I don't know what command to play this file with: " + fullpath)
+            return
+
+        #subprocess.Popen(command, shell=True)
+        #os.waitpid(proc.pid, 0)
+
+        # the above "should" work but results in a mysterious situation
+        # on my eeepc: mplayer outputs one line ("MPlayer SVN-r29237-4.4.1
+        # (C) 2000-2009 MPlayer Team") to the shell, and then everything
+        # stops.  mplayer is hung, and htpicker has mysteriously received a
+        # SIGSTOP from somewhere.  i don't get it AT ALL.
+
+        # the following is uglier but works just fine.
+        os.system(command + ' &')
+
 
     @URLAction
     def list_files(self, directory):
         directory = os.path.abspath(directory)
-
         files = []
+        ignores = self.config.get_ignores()
+        listing = set(os.listdir(directory))
 
-        ignores = self.config.getlist('options', 'ignore')
-
-        listing = os.listdir(directory)
+        # this funky expression filters out all files matching any of the
+        # specified of ignore patterns.  it is ugly because it is fast.  see
+        # fnmatch_vs_regex.py and file_ignore_algorithms.py in experiments/
         ignore_files = set(itertools.chain(*[fnmatch.filter(listing, ignore) for ignore in ignores]))
-        listing = set(listing)
+
         listing.difference_update(ignore_files)
         listing = sorted(listing, key=str.lower)
 
@@ -128,11 +115,7 @@ class HTPickerURLHandler(URLHandler):
                 icon = 'directory'
             elif stat.S_ISREG(mode):
                 filetype = 'file'
-                section = self.section_for_file(fullpath)
-                if section:
-                    icon = self.config.get_default(section, 'icon', '')
-                else:
-                    icon = ''
+                icon = self.config.get_icon(fullpath)
             else:
                 filetype = 'other'
 

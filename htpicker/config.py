@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
 import ConfigParser
+import fnmatch
 import logging
 import os
+import pipes
 
 class MyConfigParser(ConfigParser.RawConfigParser):
     def get_default(self, section, option, default):
@@ -23,30 +25,59 @@ class MyConfigParser(ConfigParser.RawConfigParser):
             return []
         return map(str.strip, val.split(','))
 
-class HTPickerConfig(MyConfigParser):
+class NoMatchingSectionForCommand(Exception): pass
+
+class HTPickerConfig(object):
     def __init__(self, filename, argv):
-        MyConfigParser.__init__(self)
+        self.cfg = MyConfigParser()
 
         if not os.path.isfile(filename):
             write_default_config(filename)
             logging.info("I have created a ~/.htpickerrc config file for you.  "
                     "Take a look and edit it to your liking.")
 
-        if not self.has_section('options'):
-            self.add_section('options')
+        if not self.cfg.has_section('options'):
+            self.cfg.add_section('options')
 
         if len(argv) > 1:
-            self.set('options', 'initial_dir', argv[1])
+            self.cfg.set('options', 'initial_dir', argv[1])
         elif self.get_default('options', 'initial_dir', None) is None:
-            self.set('options', 'initial_dir', os.getcwd())
+            self.cfg.set('options', 'initial_dir', os.getcwd())
 
-        self.read(filename)
+        self.cfg.read(filename)
+
+    def get_initial_dir(self):
+        return self.cfg.get('options', 'initial_dir')
 
     def get_fullscreen(self):
-        return self.getboolean_default('options', 'fullscreen', False)
+        return self.cfg.getboolean_default('options', 'fullscreen', False)
 
     def get_show_animations(self):
-        return self.getboolean_default('options', 'animations', True)
+        return self.cfg.getboolean_default('options', 'animations', True)
+
+    def get_ignores(self):
+        return self.cfg.getlist('options', 'ignore')
+
+    def get_command(self, file_path):
+        section = self._section_for_file(file_path)
+        if not section:
+            raise NoMatchingSectionForCommand()
+        return self.cfg.get_default(section, 'command', '').format(file=pipes.quote(file_path))
+
+    def get_icon(self, file_path):
+        section = self._section_for_file(file_path)
+        if section:
+            return self.cfg.get_default(section, 'icon', '')
+        return ''
+
+    def _section_for_file(self, file_path):
+        for section in self.cfg.sections():
+            patterns = self.cfg.getlist(section, 'matches')
+            for pattern in patterns:
+                pattern = os.path.expanduser(pattern)
+                if fnmatch.fnmatch(file_path.lower(), pattern.lower()):
+                    return section
+
 
 def write_default_config(filename):
     f = open(filename, 'w')

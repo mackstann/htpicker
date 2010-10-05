@@ -31,16 +31,19 @@ class LIRCEventHandler(object):
             self.handle_event(e)
 
     def handle_event(self, e):
-        # lirc is totally ignorant of window focus, so we must enforce it
-        # ourselves.
+        # enforce window focus.
         if not self.window.has_toplevel_focus():
             return
 
-        if e == 'back':
-            self.web_view.call_js_function('go_parent_directory')
-        elif e == 'up':
+        if e == 'up':
             self.web_view.call_js_function('move_selection_up')
         elif e == 'down':
             self.web_view.call_js_function('move_selection_down')
+        elif e == 'left':
+            self.web_view.call_js_function('hide_menu')
+        elif e == 'right':
+            self.web_view.call_js_function('show_menu')
+        elif e == 'back':
+            self.web_view.call_js_function('go_parent_directory')
         elif e == 'select':
             self.web_view.call_js_function('activate_current_selection')

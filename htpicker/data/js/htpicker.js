@@ -251,6 +251,7 @@ var load_files = function(path) {
 $(function() {
     preload_images();
 
+    // these can be consolidated into one and should probably run at the end.
     $.ajax({
         'url': 'htpicker://show_animations',
         'dataType': 'json',
@@ -263,13 +264,12 @@ $(function() {
         'async': false,
         'success': function(data) { fullscreen = data['fullscreen']; }
     });
-
+    $('#fullscreen-checkbox').html(fullscreen ? '&#x2714;' : '');
     $.getJSON('htpicker://get_initial_dir', function(data) {
         var initial_dir = data['initial_dir'];
         load_files(initial_dir);
     });
-
-    $('#fullscreen-checkbox').html(fullscreen ? '&#x2714;' : '');
+    // end
 
     $('#fullscreen-toggle').click(function(ev) {
         if(fullscreen)

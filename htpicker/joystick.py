@@ -6,9 +6,16 @@ import struct
 
 class Joystick(object):
     def __init__(self, filename, axis_threshold=0.1, digitize=True):
-        self.device_file = open(filename)
+        self.filename = filename
         self.axis_threshold = axis_threshold
         self.digitize = digitize
+        self.open()
+
+    def close(self):
+        self.device_file.close()
+
+    def open(self):
+        self.device_file = open(self.filename)
 
     @classmethod
     def create_all(cls):

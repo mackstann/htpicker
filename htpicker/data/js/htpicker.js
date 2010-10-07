@@ -54,8 +54,20 @@ var activate = function(fullpath, type, display_name)
     else
     {
         $('#files').hide();
-        $.get('htpicker://play_file?fullpath=' + fullpath);
-        setTimeout(function() { $('#files').show(); }, 5000);
+
+        // we need to yield to the renderer for a moment to get it to *really*
+        // hide the element.  when i tested it, a 3ms timeout was necessary, so
+        // 30ms should be a comfortable margin of error.  even if it sometimes
+        // isn't, the only thing that happens is that the file list doesn't
+        // disappear before the app is launched, which, if the app being
+        // launched starts up slowly, could make things feel slightly less
+        // responsive.  it's really just a visual cue to give the impression of
+        // speed, so it's not a big problem if it's not 100% reliable.
+
+        setTimeout(function() {
+            $.get('htpicker://play_file?fullpath=' + fullpath); // this blocks our whole process
+            $('#files').show();
+        }, 30);
     }
 }
 

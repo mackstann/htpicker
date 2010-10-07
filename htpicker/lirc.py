@@ -4,8 +4,15 @@ import pylirc
 
 class LIRCEventSource(object):
     def __init__(self, appname):
-        self.fileno = pylirc.init(appname)
+        self.appname = appname
+        self.open()
+
+    def open(self):
+        self.fileno = pylirc.init(self.appname)
         pylirc.blocking(False)
+
+    def close(self):
+        pylirc.exit()
 
     def get_events(self):
         events = []

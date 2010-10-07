@@ -60,7 +60,7 @@ class HTPickerURLHandler(URLHandler):
             logging.warn("No command is set for this file: " + fullpath)
             return
 
-        os.system(command + ' &')
+        os.system(command)
 
         #subprocess.Popen(command, shell=True)
         #os.waitpid(proc.pid, 0)

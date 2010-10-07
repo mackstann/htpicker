@@ -11,7 +11,6 @@ import types
 import urllib
 
 from htpicker.browser import URLHandler, URLAction
-from htpicker.config import NoMatchingSectionForCommand
 
 class HTPickerURLHandler(URLHandler):
     def __init__(self, scheme, config, dir_change_cb):
@@ -55,11 +54,13 @@ class HTPickerURLHandler(URLHandler):
 
     @URLAction
     def play_file(self, fullpath):
-        try:
-            command = self.config.get_command(fullpath)
-        except NoMatchingSectionForCommand:
-            logging.warn("I don't know what command to play this file with: " + fullpath)
+        command = self.config.get_command(fullpath)
+
+        if not command:
+            logging.warn("No command is set for this file: " + fullpath)
             return
+
+        os.system(command + ' &')
 
         #subprocess.Popen(command, shell=True)
         #os.waitpid(proc.pid, 0)
@@ -70,8 +71,7 @@ class HTPickerURLHandler(URLHandler):
         # stops.  mplayer is hung, and htpicker has mysteriously received a
         # SIGSTOP from somewhere.  i don't get it AT ALL.
 
-        # the following is uglier but works just fine.
-        os.system(command + ' &')
+        # system(command + ' &') is ugly but works fine.
 
 
     @URLAction

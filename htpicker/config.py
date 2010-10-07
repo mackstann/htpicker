@@ -61,7 +61,7 @@ class HTPickerConfig(object):
     def get_command(self, file_path):
         section = self._section_for_file(file_path)
         if not section:
-            raise NoMatchingSectionForCommand()
+            return ''
         return self.cfg.get_default(section, 'command', '').format(file=pipes.quote(file_path))
 
     def get_icon(self, file_path):

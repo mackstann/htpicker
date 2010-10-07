@@ -32,16 +32,12 @@ class HTPickerURLHandler(URLHandler):
         self.browser.unfullscreen()
 
     @URLAction
-    def show_animations(self):
-        return {'show_animations': int(self.config.get_show_animations())}
-
-    @URLAction
-    def fullscreen(self):
-        return {'fullscreen': int(self.config.get_fullscreen())}
-
-    @URLAction
-    def get_initial_dir(self):
-        return {'initial_dir': self.config.get_initial_dir()}
+    def get_startup_config(self):
+        return {
+            'show_animations': int(self.config.get_show_animations()),
+            'fullscreen': int(self.config.get_fullscreen()),
+            'initial_dir': self.config.get_initial_dir(),
+        }
 
     @URLAction
     def file_resource(self, filepath, mime_type):

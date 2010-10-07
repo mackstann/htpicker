@@ -15,6 +15,8 @@ var icon_urls = {
     'game': 'htpicker://file_resource?filepath=images/nuvola/gamepad.svg&mime_type=image/svg+xml'
 };
 
+// TODO: preload the background image too!
+
 var menu_showing = false;
 var fullscreen = null;
 
@@ -251,25 +253,6 @@ var load_files = function(path) {
 $(function() {
     preload_images();
 
-    // these can be consolidated into one and should probably run at the end.
-    $.ajax({
-        'url': 'htpicker://show_animations',
-        'dataType': 'json',
-        'async': false,
-        'success': function(data) { show_animations = data['show_animations']; }
-    });
-    $.ajax({
-        'url': 'htpicker://fullscreen',
-        'dataType': 'json',
-        'async': false,
-        'success': function(data) { fullscreen = data['fullscreen']; }
-    });
-    $('#fullscreen-checkbox').html(fullscreen ? '&#x2714;' : '');
-    $.getJSON('htpicker://get_initial_dir', function(data) {
-        load_files(data['initial_dir']);
-    });
-    // end
-
     $('#fullscreen-toggle').click(function(ev) {
         if(fullscreen)
         {
@@ -315,6 +298,21 @@ $(function() {
         {
             hide_menu();
             return false;
+        }
+    });
+});
+
+// run this at .load() so preloaded images are guaranteed to be loaded.
+$(window).load(function() {
+    $.ajax({
+        'url': 'htpicker://get_startup_config',
+        'dataType': 'json',
+        'async': false,
+        'success': function(data) {
+            show_animations = data['show_animations'];
+            fullscreen = data['fullscreen'];
+            $('#fullscreen-checkbox').html(fullscreen ? '&#x2714;' : '');
+            load_files(data['initial_dir']);
         }
     });
 });

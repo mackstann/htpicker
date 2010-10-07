@@ -19,6 +19,12 @@ class HTPickerURLHandler(URLHandler):
         self.config = config
         self.dir_change_cb = dir_change_cb
 
+    def return_uri_filter(self, data):
+        if isinstance(data, types.DictType):
+            return ('data:application/json;charset=utf-8;base64,'
+                    + json.dumps(data).encode('base64'))
+        return data
+
     @URLAction
     def exit(self):
         raise SystemExit
@@ -46,19 +52,6 @@ class HTPickerURLHandler(URLHandler):
         # ask for it in the URL.
         filename = pkg_resources.resource_filename(__name__, 'data/'+filepath)
         return 'file://' + urllib.quote(filename)
-
-    @staticmethod
-    def data_uri(data, mime_type, encoding='utf-8'):
-        return 'data:{0};charset={1};base64,'.format(mime_type, encoding) + data.encode('base64')
-
-    @classmethod
-    def json_data_uri(cls, data):
-        return cls.data_uri(json.dumps(data), 'application/json')
-
-    def return_uri_filter(self, data):
-        if isinstance(data, types.DictType):
-            return self.json_data_uri(data)
-        return data
 
     @URLAction
     def play_file(self, fullpath):

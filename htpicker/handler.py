@@ -84,7 +84,7 @@ class HTPickerURLHandler(URLHandler):
         listing = [ f for f in os.listdir(directory) if not ignore_match(f.lower()) ]
         listing = sorted(listing, key=str.lower)
 
-        for i, filename in enumerate(listing):
+        for filename in listing:
             fullpath = directory + '/' + filename
 
             real = os.path.realpath(os.path.abspath(fullpath))

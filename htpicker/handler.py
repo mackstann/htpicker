@@ -41,7 +41,7 @@ class HTPickerURLHandler(URLHandler):
         return {
             'show_animations': int(self.config.get_show_animations()),
             'fullscreen': int(self.config.get_fullscreen()),
-            'initial_dir': self.config.get_initial_dir(),
+            'initial_dir': os.path.abspath(self.config.get_initial_dir()),
         }
 
     @URLAction
@@ -76,7 +76,6 @@ class HTPickerURLHandler(URLHandler):
 
     @URLAction
     def list_files(self, directory):
-        directory = os.path.abspath(directory)
         files = []
 
         ignore_match = self.config.get_ignore_regex().match
@@ -87,11 +86,9 @@ class HTPickerURLHandler(URLHandler):
         for filename in listing:
             fullpath = directory + '/' + filename
 
-            real = os.path.realpath(os.path.abspath(fullpath))
             try:
-                mode = os.stat(real).st_mode
-            except OSError:
-                # broken symlink, among other things
+                mode = os.stat(fullpath).st_mode
+            except OSError: # broken symlink, among other things
                 continue
 
             if stat.S_ISDIR(mode):

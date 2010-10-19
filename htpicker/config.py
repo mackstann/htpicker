@@ -57,11 +57,13 @@ class HTPickerConfig(object):
         return self.cfg.getboolean_default('options', 'animations', True)
 
     def get_ignore_regex(self):
-        regexes = [
-            i.replace('.', r'\.').replace('*', '.*')
-            for i in self.cfg.getlist('options', 'ignore')
-        ]
-        return re.compile('^' + '|'.join(regexes) + '$')
+        if not hasattr(self, '_ignore_regex'):
+            regexes = [
+                i.replace('.', r'\.').replace('*', '.*')
+                for i in self.cfg.getlist('options', 'ignore')
+            ]
+            self._ignore_regex = re.compile('^' + '|'.join(regexes) + '$')
+        return self._ignore_regex
 
     def get_command(self, file_path):
         section = self._section_for_file(file_path)

@@ -111,7 +111,7 @@ class HTPickerURLHandler(URLHandler):
 
         if directory != '/':
             files.insert(0, {
-                'fullpath': '/' + directory.rsplit('/', 1)[0].lstrip('/'),
+                'fullpath': directory.rsplit('/', 1)[0] or '/',
                 'display_name': '&#8593; Parent Folder',
                 'type': 'directory',
                 'icon': 'directory',

@@ -7,16 +7,17 @@ if len(sys.argv) < 3:
 path = sys.argv[1]
 num_iterations = int(sys.argv[2])
 
-fnmatch_patterns = "*~ *.bak *.nfo *.txt *.url *.sfv *.part*.rar".split()
-regex = re.compile(r'.*(?:~|\.bak|\.nfo|\.txt|\.url|\.sfv|\.part.*\.rar)$')
+fnmatch_patterns = ".* *~ *.bak *.nfo *.txt *.url *.sfv *.part*.rar".split()
+regex = re.compile(r'^(?:\..*|.*~|.*\.bak|.*\.nfo|.*\.txt|.*\.url|.*\.sfv|.*\.part.*\.rar)$')
 separate_regexes = (
-    re.compile(r'.*~$'),
-    re.compile(r'.*\.bak$'),
-    re.compile(r'.*\.nfo$'),
-    re.compile(r'.*\.txt$'),
-    re.compile(r'.*\.url$'),
-    re.compile(r'.*\.sfv$'),
-    re.compile(r'.*\.part.*\.rar$'),
+    re.compile(r'^\..*$'),
+    re.compile(r'^.*~$'),
+    re.compile(r'^.*\.bak$'),
+    re.compile(r'^.*\.nfo$'),
+    re.compile(r'^.*\.txt$'),
+    re.compile(r'^.*\.url$'),
+    re.compile(r'^.*\.sfv$'),
+    re.compile(r'^.*\.part.*\.rar$'),
 )
 
 proc = subprocess.Popen("find {0}".format(pipes.quote(path)),
@@ -61,7 +62,7 @@ t = timeit.Timer(stmt=test_separate_regexes)
 print "separate regexes: %.2f usec per file" % (1000000 * t.timeit(number=num_iterations)/num_iterations/num_files)
 
 # and the results are...
-# fnmatch: 8.15 usec per file
-# fnmatch filter: 5.61 usec per file
-# regex: 3.62 usec per file
-# separate regexes: 5.45 usec per file
+# fnmatch: 9.09 usec per file
+# fnmatch filter: 6.01 usec per file
+# regex: 2.64 usec per file
+# separate regexes: 4.83 usec per file

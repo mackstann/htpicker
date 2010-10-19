@@ -78,15 +78,10 @@ class HTPickerURLHandler(URLHandler):
     def list_files(self, directory):
         directory = os.path.abspath(directory)
         files = []
-        ignores = self.config.get_ignores()
-        listing = set(os.listdir(directory))
 
-        # this funky expression filters out all files matching any of the
-        # specified of ignore patterns.  it is ugly because it is fast.  see
-        # fnmatch_vs_regex.py and file_ignore_algorithms.py in experiments/
-        ignore_files = set(itertools.chain(*[fnmatch.filter(listing, ignore) for ignore in ignores]))
+        ignore_match = self.config.get_ignore_regex().match
 
-        listing.difference_update(ignore_files)
+        listing = [ f for f in os.listdir(directory) if not ignore_match(f) ]
         listing = sorted(listing, key=str.lower)
 
         for i, filename in enumerate(listing):

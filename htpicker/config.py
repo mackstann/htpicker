@@ -5,6 +5,7 @@ import fnmatch
 import logging
 import os
 import pipes
+import re
 
 class MyConfigParser(ConfigParser.RawConfigParser):
     def get_default(self, section, option, default):
@@ -55,8 +56,12 @@ class HTPickerConfig(object):
     def get_show_animations(self):
         return self.cfg.getboolean_default('options', 'animations', True)
 
-    def get_ignores(self):
-        return self.cfg.getlist('options', 'ignore')
+    def get_ignore_regex(self):
+        regexes = [
+            i.replace('.', r'\.').replace('*', '.*')
+            for i in self.cfg.getlist('options', 'ignore')
+        ]
+        return re.compile('^' + '|'.join(regexes) + '$')
 
     def get_command(self, file_path):
         section = self._section_for_file(file_path)

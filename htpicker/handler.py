@@ -81,7 +81,7 @@ class HTPickerURLHandler(URLHandler):
 
         ignore_match = self.config.get_ignore_regex().match
 
-        listing = [ f for f in os.listdir(directory) if not ignore_match(f) ]
+        listing = [ f for f in os.listdir(directory) if not ignore_match(f.lower()) ]
         listing = sorted(listing, key=str.lower)
 
         for i, filename in enumerate(listing):

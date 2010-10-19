@@ -59,7 +59,7 @@ class HTPickerConfig(object):
     def get_ignore_regex(self):
         if not hasattr(self, '_ignore_regex'):
             regexes = [
-                i.replace('.', r'\.').replace('*', '.*')
+                i.lower().replace('.', r'\.').replace('*', '.*')
                 for i in self.cfg.getlist('options', 'ignore')
             ]
             self._ignore_regex = re.compile('^' + '|'.join(regexes) + '$')

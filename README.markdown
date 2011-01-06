@@ -10,6 +10,8 @@ Dependencies
 You will need Python, the WebKit library (libwebkit) as well as the Python GTK
 bindings for it (pywebkitgtk; the Ubuntu package is python-webkit).
 
+pylirc is optional and will enable lirc (remote control) support if installed.
+
 Downloading
 ===========
 

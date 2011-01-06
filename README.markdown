@@ -10,17 +10,21 @@ Dependencies
 You will need Python, the WebKit library (libwebkit) as well as the Python GTK
 bindings for it (pywebkitgtk; the Ubuntu package is python-webkit).
 
-pylirc is optional and will enable lirc (remote control) support if installed.
+pylirc is optional and will enable LIRC (remote control) support if installed.
+You can either install it with your native package manager, or use Python's
+easy_install, like this:
+
+    $ sudo easy_install pylirc
 
 Downloading
 ===========
 
-There are no releases yet, so you will need git installed, and do a git clone:
+There are no releases yet, so to download it, you will need to have git
+installed.  Then, clone the git repository, like so:
 
     $ git clone git@github.com:mackstann/htpicker.git
 
-Installation
-============
+And then, to install it:
 
     $ cd htpicker
     $ python setup.py build
@@ -34,8 +38,11 @@ Usage
 [directory] is optional and defaults to the current directory.
 
 After its first run, you will now have a ~/.htpickerrc config file that you can
-edit to add support for more file types and programs to play them, as well as
-file patterns to ignore, and toggling fullscreen mode.
+edit to change a few things:
+
+* which programs are used to play given filename patterns.
+* which filename patterns should be ignored/hidden altogether.
+* various feature toggles like fullscreen and animations.
 
 General Controls
 ================
@@ -43,7 +50,8 @@ General Controls
 You can control htpicker by any combination of keyboard, joystick, or remote
 control.  It only cares about 6 buttons: left, right, up, down, "select", and
 "back".  Up and down scroll through menu choices.  Right displays the options
-menu.  Left closes it.  "Select" and "back" should be self-explanatory.
+menu.  Left closes it.  "Back" should be self-explanatory.  "Select" is what
+you would generally think of as "OK" or "confirm" or "go".
 
 Keyboard Controls
 =================

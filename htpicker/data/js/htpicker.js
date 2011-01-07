@@ -261,13 +261,13 @@ $(function() {
     $('#fullscreen-toggle').click(function(ev) {
         if(fullscreen)
         {
-            $.getJSON('htpicker://disable_fullscreen');
             $('#fullscreen-checkbox').html('');
+            $.get('htpicker://disable_fullscreen');
         }
         else
         {
-            $.getJSON('htpicker://enable_fullscreen');
             $('#fullscreen-checkbox').html('&#x2714;');
+            $.get('htpicker://enable_fullscreen');
         }
         fullscreen = !fullscreen;
     });

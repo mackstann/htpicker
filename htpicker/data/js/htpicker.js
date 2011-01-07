@@ -169,6 +169,10 @@ var scrollCentered = function(el, percentage, sweep_pct)
 var scroll_to_focus = function()
 {
     var el = $('#file-'+focus_index);
+    // XXX in certain unusual circumstances, like maybe when first starting up,
+    // el is non-null, but el.offset() is null.  why is that?
+    if(!el.offset())
+        return;
     var percentage = 1.0 * focus_index / num_items;
     scrollCentered(el, percentage, 0.5);
 }

@@ -73,6 +73,35 @@ class HTPickerURLHandler(URLHandler):
 
         # system(command + ' &') is ugly but works fine.
 
+    def _get_file_info(self, directory, filename):
+        fullpath = directory + '/' + filename
+
+        try:
+            mode = os.stat(fullpath).st_mode
+        except OSError:
+            # broken symlink, among other things.
+            # maybe this should fall back to lstat and try a little harder to
+            # give info about this broken file-thingie, instead of hiding it.
+            return None
+
+        if stat.S_ISDIR(mode):
+            filetype = 'directory'
+            icon = 'directory'
+        elif stat.S_ISREG(mode):
+            filetype = 'file'
+            icon = self.config.get_icon(fullpath)
+        else:
+            filetype = 'other'
+            icon = ''
+
+        return {
+            'fullpath': fullpath,
+            'display_name': (os.path.splitext(filename)[0]
+                             if filetype == 'file' else filename),
+            'type': filetype,
+            'icon': icon,
+        }
+
 
     @URLAction
     def list_files(self, directory):
@@ -84,30 +113,9 @@ class HTPickerURLHandler(URLHandler):
         listing = sorted(listing, key=str.lower)
 
         for filename in listing:
-            fullpath = directory + '/' + filename
-
-            try:
-                mode = os.stat(fullpath).st_mode
-            except OSError: # broken symlink, among other things
-                continue
-
-            if stat.S_ISDIR(mode):
-                filetype = 'directory'
-                icon = 'directory'
-            elif stat.S_ISREG(mode):
-                filetype = 'file'
-                icon = self.config.get_icon(fullpath)
-            else:
-                filetype = 'other'
-
-
-            files.append({
-                'fullpath': fullpath,
-                'display_name': (os.path.splitext(filename)[0]
-                                 if filetype == 'file' else filename),
-                'type': filetype,
-                'icon': icon,
-            })
+            file_info = self._get_file_info(directory, filename)
+            if file_info:
+                files.append(file_info)
 
         if directory != '/':
             files.insert(0, {

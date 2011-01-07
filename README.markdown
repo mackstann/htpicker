@@ -74,8 +74,10 @@ Remote Control
 
 htpicker can be controlled by a remote control via LIRC.  Get LIRC installed
 and configured for your remote, then see the example config file in htpicker's
-extras directory.  There's one config file for htpicker itself, and another
-that you may find useful for controlling mplayer.
+extras directory (or look here:
+http://github.com/mackstann/htpicker/tree/master/extras).  There's one config
+file for htpicker itself, and another that you may find useful for controlling
+mplayer.
 
 Motivation and Design
 =====================

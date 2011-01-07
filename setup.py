@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 setup(
     name = "htpicker",
-    version = "0.1alpha",
+    version = "0.1",
     packages = find_packages(),
 
     install_requires = ['distribute'],

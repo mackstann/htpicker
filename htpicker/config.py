@@ -42,7 +42,7 @@ class HTPickerConfig(object):
 
         if len(argv) > 1:
             self.cfg.set('options', 'initial_dir', argv[1])
-        elif self.get_default('options', 'initial_dir', None) is None:
+        elif self.cfg.get_default('options', 'initial_dir', None) is None:
             self.cfg.set('options', 'initial_dir', os.getcwd())
 
         self.cfg.read(filename)

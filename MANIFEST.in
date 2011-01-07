@@ -27,4 +27,5 @@ include AUTHORS
 include README.markdown
 include FAQ.markdown
 include LICENSE
-include extras
+include extras/lircrc-htpicker
+include extras/lircrc-mplayer

@@ -266,6 +266,7 @@ $(function() {
         }
         fullscreen = !fullscreen;
     });
+    $(window).resize(function () { scroll_to_focus(); });
 
     $('#fullscreen-toggle').attr('href', '#');
     $('#exit').attr('href', 'htpicker://exit');

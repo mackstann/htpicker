@@ -38,9 +38,14 @@ class HTPicker(object):
             logging.info("pylirc is not installed. Install it if you wish to use a remote.")
         else:
             from htpicker.lirc import LIRCEventSource, LIRCEventHandler
-            lirc_source = LIRCEventSource('htpicker')
-            lirc_handler = LIRCEventHandler(lirc_source, webbrowser, webbrowser.web_view)
-            glib.io_add_watch(lirc_source.fileno, glib.IO_IN, lirc_handler)
+            try:
+                lirc_source = LIRCEventSource('htpicker')
+            except RuntimeError, e:
+                logging.warn("pylirc failed to initialize, with the following error: " + str(e))
+                logging.warn("... this may be because your LIRC isn't configured, or no IR receiver is connected.")
+            else:
+                lirc_handler = LIRCEventHandler(lirc_source, webbrowser, webbrowser.web_view)
+                glib.io_add_watch(lirc_source.fileno, glib.IO_IN, lirc_handler)
 
     def init_joysticks(self, webbrowser):
         joysticks = Joystick.create_all()

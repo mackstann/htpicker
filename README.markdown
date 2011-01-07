@@ -16,8 +16,8 @@ easy_install, like this:
 
     $ sudo easy_install pylirc
 
-Downloading
-===========
+Installation
+============
 
 There are no releases yet, so to download it, you will need to have git
 installed.  Then, clone the git repository, like so:

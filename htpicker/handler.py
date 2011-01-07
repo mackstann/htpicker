@@ -74,10 +74,10 @@ class HTPickerURLHandler(URLHandler):
         # system(command + ' &') is ugly but works fine.
 
     def _get_file_info(self, directory, filename):
-        fullpath = directory + '/' + filename
+        info = { 'display_name': filename, 'fullpath': directory + '/' + filename }
 
         try:
-            mode = os.stat(fullpath).st_mode
+            mode = os.stat(info['fullpath']).st_mode
         except OSError:
             # broken symlink, among other things.
             # maybe this should fall back to lstat and try a little harder to
@@ -85,23 +85,17 @@ class HTPickerURLHandler(URLHandler):
             return None
 
         if stat.S_ISDIR(mode):
-            filetype = 'directory'
-            icon = 'directory'
+            info['type'] = 'directory'
+            info['icon'] = 'directory'
         elif stat.S_ISREG(mode):
-            filetype = 'file'
-            icon = self.config.get_icon(fullpath)
+            info['type'] = 'file'
+            info['icon'] = self.config.get_icon(info['fullpath'])
+            info['display_name'] = os.path.splitext(filename)[0]
         else:
-            filetype = 'other'
-            icon = ''
+            info['type'] = 'other'
+            info['icon'] = ''
 
-        return {
-            'fullpath': fullpath,
-            'display_name': (os.path.splitext(filename)[0]
-                             if filetype == 'file' else filename),
-            'type': filetype,
-            'icon': icon,
-        }
-
+        return info
 
     @URLAction
     def list_files(self, directory):

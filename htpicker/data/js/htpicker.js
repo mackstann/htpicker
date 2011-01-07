@@ -275,7 +275,6 @@ $(function() {
         }
         fullscreen = !fullscreen;
     });
-    $(window).resize(function () { scroll_to_focus(); });
 
     $('#exit').attr('href', 'htpicker://exit');
 
@@ -309,6 +308,8 @@ $(function() {
             return false;
         }
     });
+
+    $(window).resize(function () { scroll_to_focus(); });
 });
 
 // run this at .load() so preloaded images are guaranteed to be loaded.

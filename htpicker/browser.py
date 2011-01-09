@@ -3,7 +3,6 @@
 import functools
 import gtk
 import logging
-import time
 import urlparse
 import webkit
 
@@ -49,7 +48,16 @@ class WebBrowser(gtk.Window):
         self.url_handler_cb = url_handler_cb
 
         self.connect('destroy', self._destroy_cb)
+
+        self.screen = self.get_screen()
+
+        self.check_fullscreen_supported()
+
         self.set_default_size(800, 600)
+
+        self.restore_to_size = (800, 600)
+        self.restore_to_position = self.get_position()
+
         self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0x11*0xff, 0x11*0xff, 0x11*0xff))
 
         self.web_view = HTPickerWebView(**kw)
@@ -62,6 +70,72 @@ class WebBrowser(gtk.Window):
         scrolled_window.add(self.web_view)
 
         self.add(scrolled_window)
+
+    def check_modern_window_manager_running(self):
+        # the official explanation of this logic is at
+        # http://standards.freedesktop.org/wm-spec/latest/ in the "root window
+        # properties" section.
+
+        # if a modern (EWMH-compliant) WM is running, then the root window
+        # should have a property called _NET_SUPPORTING_WM_CHECK.
+        supports_wm_check = gtk.gdk.get_default_root_window().property_get('_NET_SUPPORTING_WM_CHECK')
+
+        if supports_wm_check:
+            type, format, window_ids = supports_wm_check
+
+            # that property's value should be a list of window IDs whose length
+            # is 1.
+            if window_ids:
+
+                # the window ID in that list refers to an invisible dummy
+                # window whose purpose is basically just to prove that the WM
+                # is EWMH-compliant.
+                window = gtk.gdk.window_foreign_new(window_ids[0])
+
+                # if that window exists, then we can be assured that the WM who
+                # created the _NET_SUPPORTING_WM_CHECK property is still
+                # running.
+                return bool(window)
+
+        return False
+
+    def check_fullscreen_supported(self):
+        response = gtk.gdk.get_default_root_window().property_get('_NET_SUPPORTED')
+        if not response:
+            supported = []
+        else:
+            type, format, supported = response
+
+        self.fullscreen_supported = '_NET_WM_ACTION_FULLSCREEN' in supported \
+                and self.check_modern_window_manager_running()
+
+        # why do we also need to check that a EWMH-compliant WM is running?
+        # because the _NET_SUPPORTED property could be stale, left over from a
+        # window manager that is not running anymore.
+
+    def fullscreen(self):
+        # this extra complexity is to handle situations where no window manager
+        # is running.  in those cases, fullscreen() does nothing (although GTK
+        # will still internally report WINDOW_STATE_FULLSCREEN if you ask).  so
+        # we just manually set the window to the screen's size.
+
+        self.restore_to_size = self.get_size()
+        self.restore_to_position = self.get_position()
+
+        if self.fullscreen_supported:
+            super(WebBrowser, self).fullscreen()
+        else:
+            self.set_decorated(False)
+            self.move(0, 0)
+            self.resize(self.screen.get_width(), self.screen.get_height())
+
+    def unfullscreen(self):
+        if self.fullscreen_supported:
+            super(WebBrowser, self).unfullscreen()
+        else:
+            self.set_decorated(True)
+            self.resize(*self.restore_to_size)
+            self.move(*self.restore_to_position)
 
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)

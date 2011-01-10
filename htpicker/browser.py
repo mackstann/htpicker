@@ -51,12 +51,14 @@ class WebBrowser(gtk.Window):
 
         self.screen = self.get_screen()
 
+        self.listen_for_wm_changes()
         self.check_fullscreen_supported()
 
         self.set_default_size(800, 600)
 
         self.restore_to_size = (800, 600)
         self.restore_to_position = self.get_position()
+        self.is_fullscreen = False
 
         self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0x11*0xff, 0x11*0xff, 0x11*0xff))
 
@@ -71,6 +73,67 @@ class WebBrowser(gtk.Window):
 
         self.add(scrolled_window)
 
+    def listen_for_wm_changes(self):
+        self.listen_for_wm_selection_changes()
+        self.listen_for_root_property_changes()
+
+    def listen_for_wm_selection_changes(self):
+        # Clipboard is misleadingly named -- it's a selection!  the clipboard
+        # is just one use for selections.  the WM_Sn selection must be owned by
+        # the currently running window manager.  by monitoring changes in its
+        # ownership, we can know when the current window manager has exited, or
+        # when a new one has started.  this goes way back to the ICCCM spec and
+        # should be compatible with even old or primitive WMs.
+        self.screen_selection_atom_names = (
+            'WM_S' + str(self.screen.get_number()),
+            '_NET_WM_CM_S' + str(self.screen.get_number()), # CM = compositing manager
+        )
+        for atom_name in self.screen_selection_atom_names:
+            selection = gtk.Clipboard(selection=atom_name)
+            selection.connect('owner-change', self._wm_selection_owner_change_cb)
+
+    def listen_for_root_property_changes(self):
+        root_widget = gtk.Window()
+        root_widget.realize()
+        root_widget.connect('property-notify-event', self._root_property_change_cb)
+
+        root = self.get_root_window()
+        root.set_user_data(root_widget) # set_user_data is misleadingly named -- see the docs
+        root.set_events(gtk.gdk.PROPERTY_CHANGE_MASK)
+
+        self.commonly_changed_upon_wm_startup = (
+            'WM_ICON_SIZE',
+            '_NET_SUPPORTING_WM_CHECK',
+            '_NET_SUPPORTED',
+            '_NET_WORKAREA',
+            '_NET_DESKTOP_NAMES',
+            '_NET_DESKTOP_GEOMETRY',
+            '_NET_NUMBER_OF_DESKTOPS',
+        )
+
+    def _root_property_change_cb(self, window, event):
+        if event.atom in self.commonly_changed_upon_wm_startup:
+            self.check_fullscreen_supported()
+            self.restore_fullscreen_flag_after_wm_change()
+
+    def _wm_selection_owner_change_cb(self, selection, event):
+        if event.selection in self.screen_selection_atom_names:
+            self.check_fullscreen_supported()
+            self.restore_fullscreen_flag_after_wm_change()
+
+    def restore_fullscreen_flag_after_wm_change(self):
+        if self.fullscreen_supported:
+            # we just possibly went through a period of time with no WM, and
+            # now it's back. since the WM is in charge of updating the
+            # _NET_WM_STATE property, that property is now potentially
+            # inaccurate, with regard to fullscreen state.  let's get the newly
+            # arrived WM to update it to its correct value, so that it doesn't
+            # inadvertantly fullscreen us when we no longer want to be.
+            if self.is_fullscreen:
+                super(WebBrowser, self).fullscreen()
+            else:
+                super(WebBrowser, self).unfullscreen()
+
     def check_modern_window_manager_running(self):
         # the official explanation of this logic is at
         # http://standards.freedesktop.org/wm-spec/latest/ in the "root window
@@ -80,11 +143,13 @@ class WebBrowser(gtk.Window):
         # should have a property called _NET_SUPPORTING_WM_CHECK.
         supports_wm_check = gtk.gdk.get_default_root_window().property_get('_NET_SUPPORTING_WM_CHECK')
 
+        self.wm_name = '<none>'
+
         if supports_wm_check:
             type, format, window_ids = supports_wm_check
 
-            # that property's value should be a list of window IDs whose length
-            # is 1.
+            # the value of the _NET_SUPPORTING_WM_CHECK property should be a
+            # list of window IDs whose length is 1.
             if window_ids:
 
                 # the window ID in that list refers to an invisible dummy
@@ -92,10 +157,25 @@ class WebBrowser(gtk.Window):
                 # is EWMH-compliant.
                 window = gtk.gdk.window_foreign_new(window_ids[0])
 
-                # if that window exists, then we can be assured that the WM who
-                # created the _NET_SUPPORTING_WM_CHECK property is still
-                # running.
-                return bool(window)
+                if not window:
+                    # the documentation leads you to believe that if the dummy
+                    # window is missing, then window_foreign_new should return
+                    # None.  however, that doesn't seem to be accurate for me
+                    # at all.  but just in case they fix that, i'll leave this
+                    # if statement around...
+                    return False
+
+                # if the dummy window does appear to exist, then let's check if
+                # we can read its _NET_WM_NAME property without getting an
+                # error.  that will be the final indication of whether the WM
+                # is running or not.
+
+                gtk.gdk.error_trap_push()
+                result = window.property_get('_NET_WM_NAME')
+                if result:
+                    self.wm_name = result[2]
+                self.screen.get_display().sync()
+                return not gtk.gdk.error_trap_pop()
 
         return False
 
@@ -106,12 +186,17 @@ class WebBrowser(gtk.Window):
         else:
             type, format, supported = response
 
+        # why do we also need to check that an EWMH-compliant WM is running, instead
+        # of just checking that _NET_SUPPORTED contains
+        # _NET_WM_ACTION_FULLSCREEN?  because the _NET_SUPPORTED property could
+        # be stale, left over from a window manager that is not running
+        # anymore.
+
         self.fullscreen_supported = '_NET_WM_ACTION_FULLSCREEN' in supported \
                 and self.check_modern_window_manager_running()
 
-        # why do we also need to check that a EWMH-compliant WM is running?
-        # because the _NET_SUPPORTED property could be stale, left over from a
-        # window manager that is not running anymore.
+        logging.debug('WM just changed to {0}. is EWMH fullscreen supported? {1}'
+            .format(self.wm_name, self.fullscreen_supported))
 
     def fullscreen(self):
         # this extra complexity is to handle situations where no window manager
@@ -122,17 +207,17 @@ class WebBrowser(gtk.Window):
         self.restore_to_size = self.get_size()
         self.restore_to_position = self.get_position()
 
-        if self.fullscreen_supported:
-            super(WebBrowser, self).fullscreen()
-        else:
+        self.is_fullscreen = True
+        super(WebBrowser, self).fullscreen()
+        if not self.fullscreen_supported:
             self.set_decorated(False)
             self.move(0, 0)
             self.resize(self.screen.get_width(), self.screen.get_height())
 
     def unfullscreen(self):
-        if self.fullscreen_supported:
-            super(WebBrowser, self).unfullscreen()
-        else:
+        self.is_fullscreen = False
+        super(WebBrowser, self).unfullscreen()
+        if not self.fullscreen_supported:
             self.set_decorated(True)
             self.resize(*self.restore_to_size)
             self.move(*self.restore_to_position)

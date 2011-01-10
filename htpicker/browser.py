@@ -181,6 +181,16 @@ class BackwardsCompatibleFullscreenWindow(gtk.Window):
         logging.debug('WM just changed to {0}. is EWMH fullscreen supported? {1}'
             .format(self.wm_name, self.fullscreen_supported))
 
+    def apply_legacy_fullscreen(self):
+        self.set_decorated(False)
+        self.move(0, 0)
+        self.resize(self.screen.get_width(), self.screen.get_height())
+
+    def undo_legacy_fullscreen(self):
+        self.set_decorated(True)
+        self.resize(*self.restore_to_size)
+        self.move(*self.restore_to_position)
+
     def fullscreen(self):
         # this extra complexity is to handle situations where no window manager
         # is running.  in those cases, fullscreen() does nothing (although GTK
@@ -193,17 +203,13 @@ class BackwardsCompatibleFullscreenWindow(gtk.Window):
         self.is_fullscreen = True
         gtk.Window.fullscreen(self)
         if not self.fullscreen_supported:
-            self.set_decorated(False)
-            self.move(0, 0)
-            self.resize(self.screen.get_width(), self.screen.get_height())
+            self.apply_legacy_fullscreen()
 
     def unfullscreen(self):
         self.is_fullscreen = False
         gtk.Window.unfullscreen(self)
         if not self.fullscreen_supported:
-            self.set_decorated(True)
-            self.resize(*self.restore_to_size)
-            self.move(*self.restore_to_position)
+            self.undo_legacy_fullscreen()
 
 class WebBrowser(BackwardsCompatibleFullscreenWindow):
     def __init__(self, url_handler_cb, **kw):

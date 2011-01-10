@@ -42,36 +42,19 @@ class HTPickerWebView(webkit.WebView):
     def call_js_function(self, name):
         self.execute_script(name + '()')
 
-class WebBrowser(gtk.Window):
-    def __init__(self, url_handler_cb, **kw):
+class BackwardsCompatibleFullscreenWindow(gtk.Window):
+    def __init__(self, default_size):
         gtk.Window.__init__(self)
-        self.url_handler_cb = url_handler_cb
-
-        self.connect('destroy', self._destroy_cb)
 
         self.screen = self.get_screen()
 
         self.listen_for_wm_changes()
         self.check_fullscreen_supported()
 
-        self.set_default_size(800, 600)
-
-        self.restore_to_size = (800, 600)
+        self.set_default_size(*default_size)
+        self.restore_to_size = default_size
         self.restore_to_position = self.get_position()
         self.is_fullscreen = False
-
-        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0x11*0xff, 0x11*0xff, 0x11*0xff))
-
-        self.web_view = HTPickerWebView(**kw)
-        self.web_view.connect('document-load-finished', self._ready_cb)
-        self.web_view.connect('resource-request-starting', self._resource_cb)
-        self.web_view.load()
-
-        scrolled_window = gtk.ScrolledWindow()
-        scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
-        scrolled_window.add(self.web_view)
-
-        self.add(scrolled_window)
 
     def listen_for_wm_changes(self):
         self.listen_for_wm_selection_changes()
@@ -130,9 +113,9 @@ class WebBrowser(gtk.Window):
             # arrived WM to update it to its correct value, so that it doesn't
             # inadvertantly fullscreen us when we no longer want to be.
             if self.is_fullscreen:
-                super(WebBrowser, self).fullscreen()
+                gtk.Window.fullscreen(self)
             else:
-                super(WebBrowser, self).unfullscreen()
+                gtk.Window.unfullscreen(self)
 
     def check_modern_window_manager_running(self):
         # the official explanation of this logic is at
@@ -208,7 +191,7 @@ class WebBrowser(gtk.Window):
         self.restore_to_position = self.get_position()
 
         self.is_fullscreen = True
-        super(WebBrowser, self).fullscreen()
+        gtk.Window.fullscreen(self)
         if not self.fullscreen_supported:
             self.set_decorated(False)
             self.move(0, 0)
@@ -216,11 +199,32 @@ class WebBrowser(gtk.Window):
 
     def unfullscreen(self):
         self.is_fullscreen = False
-        super(WebBrowser, self).unfullscreen()
+        gtk.Window.unfullscreen(self)
         if not self.fullscreen_supported:
             self.set_decorated(True)
             self.resize(*self.restore_to_size)
             self.move(*self.restore_to_position)
+
+class WebBrowser(BackwardsCompatibleFullscreenWindow):
+    def __init__(self, url_handler_cb, **kw):
+        BackwardsCompatibleFullscreenWindow.__init__(self, (800, 600))
+
+        self.url_handler_cb = url_handler_cb
+
+        self.connect('destroy', self._destroy_cb)
+
+        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(0x11*0xff, 0x11*0xff, 0x11*0xff))
+
+        self.web_view = HTPickerWebView(**kw)
+        self.web_view.connect('document-load-finished', self._ready_cb)
+        self.web_view.connect('resource-request-starting', self._resource_cb)
+        self.web_view.load()
+
+        scrolled_window = gtk.ScrolledWindow()
+        scrolled_window.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
+        scrolled_window.add(self.web_view)
+
+        self.add(scrolled_window)
 
     def _resource_cb(self, view, frame, resource, request, response):
         self.url_handler_cb(request)

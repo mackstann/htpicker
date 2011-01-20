@@ -47,5 +47,5 @@ setup(
     description = "A simple home theater frontend",
     license = "Public Domain + CC Attribution + LGPL + MIT",
     keywords = "home theater htpc frontend media player",
-    url = "http://github.com/mackstann/htpicker",
+    url = "http://incise.org/htpicker.html",
 )

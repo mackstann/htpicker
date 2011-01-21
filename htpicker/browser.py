@@ -43,11 +43,11 @@ class HTPickerWebView(webkit.WebView):
         self.execute_script(name + '()')
 
 class WebBrowser(gtk.Window):
-    def __init__(self, url_handler_cb, **kw):
+    def __init__(self, default_windowed_size, url_handler_cb, **kw):
         gtk.Window.__init__(self)
 
         self.url_handler_cb = url_handler_cb
-        self.set_default_size(800, 600)
+        self.set_default_size(*default_windowed_size)
 
         self.connect('destroy', self._destroy_cb)
 

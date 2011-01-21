@@ -64,7 +64,16 @@ class HTPicker(object):
 
         html = pkg_resources.resource_string(__name__, 'data/app.html')
 
-        webbrowser = WebBrowser(handler.handle_request,
+        if self.config.get_fullscreen():
+            # setting the window's size to the screen's size is a small hack to
+            # prevent a visible resizing of the window in case htpicker starts
+            # up before the window manager has finished starting.
+            screen = gtk.gdk.screen_get_default()
+            geometry = (screen.get_width(), screen.get_height())
+        else:
+            geometry = (800, 600)
+
+        webbrowser = WebBrowser(geometry, handler.handle_request,
                 content=(html, 'text/html', 'utf-8', 'file://'))
 
         handler.browser = webbrowser # ugly workaround for mutual dependency

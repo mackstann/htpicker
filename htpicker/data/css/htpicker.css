@@ -10,7 +10,7 @@ a:focus {
     display: block;
     padding: 0.2em;
 }
-body, div, a {
+* {
     font-family: 'Droid Sans', sans-serif;
     font-size: xx-large;
     cursor: none;

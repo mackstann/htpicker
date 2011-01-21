@@ -43,7 +43,7 @@ var activate = function(fullpath, type, display_name)
 
         if(show_animations)
         {
-            $('#files').hide("slide", {
+            $('#main-menu').hide("slide", {
                 'direction': last_folder_entry_action == 'descend' ? 'left' : 'right',
                 'mode': 'hide'
             }, 150);
@@ -53,15 +53,15 @@ var activate = function(fullpath, type, display_name)
     }
     else
     {
-        $('#files').hide();
+        $('#main-menu').hide();
         $.get('htpicker://play_file?fullpath=' + fullpath);
-        setTimeout(function() { $('#files').show(); }, 5000);
+        setTimeout(function() { $('#main-menu').show(); }, 5000);
     }
 }
 
 var go_parent_directory = function()
 {
-    $('#files a').first().click();
+    $('#main-menu a').first().click();
 }
 
 var move_selection_up = function()
@@ -110,13 +110,13 @@ var show_menu = function()
     {
         if(show_animations)
         {
-            $('#menu').show("slide", { direction: "right" }, 300, function() {
+            $('#options-menu').show("slide", { direction: "right" }, 300, function() {
                 focus_current_menu_item();
             });
         }
         else
         {
-            $('#menu').show();
+            $('#options-menu').show();
             focus_current_menu_item();
         }
     }
@@ -129,16 +129,16 @@ var hide_menu = function()
     {
         focus_current_index();
         if(show_animations)
-            $('#menu').hide("slide", { direction: "right" }, 300);
+            $('#options-menu').hide("slide", { direction: "right" }, 300);
         else
-            $('#menu').hide();
+            $('#options-menu').hide();
     }
     menu_showing = false;
 }
 
 var focus_current_menu_item = function()
 {
-    $('#menu a').eq(menu_focus_index).focus();
+    $('#options-menu a').eq(menu_focus_index).focus();
 }
 
 var focus_current_index = function()
@@ -185,7 +185,7 @@ var load_files = function(path) {
 
     $.getJSON('htpicker://list_files?directory=' + encodeURIComponent(current_dir), function(data) {
         var files = data['files'];
-        $('#files').html('');
+        $('#main-menu').html('');
         new_index_matching_focus_name = null;
         num_items = files.length;
         for(var i = 0; i < num_items; i++)
@@ -193,7 +193,7 @@ var load_files = function(path) {
             var focusin_cb = function(i, num_items) {
                 return function(ev) {
                     focus_index = i;
-                    $('#files').show();
+                    $('#main-menu').show();
                     $('#file-'+focus_index).addClass("ui-state-active");
                     scroll_to_focus();
                 };
@@ -227,17 +227,17 @@ var load_files = function(path) {
             if(files[i]['fullpath'] == focus_name)
                 new_index_matching_focus_name = i;
 
-            $('#files').append(item);
+            $('#main-menu').append(item);
         }
 
         if(show_animations && (last_folder_entry_action == 'ascend' || last_folder_entry_action == 'descend'))
         {
             // ascend/descend
             focus_index = 0;
-            $('#files').show("slide", {
+            $('#main-menu').show("slide", {
                 'direction': last_folder_entry_action == 'descend' ? 'right' : 'left',
                 'mode': 'show'
-            }, 250, function() { $('#files > a')[0].focus(); });
+            }, 250, function() { $('#main-menu > a')[0].focus(); });
         }
         else
         {
@@ -278,11 +278,11 @@ $(function() {
 
     $('#exit').attr('href', 'htpicker://exit');
 
-    $('#menu a').focusin(function(ev) {
+    $('#options-menu a').focusin(function(ev) {
         $(this).parent().addClass("ui-state-hover");
     });
 
-    $('#menu a').focusout(function(ev) {
+    $('#options-menu a').focusout(function(ev) {
         $(this).parent().removeClass("ui-state-hover");
     });
 

@@ -18,17 +18,13 @@ a {
     padding: 0.2em;
 }
 
-/* file listing */
-
-a.item span { vertical-align: middle; }
-a.item img {
+#main-menu a.item span { vertical-align: middle; }
+#main-menu a.item img {
     vertical-align: middle;
     height: 1.8em; /* using em makes icons scale with the font size */
 }
 
-/* side menu */
-
-div#menu {
+#options-menu {
     /* it's not visible until you activate it */
     display: none;
 
@@ -48,12 +44,12 @@ div#menu {
     -webkit-border-bottom-left-radius: 10px;
             border-bottom-left-radius: 10px;
 }
-div#menu ul { padding-left: 0px; }
-div#menu li {
+#options-menu ul { padding-left: 0px; }
+#options-menu li {
     list-style: none;
     border: 1px solid transparent; /* to match thickness of jquery's border when focused */
 }
-div#menu a {
+#options-menu a {
     color: #ddd;
     font-weight: bold;
 }

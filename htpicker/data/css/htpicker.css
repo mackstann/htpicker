@@ -1,53 +1,59 @@
-/* general */
-a:link,
-a:active,
-a:hover,
-a:visited,
-a:focus {
-    text-decoration: none;
-    outline: none;
-    vertical-align: middle;
-    display: block;
-    padding: 0.2em;
-}
+/* this top section is stuff you probably want to keep even if you make your
+ * own custom CSS. */
+
+* { cursor: none; } /* no mouse cursor, ever. */
+a { outline: none; } /* that thin dotted outline around clicked/selected links */
+
+/* and now, for the CSS specific to this theme. */
+
+body { background: #111; overflow: hidden; }
 * {
     font-family: 'Droid Sans', sans-serif;
-    font-size: xx-large;
-    cursor: none;
+    font-size: xx-large; /* changing this should scale everything else accordingly */
 }
-body { background: #111; overflow: hidden; }
+a {
+    text-decoration: none;
+    vertical-align: middle;
+    display: block; /* this makes both menus vertical */
+    padding: 0.2em;
+}
 
 /* file listing */
-a.item img { vertical-align: middle; height: 1.8em; }
+
 a.item span { vertical-align: middle; }
+a.item img {
+    vertical-align: middle;
+    height: 1.8em; /* using em makes icons scale with the font size */
+}
 
 /* side menu */
+
 div#menu {
+    /* it's not visible until you activate it */
     display: none;
+
+    /* geometry */
     position: fixed;
     right: 0px;
     top: 100px;
+    width: 12em;
+    padding: 0.1em 1em 0.1em 1em;
+    line-height: 1.6em;
+
+    /* styling */
     background: -webkit-gradient(linear, left top, left bottom, from(#262626), to(#000));
     color: #ddd;
     -webkit-border-top-left-radius: 10px;
             border-top-left-radius: 10px;
     -webkit-border-bottom-left-radius: 10px;
             border-bottom-left-radius: 10px;
-    width: 12em;
-    padding: 0.1em 1em 0.1em 1em;
-    line-height: 1.6em;
 }
 div#menu ul { padding-left: 0px; }
 div#menu li {
     list-style: none;
-    /* to match thickness of jquery's border when focused */
-    border: 1px solid transparent;
+    border: 1px solid transparent; /* to match thickness of jquery's border when focused */
 }
-div#menu a:link,
-div#menu a:active,
-div#menu a:hover,
-div#menu a:visited,
-div#menu a:focus {
+div#menu a {
     color: #ddd;
     font-weight: bold;
 }

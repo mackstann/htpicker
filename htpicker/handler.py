@@ -50,6 +50,8 @@ class HTPickerURLHandler(URLHandler):
         # Accept header (or access request headers in general), so we must also
         # ask for it in the URL.
         filename = pkg_resources.resource_filename(__name__, 'data/'+filepath)
+        if os.name == 'nt':
+            filename = '/' + filename.replace('\\', '/')
         return 'file://' + urllib.quote(filename)
 
     @URLAction

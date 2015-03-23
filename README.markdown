@@ -22,7 +22,7 @@ Installation
 There are no releases yet, so to download it, you will need to have git
 installed.  Then, clone the git repository, like so:
 
-    $ git clone git@github.com:mackstann/htpicker.git
+    $ git clone https://github.com/mackstann/htpicker
 
 And then, to install it:
 
